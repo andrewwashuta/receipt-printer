@@ -1,42 +1,45 @@
-// typefaces
 @font-face {
-    font-family: 'MNKY Banana Grotesk';
-    src: url('/fonts/MNKYBananaGroteskTRIAL-Medium.otf') format('otf');
-    font-weight: 500;
-    font-display: swap;
-  }
-  
-  @font-face {
-    font-family: 'MNKY Banana Grotesk';
-    src: url('/fonts/MNKYBananaGroteskTRIAL-Regular.otf') format('otf');
-    font-weight: 400;
-    font-display: swap;
-  }
+  font-family: 'MNKY Banana Grotesk';
+  src: url('/fonts/MNKYBananaGroteskTRIAL-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
 
-// color
-$bg-color: #fafaf5;
+@font-face {
+  font-family: 'MNKY Banana Grotesk';
+  src: url('/fonts/MNKYBananaGroteskTRIAL-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-display: swap;
+}
 
-// text colors
-$color-ink: #43413A;
-$color-ink-primary: #282726;
-$color-ink-subtle: #7d7976;
+:root {
+  // colors
+  --bg-color: #fafaf5;
+  --color-ink: #5b5953;
+  --color-ink-primary: #282726;
+  --color-ink-subtle: #7d7976;
 
-// breakpoints
+  // sizes
+  --size-xxs: 4px;
+  --size-xs: 8px;
+  --size-sm: 12px;
+  --size-md: 16px;
+  --size-lg: 24px;
+  --size-xl: 32px;
+  --size-xxl: 40px;
+  --size-xxxl: 48px;
+  --size-xxxxl: 64px;
+
+  // typography
+  --font-sans: 'MNKY Banana Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-base: 14px;
+  --font-size-sm: 12px;
+  --font-size-lg: 16px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --line-height: 1.5;
+  --letter-spacing: -0.035px;
+}
+
+// breakpoints (keep as SCSS variables)
 $breakpoint-md: 768px;
-
-// size
-$size-xxs: 4px;
-$size-xs: 8px;
-$size-sm: 12px;
-$size-md: 16px;
-$size-lg: 24px;
-$size-xl: 32px;
-$size-xxl: 40px;
-$size-xxxl: 48px;
-$size-xxxxl: 64px;
-
-// typography
-$font-sans: 'MNKY Banana Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-$font-weight-normal: 400;
-$font-weight-medium: 500;
-$line-height: 1.5;
