@@ -1,0 +1,30 @@
+// typefaces
+@font-face {
+    font-family: 'MNKY Banana Grotesk';
+    src: url('/fonts/MNKYBananaGroteskTRIAL-Medium.otf') format('otf');
+    font-weight: 500;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'MNKY Banana Grotesk';
+    src: url('/fonts/MNKYBananaGroteskTRIAL-Regular.otf') format('otf');
+    font-weight: 400;
+    font-display: swap;
+  }
+
+// color
+$bg-color: #fafaf5;
+
+// text colors
+$text-color: #43413A;
+$text-color-primary: #282726;
+$text-color-subtle: #7d7976;
+
+// breakpoints
+$breakpoint-md: 768px;
+
+// typography
+$font-sans: 'MNKY Banana Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
