@@ -1,24 +1,76 @@
 @use 'variables' as *;
 
-// Reset
+// reset
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+// base styles
 body {
   font-family: $font-sans;
   font-weight: $font-weight-normal;
-  line-height: 1.5;
-  color: $text-color;
+  line-height: $line-height;
+  color: $color-ink;
   background: $bg-color;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-// Basic responsive container
-.container {
+// Main content area
+main {
   width: 100%;
-  max-width: 1200px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 2rem 1rem;
+}
+
+// Side navigation
+.side-nav {
+  position: fixed;
+  top: $size-xxl;
+  left: $size-xxl;
+  
+  @media (max-width: $breakpoint-md) {
+    display: none;
+  }
+
+  nav {
+    ul {
+      list-style: none;
+      
+      li {
+        margin-bottom: $size-sm;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        
+        a {
+          color: $color-ink;
+          text-decoration: none;
+
+          &:hover {
+            color: $color-ink-primary;
+          }
+
+          &:target {
+            color: $color-ink-primary;
+            font-weight: $font-weight-medium;
+
+            &::before {
+              content: "";
+              width: 6px;
+              height: 6px;
+              background-color: $color-ink-subtle;
+              margin-right: 4px;
+              display: inline-block;
+            }
+          }
+        }
+      }
+    }
+  }
 } 

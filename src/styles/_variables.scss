@@ -17,14 +17,26 @@
 $bg-color: #fafaf5;
 
 // text colors
-$text-color: #43413A;
-$text-color-primary: #282726;
-$text-color-subtle: #7d7976;
+$color-ink: #43413A;
+$color-ink-primary: #282726;
+$color-ink-subtle: #7d7976;
 
 // breakpoints
 $breakpoint-md: 768px;
+
+// size
+$size-xxs: 4px;
+$size-xs: 8px;
+$size-sm: 12px;
+$size-md: 16px;
+$size-lg: 24px;
+$size-xl: 32px;
+$size-xxl: 40px;
+$size-xxxl: 48px;
+$size-xxxxl: 64px;
 
 // typography
 $font-sans: 'MNKY Banana Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
+$line-height: 1.5;
