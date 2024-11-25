@@ -15,10 +15,17 @@
 :root {
   // colors
   --bg-color: #fafaf5;
+  --color-white: #fff;
   --color-ink: #5b5953;
   --color-ink-primary: #282726;
   --color-ink-subtle: #7d7976;
   --color-edge-subtle: #ebebeb;
+
+  // border-radius
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
 
   // sizes
   --size-xxs: 4px;
