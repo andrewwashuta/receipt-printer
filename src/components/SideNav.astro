@@ -1,0 +1,79 @@
+---
+---
+
+<aside class="side-nav">
+    <nav>
+        <ul>
+            <li><a href="#intro">Intro</a></li>
+            <li><a href="#now">Now</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <!-- <li><a href="#photo">Photography</a></li> -->
+            <!-- <li><a href="#fun">Fun</a></li> -->
+            <!-- <li><a href="#misc">Misc</a></li> -->
+        </ul>
+    </nav>
+
+    <footer class="footer">
+        <p>Typeset in MNKY Banana Grotesk</p>
+        <p>© 2024</p>
+    </footer>
+</aside>
+
+<style>
+ .side-nav {
+  position: fixed;
+  top: var(--size-xxl);
+  left: var(--size-xxl);
+  
+  @media (max-width: $breakpoint-md) {
+    display: none;
+  }
+
+  nav {
+    ul {
+      list-style: none;
+      
+      li {
+        margin-bottom: var(--size-sm);
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        
+        a {
+          color: var(--color-ink);
+          text-decoration: none;
+
+          &:hover {
+            color: var(--color-ink-primary);
+          }
+
+         /*   &:target,
+            &.active {
+         //   color: var(--color-ink-primary);
+         //   font-weight: var(--font-weight-medium);
+         // }
+
+            // &::before {
+            //   content: "";
+            //   width: 6px;
+            //   height: 6px;
+            //   background-color: var(--color-ink-subtle);
+            //   margin-right: 4px;
+            //   display: inline-block;
+          }
+            */
+        }
+      }
+    }
+  }
+    .footer {
+        position: fixed;
+        bottom: var(--size-xxl);
+        left: var(--size-xxl);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-subtle);
+        z-index: var(--z-nav);
+    }
+</style> 

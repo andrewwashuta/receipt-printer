@@ -1,8 +1,8 @@
 ---
 ---
-<section id="work">
-    <h2>Work</h2>
-    <div class="work-entry">
+<section id="experience">
+    <h2><span>Experience</span></h2>
+    <div class="experience-entry">
         <div class="label">
             <time datetime="2017">2017</time> – Present
         </div>
@@ -12,7 +12,7 @@
             <p class="label">84.51°</p>
         </hgroup>
     </div>
-    <div class="work-entry">
+    <div class="experience-entry">
         <div class="label">
             <time datetime="2016">2016</time> – <time datetime="2017">2017</time>
         </div>
@@ -21,7 +21,7 @@
             <p class="label">Clubessential</p>
         </hgroup>
     </div>
-    <div class="work-entry">
+    <div class="experience-entry">
         <div class="label">
             <time datetime="2014">2014</time> – <time datetime="2016">2016</time>
         </div>
@@ -31,3 +31,19 @@
         </hgroup>
     </div>
 </section>
+
+<style lang="scss">
+  .experience-entry {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: start/end;
+
+    .label {
+      grid-column: 1;
+    }
+
+    hgroup {
+      grid-column: 2 / span 3;
+    }
+  }
+</style>

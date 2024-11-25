@@ -1,0 +1,69 @@
+---
+import { Image } from 'astro:assets';
+import meridianImg from '../../assets/photos/index/meridian.png';
+---
+<section id="projects">
+    <h2><span>Projects</span></h2>
+    
+    <div class="project-entry">
+        <div class="project-image">
+            <Image src={meridianImg} alt="Meridian Design System" />
+        </div>
+        <div class=""project-title">
+            <h3>Meridian Design System</h3>
+            <p class="label">84.51°</p>
+        </div>
+        <div class="project-content">
+            <p>Maintaining and scaling a proprietary design system across Kroger’s data enterprise products to serve thousands of customers.</p>
+        </div>
+    </div>
+</section>
+
+<style lang="scss">
+    .project-entry {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-md);
+        
+        .project-image {
+            width: 100%;
+            border: 1px solid var(--color-edge-subtle);
+            padding: var(--size-xxs);
+            border-radius: var(--border-radius-md);
+            background-color: var(--color-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            img {
+                width: 100%;
+                height: auto;
+                border-radius: var(--border-radius-sm);
+                display: block;
+                image-rendering: -webkit-optimize-contrast;
+            }
+
+    
+        }
+
+        .project-title {
+            display: flex;
+            flex-direction: column;
+            gap: var(--size-xxs);
+        }
+        
+        .project-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--size-xs);
+            
+            h3 {
+                color: var(--color-ink-primary);
+                
+                &:hover {
+                    color: var(--color-ink);
+                }
+            }
+        }
+    }
+</style>
