@@ -12,8 +12,8 @@ import meridianImg from '../../assets/images/index/meridian_thumb.png';
                 alt="Meridian Design System"
                 quality={100}
                 format="webp"
+                loading="eager"
             />
-            <div class="view-button">View Project</div>
         </div>
         <div class="project-title">
             <h3>Meridian Design System</h3>
@@ -30,12 +30,22 @@ import meridianImg from '../../assets/images/index/meridian_thumb.png';
         display: flex;
         flex-direction: column;
         gap: var(--size-md);
+        --hover-area: var(--size-sm);
+        padding: var(--hover-area);
+        margin: calc(-1 * var(--hover-area));
+        border-radius: var(--border-radius-md);
+        cursor: pointer;
+        transition: background-color var(--transition-default);
+        
+        &:hover {
+            background-color: var(--color-surface-hover);
+        }
         
         .project-image {
             width: 100%;
             border: 1px solid var(--color-edge-subtle);
             padding: var(--size-xxs);
-            border-radius: var(--border-radius-md);
+          /*  border-radius: var(--border-radius-md); */
             background-color: var(--color-white);
             display: flex;
             justify-content: center;
@@ -43,7 +53,7 @@ import meridianImg from '../../assets/images/index/meridian_thumb.png';
             position: relative;
             cursor: pointer;
             
-            .view-button {
+           /* .view-button {
                 position: absolute;
                 top: 50%;
                 left: 50%;
@@ -78,6 +88,7 @@ import meridianImg from '../../assets/images/index/meridian_thumb.png';
                     pointer-events: auto;
                 }
             }
+                */
             
             img {
                 width: 100%;

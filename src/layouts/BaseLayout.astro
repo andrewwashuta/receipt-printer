@@ -1,5 +1,6 @@
 ---
 import '../styles/global.scss';
+import { ViewTransitions } from 'astro:transitions';
 
 interface Props {
   title?: string;
@@ -16,8 +17,62 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
     <meta name="description" content={title ? `${title} | ${siteName}` : siteName} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{pageTitle}</title>
+    <ViewTransitions />
   </head>
   <body>
     <slot />
   </body>
 </html> 
+
+<script is:inline type="module">
+  document.addEventListener('astro:page-load', () => {
+      // Get all modal triggers and modals
+      const triggers = document.querySelectorAll('.modal-trigger');
+      const modals = document.querySelectorAll('.modal');
+      const modalOverlays = document.querySelectorAll('.modal-overlay');
+      const closeButtons = document.querySelectorAll('.modal-close');
+
+      // Function to close modal
+      const closeModal = (modal) => {
+          modal.classList.remove('visible');
+          document.body.style.overflow = 'auto';
+      };
+
+      // Add click handlers to triggers
+      triggers.forEach(trigger => {
+          trigger.addEventListener('click', () => {
+              const modalId = trigger.getAttribute('data-modal-id');
+              const modal = document.querySelector(`.modal[data-modal-id="${modalId}"]`);
+              
+              if (modal) {
+                  modal.classList.add('visible');
+                  document.body.style.overflow = 'hidden';
+              }
+          });
+      });
+
+      // Close when clicking overlay
+      modalOverlays.forEach(overlay => {
+          overlay.addEventListener('click', () => {
+              const modal = overlay.closest('.modal');
+              if (modal) closeModal(modal);
+          });
+      });
+
+      // Close when clicking close button
+      closeButtons.forEach(button => {
+          button.addEventListener('click', () => {
+              const modal = button.closest('.modal');
+              if (modal) closeModal(modal);
+          });
+      });
+
+      // Close on escape key
+      document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+              const visibleModal = document.querySelector('.modal.visible');
+              if (visibleModal) closeModal(visibleModal);
+          }
+      });
+  });
+</script>

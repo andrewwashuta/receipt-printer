@@ -14,12 +14,15 @@
 
 :root {
   // colors
-  --bg-color: #fafaf5;
+  --color-surface-primary: #fafaf5;
+  --color-surface-hover: #edede5;
   --color-white: #fff;
   --color-ink: #5b5953;
   --color-ink-primary: #282726;
   --color-ink-subtle: #7d7976;
   --color-edge-subtle: #ebebeb;
+  --color-accent-light: #f6e4db;
+  --color-accent-dark: #915233;
 
   // border-radius
   --border-radius-sm: 4px;
@@ -47,6 +50,9 @@
   --font-weight-medium: 500;
   --line-height: 1.5;
   --letter-spacing: -0.02px;
+
+  //transition
+  --transition-default: 0.2s;
 }
 
 // breakpoints (keep as SCSS variables)

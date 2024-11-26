@@ -19,7 +19,7 @@ body {
   letter-spacing: var(--letter-spacing);
   line-height: var(--line-height);
   color: var(--color-ink);
-  background: var(--bg-color);
+  background: var(--color-surface-primary);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
@@ -63,7 +63,7 @@ h2 {
 
 a {
   color: var(--color-ink);
-  font-weight: var(--font-weight-medium);
+  cursor: pointer;
   text-decoration-line: underline;
   text-decoration-style: dotted;
   text-decoration-skip-ink: auto;
@@ -72,7 +72,7 @@ a {
   text-underline-position: from-font;
 
   &:hover {
-    color: var(--color-ink-primary);
+    color: var(--color-accent-dark);
   }
 }
 
@@ -135,11 +135,15 @@ section {
 
   // Target the h2 within a targeted section
   &:target h2 > span {
+    color: var(--color-accent-dark);
+    transition: color var(--transition-default);
+    animation: resetColor 2s ease-out forwards;
+
     &::before {
       content: "";
       position: absolute;
       z-index: -1;
-      background: var(--color-edge-subtle);
+      background: var(--color-accent-light);
       width: auto;
       height: 100%;
       left: calc(-1 * var(--size-xxs));
@@ -153,6 +157,7 @@ section {
 @keyframes highlight {
   0% {
     opacity: 0;
+    color: var(--color-accent-dark);
   }
   20% {
     opacity: 1;
@@ -162,5 +167,20 @@ section {
   }
   100% {
     opacity: 0;
+    color: var(--color-ink-primary);
   }
+}
+
+@keyframes resetColor {
+  0% {
+    color: var(--color-accent-dark);
+  }
+  100% {
+    color: inherit;
+  }
+}
+
+::selection {
+    background-color: var(--color-accent-light);
+    color: var(--color-accent-dark);
 }

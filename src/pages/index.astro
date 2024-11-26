@@ -1,48 +1,22 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SideNav from '../components/SideNav.astro';
-import Intro from '../pages/index/intro.astro';
-import Now from '../pages/index/now.astro';
-import Experience from '../pages/index/experience.astro';
-import Projects from '../pages/index/projects.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SideNav from "../components/SideNav.astro";
+import Intro from "../pages/index/intro.astro";
+import Now from "../pages/index/now.astro";
+import Experience from "../pages/index/experience.astro";
+import Projects from "../pages/index/projects.astro";
 ---
+
 <BaseLayout>
-	<SideNav />
-	<main>
-		<header>
-			<h1>Andrew Washuta</h1>
-			<p>Product Designer</p>
-		</header>
-		<Intro />
-		<Now />
-		<Experience />
-		<Projects />
-	  </main>
-
+    <SideNav />
+    <main>
+        <header>
+            <h1>Andrew Washuta</h1>
+            <p>Product Designer</p>
+        </header>
+        <Intro />
+        <Now />
+        <Experience />
+        <Projects />
+    </main>
 </BaseLayout>
-
-<script>
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.side-nav a');
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Remove highlight from all sections
-        sections.forEach(section => section.classList.remove('highlight'));
-        
-        // Add highlight to current section
-        if (entry.target) {
-          entry.target.classList.add('highlight');
-        }
-
-        // Update nav active state
-        navLinks.forEach(link => link.classList.remove('active'));
-        const activeLink = document.querySelector(`.side-nav a[href="#${entry.target.id}"]`);
-        if (activeLink) activeLink.classList.add('active');
-      }
-    });
-  }, { threshold: 0.5 });
-
-  sections.forEach(section => observer.observe(section));
-</script>

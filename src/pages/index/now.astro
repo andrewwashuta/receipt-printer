@@ -1,11 +1,67 @@
 ---
+import { Image } from 'astro:assets';
+import Modal from '../../components/Modal.astro';
+import Icon from '../../components/Icon.astro';
+import ImageFamily from '../../assets/images/index/family.png';
+import ImageBrochures from '../../assets/images/index/nationalparks.png';
 ---
+
 <section id="now">
     <h2><span>Now</span></h2>
-    <ul>
-        <li>Cherishing every moment with my wife, Seneca, and my son, Thor</li>
-        <li>Dreaming up all sorts of new recipes with unique ingredients... Pumpkin bushi, anyone?</li>
-        <li>Falling in love with code all over again</li>
-        <li>Collecting vintage National Park brochures</li>
-    </ul>
-  </section>
+    <div class="now-list">
+        <div class="now-item">
+            <div class="item-label">                
+                <Icon name="chevron-right" />
+                <p>Cherishing every moment with my <a class="modal-trigger" data-modal-id="family">family</a>; my wife, Seneca, and my son, Thor</p>
+            </div>
+        </div>
+        <div class="now-item">
+            <div class="item-label">
+                <Icon name="chevron-right" />
+                <p>Dreaming up all sorts of new recipes with unique ingredients... Pumpkin bushi, anyone?</p>
+            </div>
+        </div>
+        <div class="now-item">
+            <div class="item-label">
+                <Icon name="chevron-right" />
+                <p>Falling in love with code all over again</p>
+            </div>
+        </div>
+        <div class="now-item">
+            <div class="item-label">
+                <Icon name="chevron-right" />
+                <p>Collecting vintage <a class="modal-trigger" data-modal-id="brochures">National Park brochures</a></p>
+            </div>
+        </div>
+    </div>
+    <Modal 
+        id="family"
+        imageUrl={ImageFamily} 
+        imageAlt="A photo depicting myself, my wife, Seneca, and our son, Thor" 
+    />
+    <Modal 
+        id="brochures"
+        imageUrl={ImageBrochures} 
+        imageAlt="A small collection of vintage National Park brochures" 
+    />
+</section>
+
+<style>
+    .now-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-sm);
+    }
+
+    .now-item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-sm);
+    }
+
+    .item-label {
+        display: flex;
+        align-items: center;
+        gap: var(--size-sm);
+    }
+</style>
