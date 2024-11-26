@@ -1,11 +1,85 @@
 ---
+import { Image } from 'astro:assets';
+import ChevronIcon from '../../assets/icons/chevron-right-small.svg';
+import Lightbox from '../../components/Lightbox.astro';
+import familyPhoto from '../../assets/images/index/family.png';
 ---
+
 <section id="now">
     <h2><span>Now</span></h2>
-    <ul>
-        <li>Cherishing every moment with my wife, Seneca, and my son, Thor</li>
-        <li>Dreaming up all sorts of new recipes with unique ingredients... Pumpkin bushi, anyone?</li>
-        <li>Falling in love with code all over again</li>
-        <li>Collecting vintage National Park brochures</li>
-    </ul>
-  </section>
+    <div class="now-list">
+        <div class="now-item">
+            <div class="item-header">
+                <Image 
+                    src={ChevronIcon} 
+                    alt="" 
+                    width={20}
+                    height={20}
+                />
+                <p>Cherishing every moment with my family; my wife, Seneca, and my son, Thor</p>
+            </div>
+            <Lightbox 
+                image={familyPhoto} 
+                alt="Family photo" 
+                thumbnailWidth={300}
+            />
+        </div>
+        <div class="now-item">
+            <div class="item-header">
+                <Image 
+                    src={ChevronIcon} 
+                    alt="" 
+                    width={20}
+                    height={20}
+                />
+                <p>Dreaming up all sorts of new recipes with unique ingredients... Pumpkin bushi, anyone?</p>
+            </div>
+        </div>
+        <div class="now-item">
+            <div class="item-header">
+                <Image 
+                    src={ChevronIcon} 
+                    alt="" 
+                    width={20}
+                    height={20}
+                />
+                <p>Falling in love with code all over again</p>
+            </div>
+        </div>
+        <div class="now-item">
+            <div class="item-header">
+                <Image 
+                    src={ChevronIcon} 
+                    alt="" 
+                    width={20}
+                    height={20}
+                />
+                <p>Collecting vintage National Park brochures and other ephemera</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .now-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-sm);
+    }
+
+    .now-item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-sm);
+    }
+
+    .item-header {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--size-sm);
+    }
+
+    img {
+        margin-top: 3px;
+    }
+</style>
