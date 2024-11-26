@@ -1,0 +1,46 @@
+---
+interface Props {
+  name: 'chevron-right' | 'close-large' | 'close-small';
+  size?: 'sm' | 'md';
+  color?: string;
+}
+
+const { name, size = 'md', color } = Astro.props;
+
+// Size mapping
+const sizeMap = {
+  sm: 16,
+  md: 20,
+} as const;
+
+const icons = await import.meta.glob<string>('/src/components/Icon/*.svg', {
+  query: '?raw',
+  import: 'default',
+});
+
+const iconPath = `/src/components/Icon/${name}.svg`;
+
+const svgContent = await icons[iconPath]?.();
+
+if (!svgContent) {
+  throw new Error(`Icon "${name}" not found. Available icons: ${Object.keys(icons).join(', ')}`);
+}
+---
+
+<svg 
+  width={sizeMap[size]} 
+  height={sizeMap[size]} 
+  viewBox="0 0 20 20"
+  aria-hidden="true"
+  style={color ? `color: ${color};` : ''}
+>
+  <Fragment set:html={svgContent} />
+</svg>
+
+<style>
+  svg {
+    display: inline-block;
+    vertical-align: middle;
+    color: inherit;
+  }
+</style>
