@@ -1,19 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SideNav from '../components/SideNav.astro';
 import Intro from '../pages/index/intro.astro';
 import Now from '../pages/index/now.astro';
 import Experience from '../pages/index/experience.astro';
 import Projects from '../pages/index/projects.astro';
-import Sidebar from '../components/SideNav.astro';
 ---
 <BaseLayout>
-	<Sidebar />
+	<SideNav />
 	<main>
 		<header>
 			<h1>Andrew Washuta</h1>
 			<p>Product Designer</p>
 		</header>
-
 		<Intro />
 		<Now />
 		<Experience />
