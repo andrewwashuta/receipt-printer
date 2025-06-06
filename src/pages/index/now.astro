@@ -14,6 +14,11 @@ import ImageBrochures from '../../assets/images/index/nationalparks.png';
                 <Icon name="chevron-right" />
                 <p>Cherishing every moment with my <a class="modal-trigger" data-modal-id="family">family</a>; my wife, Seneca, and my son, Thor</p>
             </div>
+            <Modal 
+            id="family"
+            imageUrl={ImageFamily} 
+            imageAlt="A photo depicting myself, my wife, Seneca, and our son, Thor" 
+            />
         </div>
         <div class="now-item">
             <div class="item-label">
@@ -32,18 +37,13 @@ import ImageBrochures from '../../assets/images/index/nationalparks.png';
                 <Icon name="chevron-right" />
                 <p>Collecting vintage <a class="modal-trigger" data-modal-id="brochures">National Park brochures</a></p>
             </div>
+            <Modal 
+            id="brochures"
+            imageUrl={ImageBrochures} 
+            imageAlt="A small collection of vintage National Park brochures" 
+            />
         </div>
     </div>
-    <Modal 
-        id="family"
-        imageUrl={ImageFamily} 
-        imageAlt="A photo depicting myself, my wife, Seneca, and our son, Thor" 
-    />
-    <Modal 
-        id="brochures"
-        imageUrl={ImageBrochures} 
-        imageAlt="A small collection of vintage National Park brochures" 
-    />
 </section>
 
 <style>
@@ -61,7 +61,12 @@ import ImageBrochures from '../../assets/images/index/nationalparks.png';
 
     .item-label {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: var(--size-sm);
+    }
+
+    .item-label :global(svg) {
+        position: relative;
+        top: 2px;
     }
 </style>

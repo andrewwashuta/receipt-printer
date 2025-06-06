@@ -1,8 +1,16 @@
 ---
+import { Image } from "astro:assets";
+import wLogo from '../assets/w.svg'
 ---
 
 <aside class="side-nav">
     <nav>
+        <Image 
+          src={wLogo} 
+          alt="A cursive w" 
+          height={24}
+          class="w-logo"
+        />
         <ul>
             <li><a href="#intro">Intro</a></li>
             <li><a href="#now">Now</a></li>
@@ -68,6 +76,12 @@
       }
     }
   }
+
+  .w-logo {
+    margin-bottom: var(--size-lg);
+    filter: drop-shadow(1px 1px 4px rgba(76, 76, 76, 0.16));
+  }
+
     .footer {
         position: fixed;
         bottom: var(--size-xxl);
