@@ -1,0 +1,262 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { Image } from 'astro:assets';
+import Icon from '../components/Icon.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  heroImage?: ImageMetadata;
+  heroImageAlt?: string;
+  navItems?: Array<{ id: string; label: string }>;
+}
+
+const { title, description, heroImage, heroImageAlt, navItems = [] } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <aside class="side-nav">
+    <nav>
+      <a href="/" class="home-link">
+        <Icon name="jump-arrow" />
+        <span>Index</span>
+      </a>
+      <ul>
+        {navItems.map(item => (
+          <li>
+            <a href={`#${item.id}`} class="section-link">
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="project-main">
+    <header class="project-header">
+      <div class="header-content">
+        <h1>{title}</h1>
+        {description && <p class="project-description">{description}</p>}
+      </div>
+    </header>
+
+    {heroImage && (
+      <div class="hero-image">
+        <Image 
+          src={heroImage} 
+          alt={heroImageAlt || title} 
+          quality={100}
+          format="webp"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <div class="project-content">
+      <slot />
+    </div>
+  </main>
+</BaseLayout>
+
+
+<style lang="scss">
+  .side-nav {
+    position: fixed;
+    top: var(--size-xxl);
+    left: var(--size-xxl);
+    z-index: 100;
+    
+    @media (max-width: var(--breakpoint-md)) {
+      display: none;
+    }
+
+    nav {
+      ul {
+        list-style: none;
+        
+        li {
+          margin-bottom: var(--size-sm);
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding-left: calc(var(--size-md) + var(--size-sm));
+          
+          a {
+            color: var(--color-ink);
+            text-decoration: none;
+
+            &:hover {
+              color: var(--color-ink-primary);
+            }
+          }
+        }
+      }
+
+      .home-link {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: var(--size-xs);
+        color: var(--color-ink);
+        margin-bottom: var(--size-lg);
+        
+        &:hover {
+          color: var(--color-ink-primary);
+        }
+      }
+    }
+  }
+
+  .project-main {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    margin-top: var(--size-xxl);
+    margin-bottom: var(--size-xxl);
+    padding: 0 var(--size-xxl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-xxxxl);
+    scroll-behavior: smooth;
+  }
+
+  .project-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-md);
+
+    .header-content {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    h1 {
+      font-size: var(--font-size-lg);
+      color: var(--color-ink-primary);
+      margin-bottom: var(--size-sm);
+    }
+
+    .project-description {
+      color: var(--color-ink-subtle);
+      font-size: var(--font-size-base);
+    }
+  }
+
+  .hero-image {
+    width: 100%;
+    border: 1px solid var(--color-edge-subtle);
+    padding: var(--size-xxs);
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+    }
+  }
+
+  .project-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-xxxxl);
+    max-width: 100%;
+    margin: 0 auto;
+
+    section {
+      scroll-margin-top: var(--size-xxl);
+    }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: var(--size-lg);
+      margin-bottom: var(--size-xl);
+      scroll-margin-top: var(--size-xxl);
+      transition: color var(--transition-smooth);
+
+      > span {
+        position: relative;
+        display: inline-flex;
+      }
+
+      &::after {
+        content: "";
+        height: 1px;
+        background-color: var(--color-edge-subtle);
+        flex: 1;
+      }
+    }
+
+    section:target h2 > span {
+      color: var(--color-accent-dark);
+      transition: color var(--transition-default);
+      animation: resetColor 2s ease-out forwards;
+
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        background: var(--color-accent-light);
+        width: auto;
+        height: 100%;
+        left: calc(-1 * var(--size-xxs));
+        right: calc(-1 * var(--size-xxs));
+        border-radius: var(--size-xxs);
+        animation: highlight 2s ease-out forwards;
+      }
+    }
+
+    .image-gallery {
+      display: flex;
+      flex-direction: row;
+      gap: var(--size-md);
+      overflow-x: auto;
+      padding: var(--size-xs) 0;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+      margin: 0 auto;
+
+      .gallery-item {
+        flex: 0 0 60vw;
+        max-width: 500px;
+        min-width: 250px;
+        scroll-snap-align: start;
+        cursor: grab;
+
+        img {
+          width: 100%;
+          height: auto;
+          border-radius: var(--border-radius-sm);
+          border: 1px solid var(--color-edge-subtle);
+          padding: var(--size-xxs);
+          background-color: var(--color-white);
+          box-shadow: var(--shadow-lg);
+        }
+      }
+    }
+
+    .single-image {
+      width: 100%;
+      margin: var(--size-xl) 0;
+
+      img {
+        width: 100%;
+        height: auto;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-edge-subtle);
+        padding: var(--size-xxs);
+        background-color: var(--color-white);
+        box-shadow: var(--shadow-lg);
+      }
+    }
+  }
+</style>

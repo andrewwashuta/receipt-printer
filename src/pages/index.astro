@@ -5,6 +5,7 @@ import Intro from "../pages/index/intro.astro";
 import Now from "../pages/index/now.astro";
 import Experience from "../pages/index/experience.astro";
 import Projects from "../pages/index/projects.astro";
+import Avatar from '../assets/images/index/andrewwashuta.png';
 ---
 
 <BaseLayout>
@@ -12,11 +13,11 @@ import Projects from "../pages/index/projects.astro";
     <main>
         <header>
             <img 
-                src="/src/assets/images/index/andrewwashuta.png" 
-                alt="Andrew Washuta" 
+                src={Avatar.src}
+                alt="Andrew Washuta"
                 class="profile-image"
-                width="64"
-                height="64"
+                width={64}
+                height={64}
             />
             <h1>Andrew Washuta</h1>
             <p>Product Designer</p>

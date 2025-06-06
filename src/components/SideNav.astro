@@ -34,7 +34,7 @@ import wLogo from '../assets/w.svg'
   top: var(--size-xxl);
   left: var(--size-xxl);
   
-  @media (max-width: $breakpoint-md) {
+  @media (max-width: var(--breakpoint-md)) {
     display: none;
   }
 
@@ -56,22 +56,6 @@ import wLogo from '../assets/w.svg'
           &:hover {
             color: var(--color-ink-primary);
           }
-
-         /*   &:target,
-            &.active {
-         //   color: var(--color-ink-primary);
-         //   font-weight: var(--font-weight-medium);
-         // }
-
-            // &::before {
-            //   content: "";
-            //   width: 6px;
-            //   height: 6px;
-            //   background-color: var(--color-ink-subtle);
-            //   margin-right: 4px;
-            //   display: inline-block;
-          }
-            */
         }
       }
     }

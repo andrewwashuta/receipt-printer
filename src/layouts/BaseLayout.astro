@@ -1,6 +1,5 @@
 ---
 import '../styles/global.scss';
-import { ViewTransitions } from 'astro:transitions';
 
 interface Props {
   title?: string;
@@ -17,7 +16,6 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
     <meta name="description" content={title ? `${title} | ${siteName}` : siteName} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{pageTitle}</title>
-    <ViewTransitions />
   </head>
   <body>
     <slot />
