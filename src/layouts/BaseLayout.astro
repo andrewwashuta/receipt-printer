@@ -28,14 +28,17 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
   document.addEventListener('astro:page-load', () => {
       // Get all modal triggers and modals
       const triggers = document.querySelectorAll('.modal-trigger');
-      const modals = document.querySelectorAll('.modal');
-      const modalOverlays = document.querySelectorAll('.modal-overlay');
+      const modalBackdrops = document.querySelectorAll('.modal-backdrop');
       const closeButtons = document.querySelectorAll('.modal-close');
 
       // Function to close modal
       const closeModal = (modal) => {
           modal.classList.remove('visible');
           document.body.style.overflow = 'auto';
+          // Wait for the transition to complete before hiding the modal
+          setTimeout(() => {
+              modal.style.display = 'none';
+          }, 500); // Match this to your --transition-smooth duration
       };
 
       // Add click handlers to triggers
@@ -45,17 +48,23 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
               const modal = document.querySelector(`.modal[data-modal-id="${modalId}"]`);
               
               if (modal) {
+                  modal.style.display = 'block';
+                  // Force a reflow before adding the visible class
+                  modal.offsetHeight;
                   modal.classList.add('visible');
                   document.body.style.overflow = 'hidden';
               }
           });
       });
 
-      // Close when clicking overlay
-      modalOverlays.forEach(overlay => {
-          overlay.addEventListener('click', () => {
-              const modal = overlay.closest('.modal');
-              if (modal) closeModal(modal);
+      // Close when clicking backdrop
+      modalBackdrops.forEach(backdrop => {
+          backdrop.addEventListener('click', (e) => {
+              const modal = backdrop.closest('.modal');
+              if (modal && e.target === backdrop) {
+                  e.stopPropagation(); // Stop event from bubbling
+                  closeModal(modal);
+              }
           });
       });
 

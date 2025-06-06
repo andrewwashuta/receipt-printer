@@ -1,28 +1,53 @@
 ---
 import { Image } from 'astro:assets';
 import meridianImg from '../../assets/images/index/meridian_thumb.png';
+import stratumImg from '../../assets/images/index/stratum_thumb.png';
 ---
 <section id="projects">
     <h2><span>Projects</span></h2>
-    
+
     <div class="project-entry">
-        <div class="project-image">
-            <Image 
-                src={meridianImg} 
-                alt="Meridian Design System"
-                quality={100}
-                format="webp"
-                loading="eager"
-            />
-        </div>
-        <div class="project-title">
-            <h3>Meridian Design System</h3>
-            <p class="label">84.51°</p>
-        </div>
-        <div class="project-content">
-            <p>Maintaining and scaling a proprietary design system across Kroger data enterprise products to serve thousands of customers.</p>
-        </div>
+        <a href="/projects/stratum" class="project-link">
+            <div class="project-image">
+                <Image 
+                    src={stratumImg} 
+                    alt="Stratum"
+                    quality={100}
+                    format="webp"
+                    loading="eager"
+                />
+            </div>
+            <div class="project-title">
+                <h3>Stratum: Kroger's Analytics Platform</h3>
+                <p class="label">84.51°</p>
+            </div>
+            <div class="project-content">
+                <p>Designed an analytics platform from the ground up that transforms Kroger shopper data from 62M+ households into actionable insights for our partners. Since launch, we've generated over $1B in contracts through intuitive UI design that makes complex retail data accessible at scale.</p>
+            </div>
+        </a>
     </div>
+
+    <div class="project-entry">
+        <a href="/projects/meridian" class="project-link">
+            <div class="project-image">
+                <Image 
+                    src={meridianImg} 
+                    alt="Meridian Design System"
+                    quality={100}
+                    format="webp"
+                    loading="eager"
+                />
+            </div>
+            <div class="project-title">
+                <h3>Meridian Design System</h3>
+                <p class="label">84.51°</p>
+            </div>
+            <div class="project-content">
+                <p>Maintaining and scaling a proprietary design system across Kroger data enterprise products to serve thousands of customers.</p>
+            </div>
+        </a>
+    </div>
+
 </section>
 
 <style lang="scss">
@@ -33,9 +58,18 @@ import meridianImg from '../../assets/images/index/meridian_thumb.png';
         --hover-area: var(--size-sm);
         padding: var(--hover-area);
         margin: calc(-1 * var(--hover-area));
+        margin-bottom: var(--size-xl);
         border-radius: var(--border-radius-md);
         cursor: pointer;
         transition: background-color var(--transition-default);
+
+        &:first-child {
+            margin-top: var(--size-xl);
+        }
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
         
         &:hover {
             background-color: var(--color-surface-hover);
@@ -52,43 +86,6 @@ import meridianImg from '../../assets/images/index/meridian_thumb.png';
             align-items: center;
             position: relative;
             cursor: pointer;
-            
-           /* .view-button {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: var(--color-ink);
-                color: var(--color-white);
-                border-radius: var(--border-radius-md);
-                padding: var(--size-xs) var(--size-sm);
-                border: 1px solid var(--color-edge-subtle);
-                opacity: 0;
-                transition: all 0.3s ease;
-                font-weight: var(--font-weight-medium);
-               
-                white-space: nowrap;
-                box-shadow: var(--shadow-sm);
-                pointer-events: none;
-                
-                &:hover {
-                    background: var(--color-ink-primary);
-                    color: var(--color-white);
-                }
-            }
-            
-            &:hover {
-                img {
-                    filter: blur(2px);
-                    transition: filter 0.2s ease;
-                }
-                
-                .view-button {
-                    opacity: 1;
-                    pointer-events: auto;
-                }
-            }
-                */
             
             img {
                 width: 100%;
@@ -118,6 +115,14 @@ import meridianImg from '../../assets/images/index/meridian_thumb.png';
                     color: var(--color-ink);
                 }
             }
+        }
+
+        .project-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: var(--size-md);
         }
     }
 </style>

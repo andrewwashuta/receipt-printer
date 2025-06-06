@@ -12,17 +12,24 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'MD Thermochrome';
+  src: url('/fonts/MDThermochrome0.1-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
   // colors
-  --color-surface-primary: #fafaf5;
-  --color-surface-hover: #edede5;
+  --color-surface-primary: #f3f3f3;
+  --color-surface-hover: #e3e3e3;
   --color-white: #fff;
   --color-ink: #5b5953;
   --color-ink-primary: #282726;
   --color-ink-subtle: #7d7976;
   --color-edge-subtle: #ebebeb;
   --color-accent-light: #f6e4db;
-  --color-accent-dark: #915233;
+  --color-accent-dark: #a96341;
 
   // border-radius
   --border-radius-sm: 4px;
@@ -43,6 +50,7 @@
 
   // typography
   --font-sans: 'MNKY Banana Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'MD Thermochrome', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-size-base: 16px;
   --font-size-sm: 14px;
   --font-size-lg: 18px;
@@ -53,6 +61,13 @@
 
   //transition
   --transition-default: 0.2s;
+  --transition-smooth: 0.5s cubic-bezier(0.33, 0, 0, 1);
+
+  // z-index
+  --z-modal: 1000;
+
+  // shadows
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 // breakpoints (keep as SCSS variables)
