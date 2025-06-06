@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import Icon from './Icon.astro';
 
 interface Props {
     id: string;
@@ -13,23 +12,17 @@ const { id, imageUrl, imageAlt } = Astro.props;
 
 <div class="modal" data-modal-id={id} role="dialog" aria-modal="true">
     <div class="modal-backdrop"></div>
-    <button class="modal-close" aria-label="Close modal">
-        <Icon name="close-large" />
-    </button>
     <div class="modal-container">
-        <div class="modal-content">
-            {imageUrl && (
-                <Image 
-                    src={imageUrl} 
-                    alt={imageAlt || ''} 
-                    width={800}
-                    quality={100}
-                    class="modal-image"
-                    loading="eager"
-                />
-            )}
-            <slot />
-        </div>
+        {imageUrl && (
+            <Image 
+                src={imageUrl} 
+                alt={imageAlt || ''} 
+                width={800}
+                quality={100}
+                class="modal-image"
+                loading="eager"
+            />
+        )}
     </div>
 </div>
 
@@ -39,80 +32,31 @@ const { id, imageUrl, imageAlt } = Astro.props;
         inset: 0;
         z-index: var(--z-modal);
         display: none;
-        opacity: 0;
-        transition: opacity var(--transition-smooth);
     }
-
     .modal.visible {
-        display: block;
-        opacity: 1;
+        display: flex;
     }
-
     .modal-backdrop {
         position: fixed;
         inset: 0;
-        background-color: color-mix(in srgb, var(--color-surface-primary), transparent 20%);
-        transition: all var(--transition-smooth);
-        cursor: pointer;
+        background: rgba(40, 39, 38, 0.85); /* or use var(--color-ink-primary) with opacity */
         z-index: 1;
     }
-
     .modal-container {
         position: relative;
-        height: 100%;
+        z-index: 2;
+        width: 100vw;
+        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: var(--size-xl);
-        z-index: 2;
         pointer-events: none;
     }
-
-    .modal-content {
-        position: relative;
-        background: var(--color-white);
-        border-radius: var(--border-radius-lg);
-        padding: var(--size-xl);
-        width: 100%;
-        max-width: min(calc(100vw - var(--size-xxl)), 1200px);
-        max-height: calc(100vh - var(--size-xxl));
-        overflow-y: auto;
-        box-shadow: var(--shadow-lg);
-        transform: scale(0.95);
-        opacity: 0;
-        transition: all var(--transition-smooth);
-        pointer-events: auto;
-    }
-
-    .modal.visible .modal-content {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    .modal-close {
-        position: fixed;
-        top: var(--size-md);
-        right: var(--size-md);
-        z-index: 3;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: var(--size-xs);
-        border: none;
-        border-radius: var(--border-radius-sm);
-        background: var(--color-ink-subtle);
-        color: var(--color-white);
-        cursor: pointer;
-        transition: background-color var(--transition-default);
-        pointer-events: auto;
-    }
-
-    .modal-close:hover {
-        background: var(--color-ink);
-    }
-
     .modal-image {
-        width: 100%;
-        height: auto;
+        max-width: 90vw;
+        max-height: 90vh;
+        box-shadow: var(--shadow-lg);
+        border-radius: var(--border-radius-lg);
+        pointer-events: auto;
     }
 </style> 
