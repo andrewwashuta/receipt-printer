@@ -5,9 +5,11 @@ interface Props {
     id: string;
     imageUrl?: ImageMetadata;
     imageAlt?: string;
+    width?: number;
+    height?: number;
 }
 
-const { id, imageUrl, imageAlt } = Astro.props;
+const { id, imageUrl, imageAlt, width, height } = Astro.props;
 ---
 
 <div class="modal" data-modal-id={id} role="dialog" aria-modal="true">
@@ -17,10 +19,11 @@ const { id, imageUrl, imageAlt } = Astro.props;
             <Image 
                 src={imageUrl} 
                 alt={imageAlt || ''} 
-                width={800}
                 quality={100}
                 class="modal-image"
                 loading="eager"
+                {...(width ? { width } : {})}
+                {...(height ? { height } : {})}
             />
         )}
     </div>
@@ -53,10 +56,13 @@ const { id, imageUrl, imageAlt } = Astro.props;
         pointer-events: none;
     }
     .modal-image {
+        height: 90vh;
+        width: auto;
         max-width: 90vw;
-        max-height: 90vh;
+        object-fit: contain;
+        display: block;
+        margin: auto;
         box-shadow: var(--shadow-lg);
-        border-radius: var(--border-radius-lg);
         pointer-events: auto;
     }
 </style> 

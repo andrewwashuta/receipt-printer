@@ -8,10 +8,11 @@ interface Props {
   description?: string;
   heroImage?: ImageMetadata;
   heroImageAlt?: string;
+  heroVideo?: string;
   navItems?: Array<{ id: string; label: string }>;
 }
 
-const { title, description, heroImage, heroImageAlt, navItems = [] } = Astro.props;
+const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [] } = Astro.props;
 ---
 
 <BaseLayout title={title}>
@@ -41,7 +42,28 @@ const { title, description, heroImage, heroImageAlt, navItems = [] } = Astro.pro
       </div>
     </header>
 
-    {heroImage && (
+    {heroVideo ? (
+      <div class="hero-video">
+        <video 
+          autoplay 
+          loop 
+          muted 
+          playsinline
+          poster={heroImage ? undefined : undefined}
+        >
+          <source src={heroVideo} type="video/mp4" />
+          {heroImage && (
+            <Image 
+              src={heroImage} 
+              alt={heroImageAlt || title} 
+              quality={100}
+              format="webp"
+              loading="eager"
+            />
+          )}
+        </video>
+      </div>
+    ) : heroImage && (
       <div class="hero-image">
         <Image 
           src={heroImage} 
@@ -162,6 +184,21 @@ const { title, description, heroImage, heroImageAlt, navItems = [] } = Astro.pro
     }
   }
 
+  .hero-video {
+    width: 100%;
+    border: 1px solid var(--color-edge-subtle);
+    padding: var(--size-xxs);
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+
   .project-content {
     display: flex;
     flex-direction: column;
@@ -224,24 +261,31 @@ const { title, description, heroImage, heroImageAlt, navItems = [] } = Astro.pro
       -webkit-overflow-scrolling: touch;
       max-width: 100%;
       margin: 0 auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
 
-      .gallery-item {
-        flex: 0 0 60vw;
-        max-width: 500px;
-        min-width: 250px;
-        scroll-snap-align: start;
-        cursor: grab;
+    .image-gallery::-webkit-scrollbar {
+      display: none;
+    }
 
-        img {
-          width: 100%;
-          height: auto;
-          border-radius: var(--border-radius-sm);
-          border: 1px solid var(--color-edge-subtle);
-          padding: var(--size-xxs);
-          background-color: var(--color-white);
-          box-shadow: var(--shadow-lg);
-        }
-      }
+    .gallery-item {
+      flex: 0 0 100%;
+      width: 100%;
+      scroll-snap-align: start;
+      cursor: grab;
+      box-sizing: border-box;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--color-edge-subtle);
+      padding: var(--size-xxs);
+      background-color: var(--color-white);
+      box-shadow: var(--shadow-lg);
+      display: block;
     }
 
     .single-image {

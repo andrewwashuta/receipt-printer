@@ -21,64 +21,6 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
   </head>
   <body>
     <slot />
+    <script src="/src/scripts/modal.js" type="module" is:inline></script>
   </body>
-</html> 
-
-<script is:inline type="module">
-  document.addEventListener('astro:page-load', () => {
-      // Get all modal triggers and modals
-      const triggers = document.querySelectorAll('.modal-trigger');
-      const modalBackdrops = document.querySelectorAll('.modal-backdrop');
-      const closeButtons = document.querySelectorAll('.modal-close');
-
-      // Function to close modal
-      const closeModal = (modal) => {
-          modal.classList.remove('visible');
-          document.body.style.overflow = 'auto';
-          modal.style.display = 'none'; // Instantly hide
-      };
-
-      // Add click handlers to triggers
-      triggers.forEach(trigger => {
-          trigger.addEventListener('click', () => {
-              const modalId = trigger.getAttribute('data-modal-id');
-              const modal = document.querySelector(`.modal[data-modal-id="${modalId}"]`);
-              
-              if (modal) {
-                  modal.style.display = 'block';
-                  // Force a reflow before adding the visible class
-                  modal.offsetHeight;
-                  modal.classList.add('visible');
-                  document.body.style.overflow = 'hidden';
-              }
-          });
-      });
-
-      // Close when clicking backdrop
-      modalBackdrops.forEach(backdrop => {
-          backdrop.addEventListener('click', (e) => {
-              const modal = backdrop.closest('.modal');
-              if (modal && e.target === backdrop) {
-                  e.stopPropagation(); // Stop event from bubbling
-                  closeModal(modal);
-              }
-          });
-      });
-
-      // Close when clicking close button
-      closeButtons.forEach(button => {
-          button.addEventListener('click', () => {
-              const modal = button.closest('.modal');
-              if (modal) closeModal(modal);
-          });
-      });
-
-      // Close on escape key
-      document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-              const visibleModal = document.querySelector('.modal.visible');
-              if (visibleModal) closeModal(visibleModal);
-          }
-      });
-  });
-</script>
+</html>

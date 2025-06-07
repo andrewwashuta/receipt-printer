@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import Modal from '../../components/Modal.astro';
 import Icon from '../../components/Icon.astro';
-import ImageFamily from '../../assets/images/index/family.png';
+import ImageFamily from '../../assets/images/index/family.jpeg';
 import ImageBrochures from '../../assets/images/index/nationalparks.png';
 ---
 
@@ -18,6 +18,7 @@ import ImageBrochures from '../../assets/images/index/nationalparks.png';
             id="family"
             imageUrl={ImageFamily} 
             imageAlt="A photo depicting myself, my wife, Seneca, and our son, Thor" 
+            width={1200}
             />
         </div>
         <div class="now-item">
@@ -41,6 +42,7 @@ import ImageBrochures from '../../assets/images/index/nationalparks.png';
             id="brochures"
             imageUrl={ImageBrochures} 
             imageAlt="A small collection of vintage National Park brochures" 
+            width={1200}
             />
         </div>
     </div>

@@ -1,12 +1,12 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import { Image } from 'astro:assets';
-import stratumHero from '../../assets/images/index/stratum_thumb.png';
-import stratumGallery1 from '../../assets/images/index/meridian_thumb.png';
-import stratumGallery2 from '../../assets/images/index/meridian_thumb.png';
-import stratumGallery3 from '../../assets/images/index/meridian_thumb.png';
-import stratumGallery4 from '../../assets/images/index/meridian_thumb.png';
-import stratumProcess from '../../assets/images/index/meridian_thumb.png';
+import stratumHero from "../../assets/images/index/stratum_thumb.png";
+import stratumGallery1 from "../../assets/images/index/meridian_thumb.png";
+import stratumGallery2 from "../../assets/images/index/meridian_thumb.png";
+import stratumGallery3 from "../../assets/images/index/meridian_thumb.png";
+import stratumGallery4 from "../../assets/images/index/meridian_thumb.png";
+import stratumProcess from "../../assets/images/index/meridian_thumb.png";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
@@ -20,6 +20,7 @@ const navItems = [
   description="Designed an analytics platform from the ground up that transforms Kroger shopper data from 62M+ households into actionable insights for our partners."
   heroImage={stratumHero}
   heroImageAlt="Stratum Analytics Platform Dashboard"
+  heroVideo="/videos/stratum_ai.mp4"
   navItems={navItems}
 >
   <section id="overview">
@@ -78,4 +79,45 @@ const navItems = [
       />
     </div>
   </section>
-</ProjectLayout> 
+</ProjectLayout>
+
+<style>
+.image-gallery {
+  display: flex;
+  flex-direction: row;
+  gap: var(--size-md);
+  overflow-x: auto;
+  padding: var(--size-xs) 0;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  margin: 0 auto;
+  scrollbar-width: none;         // Firefox
+  -ms-overflow-style: none;      // IE/Edge
+
+  // Hide scrollbar for Webkit browsers
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.gallery-item {
+  flex: 0 0 auto;
+  width: 100%;                   // Fills the content area
+  max-width: 900px;              // Optional: cap width for large screens
+  scroll-snap-align: start;
+  cursor: grab;
+  box-sizing: border-box;
+
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--color-edge-subtle);
+    padding: var(--size-xxs);
+    background-color: var(--color-white);
+    box-shadow: var(--shadow-lg);
+    display: block;
+  }
+}
+</style> 
