@@ -1,0 +1,358 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { Image } from 'astro:assets';
+import Icon from '../components/Icon.astro';
+import { calculateReadingTime } from '../utils/readingTime';
+
+interface Props {
+  title: string;
+  description?: string;
+  heroImage?: ImageMetadata;
+  heroImageAlt?: string;
+  heroVideo?: string;
+  navItems?: Array<{ id: string; label: string }>;
+  metadata?: Array<{ label: string; value: string }>;
+}
+
+const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [], metadata = [] } = Astro.props;
+
+// Calculate reading time from the content
+const content = await Astro.slots.render('default');
+const readingTime = calculateReadingTime(content);
+---
+
+<BaseLayout title={title}>
+  <aside class="side-nav">
+    <nav>
+      <a href="/" class="home-link">
+        <Icon name="jump-arrow" />
+        <span>Index</span>
+      </a>
+      <ul>
+        {navItems.map(item => (
+          <li>
+            <a href={`#${item.id}`} class="section-link">
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="project-main">
+    <header class="project-header">
+      <div class="header-content">
+        <div class="title-container">
+          <h1>{title}</h1>
+          <span class="reading-time">{readingTime} min read</span>
+        </div>
+        {description && <p class="project-description">{description}</p>}
+      </div>
+    </header>
+
+    {metadata.length > 0 && (
+      <div class="project-metadata">
+        {metadata.map(item => (
+          <div class="metadata-entry">
+            <div class="label">{item.label}</div>
+            <div class="value">{item.value}</div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {heroVideo ? (
+      <div class="hero-video">
+        <video 
+          autoplay 
+          loop 
+          muted 
+          playsinline
+          poster={heroImage ? undefined : undefined}
+        >
+          <source src={heroVideo} type="video/mp4" />
+          {heroImage && (
+            <Image 
+              src={heroImage} 
+              alt={heroImageAlt || title} 
+              quality={100}
+              format="webp"
+              loading="eager"
+            />
+          )}
+        </video>
+      </div>
+    ) : heroImage && (
+      <div class="hero-image">
+        <Image 
+          src={heroImage} 
+          alt={heroImageAlt || title} 
+          quality={100}
+          format="webp"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <div class="project-content">
+      <slot />
+    </div>
+  </main>
+</BaseLayout>
+
+
+<style lang="scss">
+  .side-nav {
+    position: fixed;
+    top: var(--size-xxl);
+    left: var(--size-xxl);
+    z-index: 100;
+    
+    @media (max-width: var(--breakpoint-md)) {
+      display: none;
+    }
+
+    nav {
+      ul {
+        list-style: none;
+        
+        li {
+          margin-bottom: var(--size-sm);
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          
+          a {
+            color: var(--color-ink);
+            text-decoration: none;
+
+            &:hover {
+              color: var(--color-ink-primary);
+            }
+          }
+        }
+      }
+
+      .home-link {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: var(--size-xs);
+        color: var(--color-ink);
+        margin-bottom: var(--size-lg);
+        
+        &:hover {
+          color: var(--color-ink-primary);
+        }
+      }
+    }
+  }
+
+  .project-main {
+    margin-top: calc(var(--size-xxl) * 2);
+  }
+
+  .project-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-sm);
+
+    .header-content {
+      text-align: left;
+    }
+
+    .title-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--size-md);
+      margin-bottom: var(--size-sm);
+      width: 100%;
+    }
+
+    h1 {
+      font-size: var(--font-size-lg);
+      color: var(--color-ink-primary);
+      margin: 0;
+    }
+
+    .reading-time {
+      font-size: var(--font-size-sm);
+      color: var(--color-accent-dark);
+      white-space: nowrap;
+      background-color: var(--color-accent-light);
+      padding: var(--size-xxxxs) var(--size-xs);
+      border-radius: var(--border-radius-md);
+    }
+
+    .project-description {
+      color: var(--color-ink);
+      font-size: var(--font-size-base);
+    }
+  }
+
+  .hero-image {
+    width: 100%;
+    border: 1px solid var(--color-edge-subtle);
+    padding: var(--size-xxs);
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+      padding: 2px;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--color-edge-subtle);
+      background-color: var(--color-white);
+    }
+  }
+
+  .hero-video {
+    width: 100%;
+    border: 1px solid var(--color-edge-subtle);
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+
+  .project-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-xxxxl);
+    max-width: 100%;
+    margin: 0 auto;
+
+    section {
+      scroll-margin-top: var(--size-xxl);
+    }
+
+    :global(.project-heading) {
+      display: block;
+      width: 100%;
+      scroll-margin-top: var(--size-xxl);
+      transition: color var(--transition-smooth);
+
+      > span {
+        position: relative;
+        display: inline;
+      }
+
+      &::after {
+        display: none;
+      }
+    }
+
+    section:target :global(.project-heading) > span {
+      color: var(--color-accent-dark);
+      transition: color var(--transition-default);
+      animation: resetColor 2s ease-out forwards;
+
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        background: var(--color-accent-light);
+        width: auto;
+        height: 100%;
+        left: calc(-1 * var(--size-xxs));
+        right: calc(-1 * var(--size-xxs));
+        border-radius: var(--size-xxs);
+        animation: highlight 2s ease-out forwards;
+      }
+    }
+
+    .image-gallery {
+      display: flex;
+      flex-direction: row;
+      gap: var(--size-md);
+      overflow-x: auto;
+      padding: var(--size-xs) 0;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+      margin: 0 auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .image-gallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery-item {
+      flex: 0 0 100%;
+      width: 100%;
+      scroll-snap-align: start;
+      cursor: grab;
+      box-sizing: border-box;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--color-edge-subtle);
+      padding: var(--size-xxs);
+      background-color: var(--color-white);
+      box-shadow: var(--shadow-lg);
+      display: block;
+    }
+
+    .single-image {
+      width: 100%;
+      margin: var(--size-xl) 0;
+
+      img {
+        width: 100%;
+        height: auto;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-edge-subtle);
+        padding: var(--size-xxs);
+        background-color: var(--color-white);
+        box-shadow: var(--shadow-lg);
+      }
+    }
+
+    .image-gallery.gallery-breakout {
+      width: 100vw;
+      max-width: none;
+      margin-left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-bg, #f7f7f7); /* Optional: match your site bg */
+      padding: var(--size-md) 0;
+    }
+  }
+
+  .project-metadata {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--size-xl);
+  }
+
+  .metadata-entry {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-xs);
+
+    .label {
+      color: var(--color-ink-subtle);
+      font-size: var(--font-size-sm);
+    }
+
+    .value {
+      font-weight: var(--font-weight-regular);
+    }
+  }
+</style>

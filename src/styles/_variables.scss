@@ -13,10 +13,11 @@
 }
 
 @font-face {
-  font-family: 'MD Thermochrome';
-  src: url('/fonts/MDThermochrome0.1-Regular.otf') format('opentype');
+  font-family: 'MD Lorien';
+  src: url('/fonts/MDLorienTrial-Regular.otf') format('opentype');
   font-weight: 400;
-  font-display: swap;
+  font-display: block;
+  font-style: normal;
 }
 
 :root {
@@ -28,6 +29,7 @@
   --color-ink-primary: #282726;
   --color-ink-subtle: #7d7976;
   --color-edge-subtle: #ebebeb;
+  --color-edge-primary: #cdcdcd;
   --color-accent-light: #f6e4db;
   --color-accent-dark: #a96341;
 
@@ -38,6 +40,8 @@
   --border-radius-xl: 24px;
 
   // sizes
+  --size-xxxxs: 1px;
+  --size-xxxs: 2px;
   --size-xxs: 4px;
   --size-xs: 8px;
   --size-sm: 12px;
@@ -50,7 +54,6 @@
 
   // typography
   --font-sans: 'MNKY Banana Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'MD Thermochrome', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-size-base: 16px;
   --font-size-sm: 14px;
   --font-size-lg: 18px;
@@ -68,7 +71,7 @@
 
   // shadows
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-}
 
-// breakpoints (keep as SCSS variables)
-$breakpoint-md: 768px;
+  // breakpoints
+  --breakpoint-md: 768px;
+}

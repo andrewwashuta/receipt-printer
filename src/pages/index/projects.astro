@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import meridianImg from '../../assets/images/index/meridian_thumb.png';
 import stratumImg from '../../assets/images/index/stratum_thumb.png';
+import stratumHero from '../../assets/images/index/stratum_thumb.png';
 ---
 <section id="projects">
     <h2><span>Projects</span></h2>
@@ -77,10 +78,6 @@ import stratumImg from '../../assets/images/index/stratum_thumb.png';
         
         .project-image {
             width: 100%;
-            border: 1px solid var(--color-edge-subtle);
-            padding: var(--size-xxs);
-          /*  border-radius: var(--border-radius-md); */
-            background-color: var(--color-white);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -90,7 +87,6 @@ import stratumImg from '../../assets/images/index/stratum_thumb.png';
             img {
                 width: 100%;
                 height: auto;
-                border-radius: var(--border-radius-sm);
                 display: block;
                 image-rendering: -webkit-optimize-contrast;
                 transition: filter 0.3s ease;
