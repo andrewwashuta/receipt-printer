@@ -87,7 +87,21 @@ const { id, imageUrl, imageAlt, width, height, class: className } = Astro.props;
         transition: opacity var(--transition-default);
     }
 
-    :global(.modal-trigger:has(img):hover)::after {
+    :global(.modal-trigger:has(img):hover)::after,
+    :global(.modal-trigger:has(img):focus)::after {
         opacity: 1;
+    }
+
+    /* Remove all focus outlines */
+    :global(.modal-trigger:focus),
+    :global(.modal-trigger:focus img) {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Remove focus outline from images in modal triggers when modal is closed */
+    :global(.modal:not(.visible) ~ .modal-trigger:focus img) {
+        outline: none !important;
+        box-shadow: none !important;
     }
 </style> 

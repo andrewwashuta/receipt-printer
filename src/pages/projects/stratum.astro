@@ -3,30 +3,13 @@ import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import { Image } from 'astro:assets';
 import Modal from "../../components/Modal.astro";
 import stratumHero from "../../assets/images/index/stratum_thumb.png";
-import stratumGallery1 from "../../assets/images/index/meridian_thumb.png";
-import stratumGallery2 from "../../assets/images/index/meridian_thumb.png";
-import stratumGallery3 from "../../assets/images/index/meridian_thumb.png";
-import stratumGallery4 from "../../assets/images/index/meridian_thumb.png";
 import stratumProcess from "../../assets/images/index/meridian_thumb.png";
+import ProjectImage from "../../components/ProjectImage.astro";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
   { id: 'key-features', label: 'Key Features' },
   { id: 'design-process', label: 'Design Process' }
-];
-
-interface ImageWithCaption {
-  src: any;
-  alt: string;
-  caption?: string;
-  showCaption?: boolean;
-}
-
-const galleryItems: ImageWithCaption[] = [
-  { src: stratumGallery1, alt: "Feature 1", caption: "Data Visualization Dashboard", showCaption: true },
-  { src: stratumGallery2, alt: "Feature 2", caption: "Advanced Analytics Tools", showCaption: true },
-  { src: stratumGallery3, alt: "Feature 3", caption: "Custom Report Builder", showCaption: true },
-  { src: stratumGallery4, alt: "Feature 4", caption: "Real-time Data Insights", showCaption: true },
 ];
 
 const metadata = [
@@ -48,89 +31,50 @@ const metadata = [
   <section id="overview">
     <h2 class="project-heading"><span>Overview</span></h2>
     <p>Since launch, we've generated over $1B in contracts through intuitive UI design that makes complex retail data accessible at scale.</p>
-
-
+    <p>Since launch, we've generated over $1B in contracts through intuitive UI design that makes complex retail data accessible at scale.</p>
+    <p>Since launch, we've generated over $1B in contracts through intuitive UI design that makes complex retail data accessible at scale.</p>
+    <p>Since launch, we've generated over $1B in contracts through intuitive UI design that makes complex retail data accessible at scale.</p>
   </section>
 
   <section id="key-features">
     <h2 class="project-heading"><span>Key Features</span></h2>
-    <div class="image-grid">
-      {galleryItems.map((item, index) => (
-        <div class="image-item">
-          <a href="#" class="modal-trigger" data-modal-id={`gallery-${index}`}>
-            <Image 
-              src={item.src}
-              alt={item.alt}
-              quality={100}
-              format="webp"
-            />
-          </a>
-          <Modal 
-            id={`gallery-${index}`}
-            imageUrl={item.src}
-            imageAlt={item.alt}
-          />
-          {item.showCaption && item.caption && (
-            <div class="image-caption">{item.caption}</div>
-          )}
-        </div>
-      ))}
-    </div>
+    <!-- Add your new content here -->
   </section>
 
   <section id="design-process">
     <h2 class="project-heading"><span>Design Process</span></h2>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    <div class="single-image">
-      <a href="#" class="modal-trigger" data-modal-id="process-image">
-        <Image 
-          src={stratumProcess} 
-          alt="Design Process" 
-          quality={100}
-          format="webp"
-        />
-      </a>
-      <Modal 
-        id="process-image"
-        imageUrl={stratumProcess}
-        imageAlt="Design Process"
-      />
-    </div>
+    <ProjectImage
+      src={stratumProcess}
+      alt="Design Process"
+      showCaption={true}
+    >
+      <span>
+        This is a caption with a <a href="https://example.com">link</a>.
+      </span>
+    </ProjectImage>
+    <ProjectImage
+    src={stratumProcess}
+    alt="Design Process"
+    showCaption={true}
+  >
+    <span>
+      This is a caption with a <a href="https://example.com">link</a>.
+    </span>
+  </ProjectImage>
+  <ProjectImage
+  src={stratumProcess}
+  alt="Design Process"
+  showCaption={true}
+>
+  <span>
+    This is a caption with a <a href="https://example.com">link</a>.
+  </span>
+</ProjectImage>
   </section>
 </ProjectLayout>
 
 <style>
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--size-lg);
-  width: 100%;
-}
-
-.image-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-sm);
-}
-
-.image-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-  padding: 2px;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--color-edge-subtle);
-  background-color: var(--color-white);
-}
-
-.image-caption {
-  font-family: var(--font-display);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
-  color: var(--color-ink-subtle);
-  line-height: 1.4;
-}
-
 .single-image {
   width: 100%;
   margin-top: var(--size-lg);
