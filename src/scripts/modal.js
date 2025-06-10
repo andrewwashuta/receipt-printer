@@ -10,7 +10,8 @@ document.addEventListener('astro:page-load', () => {
   };
 
   triggers.forEach(trigger => {
-    trigger.addEventListener('click', () => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
       const modalId = trigger.getAttribute('data-modal-id');
       const modal = document.querySelector(`.modal[data-modal-id="${modalId}"]`);
       if (modal) {
@@ -29,6 +30,13 @@ document.addEventListener('astro:page-load', () => {
         e.stopPropagation();
         closeModal(modal);
       }
+    });
+  });
+
+  // Add click handler for modal container
+  document.querySelectorAll('.modal-container').forEach(container => {
+    container.addEventListener('click', (e) => {
+      e.stopPropagation();
     });
   });
 

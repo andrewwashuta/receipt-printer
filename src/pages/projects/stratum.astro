@@ -1,6 +1,7 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import { Image } from 'astro:assets';
+import Modal from "../../components/Modal.astro";
 import stratumHero from "../../assets/images/index/stratum_thumb.png";
 import stratumGallery1 from "../../assets/images/index/meridian_thumb.png";
 import stratumGallery2 from "../../assets/images/index/meridian_thumb.png";
@@ -13,111 +14,134 @@ const navItems = [
   { id: 'key-features', label: 'Key Features' },
   { id: 'design-process', label: 'Design Process' }
 ];
+
+interface ImageWithCaption {
+  src: any;
+  alt: string;
+  caption?: string;
+  showCaption?: boolean;
+}
+
+const galleryItems: ImageWithCaption[] = [
+  { src: stratumGallery1, alt: "Feature 1", caption: "Data Visualization Dashboard", showCaption: true },
+  { src: stratumGallery2, alt: "Feature 2", caption: "Advanced Analytics Tools", showCaption: true },
+  { src: stratumGallery3, alt: "Feature 3", caption: "Custom Report Builder", showCaption: true },
+  { src: stratumGallery4, alt: "Feature 4", caption: "Real-time Data Insights", showCaption: true },
+];
+
+const metadata = [
+  { label: "Role", value: "Senior Designer" },
+  { label: "Company", value: "84.51°" },
+  { label: "Timeline", value: "2017 – 2021" }
+];
 ---
 
 <ProjectLayout 
   title="Stratum: Kroger's Analytics Platform"
-  description="Designed an analytics platform from the ground up that transforms Kroger shopper data from 62M+ households into actionable insights for our partners."
+  description="Led design of Kroger's flagship analytics platform from the ground up—transforming messy data from 62M+ households into insights that CPG brands can actually understand and act on. Generated $1B+ in contracts by making complex retail data feel intuitive."
   heroImage={stratumHero}
   heroImageAlt="Stratum Analytics Platform Dashboard"
   heroVideo="/videos/stratum_ai.mp4"
   navItems={navItems}
+  metadata={metadata}
 >
   <section id="overview">
-    <h2><span>Overview</span></h2>
+    <h2 class="project-heading"><span>Overview</span></h2>
     <p>Since launch, we've generated over $1B in contracts through intuitive UI design that makes complex retail data accessible at scale.</p>
+
+
   </section>
 
   <section id="key-features">
-    <h2><span>Key Features</span></h2>
-    <div class="image-gallery">
-      <div class="gallery-item">
-        <Image 
-          src={stratumGallery1} 
-          alt="Feature 1" 
-          quality={100}
-          format="webp"
-        />
-      </div>
-      <div class="gallery-item">
-        <Image 
-          src={stratumGallery2} 
-          alt="Feature 2" 
-          quality={100}
-          format="webp"
-        />
-      </div>
-      <div class="gallery-item">
-        <Image 
-          src={stratumGallery3} 
-          alt="Feature 3" 
-          quality={100}
-          format="webp"
-        />
-      </div>
-      <div class="gallery-item">
-        <Image 
-          src={stratumGallery4} 
-          alt="Feature 4" 
-          quality={100}
-          format="webp"
-        />
-      </div>
+    <h2 class="project-heading"><span>Key Features</span></h2>
+    <div class="image-grid">
+      {galleryItems.map((item, index) => (
+        <div class="image-item">
+          <a href="#" class="modal-trigger" data-modal-id={`gallery-${index}`}>
+            <Image 
+              src={item.src}
+              alt={item.alt}
+              quality={100}
+              format="webp"
+            />
+          </a>
+          <Modal 
+            id={`gallery-${index}`}
+            imageUrl={item.src}
+            imageAlt={item.alt}
+          />
+          {item.showCaption && item.caption && (
+            <div class="image-caption">{item.caption}</div>
+          )}
+        </div>
+      ))}
     </div>
   </section>
 
   <section id="design-process">
-    <h2><span>Design Process</span></h2>
+    <h2 class="project-heading"><span>Design Process</span></h2>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    
     <div class="single-image">
-      <Image 
-        src={stratumProcess} 
-        alt="Design Process" 
-        quality={100}
-        format="webp"
+      <a href="#" class="modal-trigger" data-modal-id="process-image">
+        <Image 
+          src={stratumProcess} 
+          alt="Design Process" 
+          quality={100}
+          format="webp"
+        />
+      </a>
+      <Modal 
+        id="process-image"
+        imageUrl={stratumProcess}
+        imageAlt="Design Process"
       />
     </div>
   </section>
 </ProjectLayout>
 
 <style>
-.image-gallery {
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--size-lg);
+  width: 100%;
+}
+
+.image-item {
   display: flex;
-  flex-direction: row;
-  gap: var(--size-md);
-  overflow-x: auto;
-  padding: var(--size-xs) 0;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  max-width: 100%;
-  margin: 0 auto;
-  scrollbar-width: none;         // Firefox
-  -ms-overflow-style: none;      // IE/Edge
-
-  // Hide scrollbar for Webkit browsers
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  flex-direction: column;
+  gap: var(--size-sm);
 }
 
-.gallery-item {
-  flex: 0 0 auto;
-  width: 100%;                   // Fills the content area
-  max-width: 900px;              // Optional: cap width for large screens
-  scroll-snap-align: start;
-  cursor: grab;
-  box-sizing: border-box;
-
-  img {
-    width: 100%;
-    height: auto;
-    border-radius: var(--border-radius-sm);
-    border: 1px solid var(--color-edge-subtle);
-    padding: var(--size-xxs);
-    background-color: var(--color-white);
-    box-shadow: var(--shadow-lg);
-    display: block;
-  }
+.image-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  padding: 2px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-edge-subtle);
+  background-color: var(--color-white);
 }
-</style> 
+
+.image-caption {
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-ink-subtle);
+  line-height: 1.4;
+}
+
+.single-image {
+  width: 100%;
+  margin-top: var(--size-lg);
+}
+
+.single-image img {
+  width: 100%;
+  height: auto;
+  padding: 2px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-edge-subtle);
+  background-color: var(--color-white);
+}
+</style>
