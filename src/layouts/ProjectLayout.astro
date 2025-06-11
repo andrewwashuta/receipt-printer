@@ -69,7 +69,7 @@ const readingTime = calculateReadingTime(content);
           loop 
           muted 
           playsinline
-          poster={heroImage ? undefined : undefined}
+          preload="auto"
         >
           <source src={heroVideo} type="video/mp4" />
           {heroImage && (
@@ -95,12 +95,24 @@ const readingTime = calculateReadingTime(content);
       </div>
     )}
 
-    <div class="project-content">
+    <article class="project-content">
       <slot />
-    </div>
+    </article>
   </main>
 </BaseLayout>
 
+<script>
+  // Add project-section class to all sections within project-content
+  document.addEventListener('DOMContentLoaded', () => {
+    const projectContent = document.querySelector('.project-content');
+    if (projectContent) {
+      const sections = projectContent.querySelectorAll('section');
+      sections.forEach(section => {
+        section.classList.add('project-section');
+      });
+    }
+  });
+</script>
 
 <style lang="scss">
   .side-nav {
@@ -234,7 +246,27 @@ const readingTime = calculateReadingTime(content);
     max-width: 100%;
     margin: 0 auto;
 
-    section {
+    .project-heading {
+      margin-bottom: var(--size-md);
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: var(--size-xs);
+    }
+
+    p + p {
+      margin-top: var(--size-xxs);
+    }
+
+    img,
+    .project-image {
+      margin-top: var(--size-md);
+      margin-bottom: var(--size-md);
+      display: block;
+    }
+
+    article {
       scroll-margin-top: var(--size-xxl);
     }
 
@@ -243,6 +275,7 @@ const readingTime = calculateReadingTime(content);
       width: 100%;
       scroll-margin-top: var(--size-xxl);
       transition: color var(--transition-smooth);
+      margin-bottom: var(--size-md);
 
       > span {
         position: relative;
@@ -254,7 +287,7 @@ const readingTime = calculateReadingTime(content);
       }
     }
 
-    section:target :global(.project-heading) > span {
+    article:target :global(.project-heading) > span {
       color: var(--color-accent-dark);
       transition: color var(--transition-default);
       animation: resetColor 2s ease-out forwards;
@@ -275,10 +308,6 @@ const readingTime = calculateReadingTime(content);
 
     h2 {
       margin-bottom: var(--size-md);
-    }
-
-    p + p {
-      margin-top: var(--size-xxs);
     }
   }
 
@@ -304,4 +333,12 @@ const readingTime = calculateReadingTime(content);
       font-weight: var(--font-weight-regular);
     }
   }
+
+  .project-content p + p {
+  margin-top: var(--size-xxs);
+}
+
+.project-content section {
+  display: block !important;
+}
 </style>

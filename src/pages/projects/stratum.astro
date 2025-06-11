@@ -1,15 +1,13 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
-import { Image } from 'astro:assets';
-import Modal from "../../components/Modal.astro";
-import stratumHero from "../../assets/images/index/stratum_thumb.png";
-import stratumProcess from "../../assets/images/index/meridian_thumb.png";
 import ProjectImage from "../../components/ProjectImage.astro";
+import { stratumMedia } from "../../assets/stratum/media";
+import Modal from "../../components/Modal.astro";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
   { id: 'key-features', label: 'Key Features' },
-  { id: 'design-process', label: 'Design Process' }
+  { id: 'AI POC', label: 'Stratum AI: Proof of Concept' }
 ];
 
 const metadata = [
@@ -22,9 +20,9 @@ const metadata = [
 <ProjectLayout 
   title="Stratum: Kroger's Analytics Platform"
   description="Led design of Kroger's flagship analytics platform from the ground up—transforming messy data from 62M+ households into insights that CPG brands can actually understand and act on. Generated $1B+ in contracts by making complex retail data feel intuitive."
-  heroImage={stratumHero}
+  heroImage={stratumMedia.hero.image}
   heroImageAlt="Stratum Analytics Platform Dashboard"
-  heroVideo="/videos/stratum_ai.mp4"
+  heroVideo={stratumMedia.hero.video}
   navItems={navItems}
   metadata={metadata}
 >
@@ -41,36 +39,21 @@ const metadata = [
     <!-- Add your new content here -->
   </section>
 
-  <section id="design-process">
-    <h2 class="project-heading"><span>Design Process</span></h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+  <section id="AI-poc">
+    <h2 class="project-heading"><span>Stratum AI: Proof of Concept</span></h2>
+    <p>It's 2024, and everyone is talking about AI. I designed a proof-of-concept for a text- and voice-based AI, integrated neatly within Stratum to help users better navigate and take action on reports.</p>
+    <p>I firmly believe in the power of storytelling, so this was a quick build to demonstrate how our Meridian Design System might be used to create a more engaging and intuitive experience.</p>
+
     <ProjectImage
-      src={stratumProcess}
-      alt="Design Process"
+      src={stratumMedia.quickLauncher.image}
+      alt="Quick launcher displaying report actions"
       showCaption={true}
     >
       <span>
-        This is a caption with a <a href="https://example.com">link</a>.
+        Quick launcher enables users to rapidly access reports, dashboards and perform actions—all through an intuitive, AI-driven CLI
       </span>
     </ProjectImage>
-    <ProjectImage
-    src={stratumProcess}
-    alt="Design Process"
-    showCaption={true}
-  >
-    <span>
-      This is a caption with a <a href="https://example.com">link</a>.
-    </span>
-  </ProjectImage>
-  <ProjectImage
-  src={stratumProcess}
-  alt="Design Process"
-  showCaption={true}
->
-  <span>
-    This is a caption with a <a href="https://example.com">link</a>.
-  </span>
-</ProjectImage>
+
   </section>
 </ProjectLayout>
 
@@ -87,5 +70,9 @@ const metadata = [
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-edge-subtle);
   background-color: var(--color-white);
+}
+
+.project-content section {
+  display: block !important;
 }
 </style>

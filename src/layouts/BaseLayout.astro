@@ -24,3 +24,73 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
     <script src="/src/scripts/modal.js" type="module" is:inline></script>
   </body>
 </html>
+
+<style lang="scss">
+  // ... existing styles ...
+
+  // Section Styles for Index Layout
+  section {
+    display: grid;
+    grid-template-columns: [start] repeat(4, 1fr) [end];
+    gap: var(--size-lg);
+    scroll-margin-top: var(--size-xxl);
+    width: 100%;
+
+    > * {
+      grid-column: start / end;
+    }
+
+    // Image styles
+    img {
+      border-radius: var(--border-radius-sm);
+      border: 1px solid var(--color-edge-subtle);
+      background-color: var(--color-white);
+    }
+
+    // Content Layout
+    > .content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-sm);
+    }
+
+    // Grid Utilities
+    .half-width {
+      grid-column: span 2;
+    }
+
+    .quarter-width {
+      grid-column: span 1;
+    }
+
+    // Lists
+    ul {
+      width: 100%;
+      padding-left: var(--size-md);
+    
+      li {
+        padding-left: var(--size-xxs);
+      }
+    }
+
+    // Target the h2 within a targeted section
+    &:target h2 > span {
+      color: var(--color-accent-dark);
+      transition: color var(--transition-default);
+      animation: resetColor 2s ease-out forwards;
+
+      &::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        background: var(--color-accent-light);
+        width: auto;
+        height: 100%;
+        left: calc(-1 * var(--size-xxs));
+        right: calc(-1 * var(--size-xxs));
+        border-radius: var(--size-xxs);
+        animation: highlight 2s ease-out forwards;
+      }
+    }
+  }
+</style>
