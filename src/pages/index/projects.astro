@@ -1,8 +1,7 @@
 ---
 import { Image } from 'astro:assets';
-import meridianImg from '../../assets/images/index/meridian_thumb.png';
-import stratumImg from '../../assets/images/index/stratum_thumb.png';
-import stratumHero from '../../assets/images/index/stratum_thumb.png';
+import meridianImg from '../../assets/index/images/meridian_thumb.png';
+import stratumImg from '../../assets/index/images/stratum_thumb.png';
 ---
 <section id="projects">
     <h2><span>Projects</span></h2>
@@ -63,10 +62,6 @@ import stratumHero from '../../assets/images/index/stratum_thumb.png';
         border-radius: var(--border-radius-md);
         cursor: pointer;
         transition: background-color var(--transition-default);
-
-        &:first-child {
-            margin-top: var(--size-xl);
-        }
         
         &:last-child {
             margin-bottom: 0;
@@ -121,4 +116,8 @@ import stratumHero from '../../assets/images/index/stratum_thumb.png';
             gap: var(--size-md);
         }
     }
+
+ //   .section-grid > h2 {
+     //   margin-bottom: var(--size-xl);
+// }
 </style>

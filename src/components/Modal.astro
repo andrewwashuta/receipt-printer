@@ -3,20 +3,21 @@ import { Image } from 'astro:assets';
 
 interface Props {
     id: string;
-    imageUrl?: ImageMetadata;
+    imageUrl?: ImageMetadata | string;
     imageAlt?: string;
     width?: number;
     height?: number;
     class?: string;
+    mediaType?: 'image' | 'video';
 }
 
-const { id, imageUrl, imageAlt, width, height, class: className } = Astro.props;
+const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'image' } = Astro.props;
 ---
 
 <div class="modal" data-modal-id={id} role="dialog" aria-modal="true">
     <div class="modal-backdrop"></div>
     <div class="modal-container">
-        {imageUrl && (
+        {imageUrl && mediaType === 'image' ? (
             <Image 
                 src={imageUrl} 
                 alt={imageAlt || ''} 
@@ -26,7 +27,17 @@ const { id, imageUrl, imageAlt, width, height, class: className } = Astro.props;
                 {...(width ? { width } : {})}
                 {...(height ? { height } : {})}
             />
-        )}
+        ) : imageUrl && mediaType === 'video' ? (
+            <video 
+                src={imageUrl as string}
+                class="modal-image"
+                preload="auto"
+                muted
+                playsinline
+                loop
+                autoplay
+            />
+        ) : null}
     </div>
 </div>
 
@@ -57,17 +68,17 @@ const { id, imageUrl, imageAlt, width, height, class: className } = Astro.props;
         pointer-events: none;
     }
     .modal-image {
-        height: 90vh;
-        width: auto;
+        max-height: 90vh;
         max-width: 90vw;
-        object-fit: contain;
+        width: auto;
+        height: auto;
         display: block;
         margin: auto;
         box-shadow: var(--shadow-lg);
         pointer-events: auto;
         border-radius: 0;
         padding: 0;
-        border:0;
+        border: 0;
     }
 
     /* Modal trigger styles */
@@ -77,7 +88,8 @@ const { id, imageUrl, imageAlt, width, height, class: className } = Astro.props;
         cursor: pointer;
     }
 
-    :global(.modal-trigger:has(img))::after {
+    :global(.modal-trigger:has(img))::after,
+    :global(.modal-trigger:has(video))::after {
         content: '';
         position: absolute;
         inset: -4px;
@@ -87,7 +99,25 @@ const { id, imageUrl, imageAlt, width, height, class: className } = Astro.props;
         transition: opacity var(--transition-default);
     }
 
-    :global(.modal-trigger:has(img):hover)::after {
+    :global(.modal-trigger:has(img):hover)::after,
+    :global(.modal-trigger:has(img):focus)::after,
+    :global(.modal-trigger:has(video):hover)::after,
+    :global(.modal-trigger:has(video):focus)::after {
         opacity: 1;
+    }
+
+    /* Remove all focus outlines */
+    :global(.modal-trigger:focus),
+    :global(.modal-trigger:focus img),
+    :global(.modal-trigger:focus video) {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Remove focus outline from images/videos in modal triggers when modal is closed */
+    :global(.modal:not(.visible) ~ .modal-trigger:focus img),
+    :global(.modal:not(.visible) ~ .modal-trigger:focus video) {
+        outline: none !important;
+        box-shadow: none !important;
     }
 </style> 

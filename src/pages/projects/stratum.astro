@@ -1,147 +1,84 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
-import { Image } from 'astro:assets';
+import ProjectMedia from "../../components/ProjectMedia.astro";
+import { stratumMedia } from "../stratum/media";
 import Modal from "../../components/Modal.astro";
-import stratumHero from "../../assets/images/index/stratum_thumb.png";
-import stratumGallery1 from "../../assets/images/index/meridian_thumb.png";
-import stratumGallery2 from "../../assets/images/index/meridian_thumb.png";
-import stratumGallery3 from "../../assets/images/index/meridian_thumb.png";
-import stratumGallery4 from "../../assets/images/index/meridian_thumb.png";
-import stratumProcess from "../../assets/images/index/meridian_thumb.png";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
-  { id: 'key-features', label: 'Key Features' },
-  { id: 'design-process', label: 'Design Process' }
-];
-
-interface ImageWithCaption {
-  src: any;
-  alt: string;
-  caption?: string;
-  showCaption?: boolean;
-}
-
-const galleryItems: ImageWithCaption[] = [
-  { src: stratumGallery1, alt: "Feature 1", caption: "Data Visualization Dashboard", showCaption: true },
-  { src: stratumGallery2, alt: "Feature 2", caption: "Advanced Analytics Tools", showCaption: true },
-  { src: stratumGallery3, alt: "Feature 3", caption: "Custom Report Builder", showCaption: true },
-  { src: stratumGallery4, alt: "Feature 4", caption: "Real-time Data Insights", showCaption: true },
+  { id: 'ai-poc', label: 'Stratum AI: Proof of Concept' }
 ];
 
 const metadata = [
-  { label: "Role", value: "Senior Designer" },
+  { label: "Role", values: ["Senior UI Designer", "Lead Product Designer"] },
   { label: "Company", value: "84.51°" },
   { label: "Timeline", value: "2017 – 2021" }
+];
+
+const footnotes = [
+  {
+    id: "1",
+    text: "Reports run as of 6/11/2025"
+  }
 ];
 ---
 
 <ProjectLayout 
   title="Stratum: Kroger's Analytics Platform"
   description="Led design of Kroger's flagship analytics platform from the ground up—transforming messy data from 62M+ households into insights that CPG brands can actually understand and act on. Generated $1B+ in contracts by making complex retail data feel intuitive."
-  heroImage={stratumHero}
+  heroImage={stratumMedia.hero.image}
   heroImageAlt="Stratum Analytics Platform Dashboard"
-  heroVideo="/videos/stratum_ai.mp4"
+  heroVideo={stratumMedia.hero.video}
   navItems={navItems}
   metadata={metadata}
+  footnotes={footnotes}
 >
   <section id="overview">
     <h2 class="project-heading"><span>Overview</span></h2>
-    <p>Since launch, we've generated over $1B in contracts through intuitive UI design that makes complex retail data accessible at scale.</p>
-
-
+    <p>Kroger was in the process of sunsetting their legacy analytics platform in 2017, and decided to bring the build of the new platform in-house. 
+      This was the beginning of what would eventually become Stratum, a robust analytics platform that would go on to generate $1B+ in contracts for Kroger,
+      and surface over 3.8M+ reports for our CPG partners.<a href="#footnote-1" id="footnote-ref-1" class="footnote-ref">1</a></p>
+    <p>Until 2021, I had the pleasure of leading design of Kroger's flagship analytics platform, Stratum, along a myriad of incredible people. 
+      I was the lead UI designer, but equally responsible for discovery research, design systems (at a time when we didn't have one!), and the overall
+      design approach.</p>
+    <p>I'll be honest with you; I didn't know a thing about what it meant to build a product.</p>
   </section>
 
   <section id="key-features">
     <h2 class="project-heading"><span>Key Features</span></h2>
-    <div class="image-grid">
-      {galleryItems.map((item, index) => (
-        <div class="image-item">
-          <a href="#" class="modal-trigger" data-modal-id={`gallery-${index}`}>
-            <Image 
-              src={item.src}
-              alt={item.alt}
-              quality={100}
-              format="webp"
-            />
-          </a>
-          <Modal 
-            id={`gallery-${index}`}
-            imageUrl={item.src}
-            imageAlt={item.alt}
-          />
-          {item.showCaption && item.caption && (
-            <div class="image-caption">{item.caption}</div>
-          )}
-        </div>
-      ))}
-    </div>
+    <!-- Add your new content here -->
   </section>
 
-  <section id="design-process">
-    <h2 class="project-heading"><span>Design Process</span></h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    <div class="single-image">
-      <a href="#" class="modal-trigger" data-modal-id="process-image">
-        <Image 
-          src={stratumProcess} 
-          alt="Design Process" 
-          quality={100}
-          format="webp"
-        />
-      </a>
-      <Modal 
-        id="process-image"
-        imageUrl={stratumProcess}
-        imageAlt="Design Process"
-      />
-    </div>
+  <section id="ai-poc">
+    <h2 class="project-heading"><span>Stratum AI: Proof of Concept</span></h2>
+    <p>It's 2024, and everyone is talking about AI. I designed a proof-of-concept for a text- and voice-based AI, integrated neatly within Stratum to help users better navigate and take action on reports.<a href="#footnote-2" id="footnote-ref-2" class="footnote-ref">[2]</a></p>
+    <p>I firmly believe in the power of storytelling, so this was a quick build to demonstrate how our Meridian Design System might be used to create a more engaging and intuitive experience.</p>
+
+    <ProjectMedia
+      src={stratumMedia.quickLauncher.image}
+      alt="Quick launcher displaying report actions"
+      showCaption={true}
+    >
+      <span>
+        Quick launcher enables users to rapidly access reports, dashboards and perform actions—all through an intuitive, AI-driven CLI
+      </span>
+    </ProjectMedia>
+  <ProjectMedia
+  src={stratumMedia.progressive.video}
+  alt="Progressively disclosing actions"
+  mediaType="video"
+  showCaption={true}
+>
+  <span>
+    Progressively disclosing actions and content to cut down on congitive load and encourage focus
+  </span>
+</ProjectMedia>
+
   </section>
 </ProjectLayout>
 
 <style>
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--size-lg);
-  width: 100%;
-}
-
-.image-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-sm);
-}
-
-.image-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-  padding: 2px;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--color-edge-subtle);
-  background-color: var(--color-white);
-}
-
-.image-caption {
-  font-family: var(--font-display);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
-  color: var(--color-ink-subtle);
-  line-height: 1.4;
-}
-
-.single-image {
-  width: 100%;
-  margin-top: var(--size-lg);
-}
-
-.single-image img {
-  width: 100%;
-  height: auto;
-  padding: 2px;
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--color-edge-subtle);
-  background-color: var(--color-white);
+.project-content section {
+  display: block !important;
 }
 </style>

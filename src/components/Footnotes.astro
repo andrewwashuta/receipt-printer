@@ -1,0 +1,76 @@
+---
+interface Props {
+  footnotes: Array<{ id: string; text: string }>;
+}
+
+const { footnotes } = Astro.props;
+---
+
+{footnotes.length > 0 && (
+  <footer class="project-footnotes">
+    <ol>
+      {footnotes.map(footnote => (
+        <li id={`footnote-${footnote.id}`}>
+          <a href={`#footnote-ref-${footnote.id}`} class="footnote-backref">{footnote.id}</a>
+          {footnote.text}
+        </li>
+      ))}
+    </ol>
+  </footer>
+)}
+
+<style lang="scss">
+.project-footnotes {
+  width: 100%;
+  margin-top: var(--size-xxxxl);
+  padding-top: var(--size-xl);
+  border-top: 1px solid var(--color-edge-subtle);
+  font-size: var(--font-size-sm);
+
+  ol {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  li {
+    margin-bottom: var(--size-md);
+    position: relative;
+    padding-left: var(--size-md);
+  }
+
+  .footnote-backref {
+    position: absolute;
+    padding: 0 var(--size-xxxs);
+    left: 0;
+    color: var(--color-ink-subtle);
+    text-decoration: none;
+    font-size: var(--font-size-xs);
+    vertical-align: super;
+
+    &:hover {
+      color: var(--color-accent-dark);
+    }
+  }
+}
+
+:global(.footnote-ref) {
+  color: var(--color-ink-subtle);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-xs);
+  vertical-align: super;
+  line-height: 0;
+
+  &::before {
+    content: "[";
+  }
+
+  &::after {
+    content: "]";
+  }
+
+  &:hover {
+    color: var(--color-accent-dark);
+  }
+}
+</style> 
