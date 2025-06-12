@@ -26,7 +26,6 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
 </html>
 
 <style lang="scss">
-  // ... existing styles ...
 
   // Section Styles for Index Layout
   section {
@@ -70,26 +69,6 @@ const pageTitle = title ? `${title} – ${siteName}` : siteName;
     
       li {
         padding-left: var(--size-xxs);
-      }
-    }
-
-    // Target the h2 within a targeted section
-    &:target h2 > span {
-      color: var(--color-accent-dark);
-      transition: color var(--transition-default);
-      animation: resetColor 2s ease-out forwards;
-
-      &::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        background: var(--color-accent-light);
-        width: auto;
-        height: 100%;
-        left: calc(-1 * var(--size-xxs));
-        right: calc(-1 * var(--size-xxs));
-        border-radius: var(--size-xxs);
-        animation: highlight 2s ease-out forwards;
       }
     }
   }

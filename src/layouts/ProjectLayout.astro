@@ -3,6 +3,7 @@ import BaseLayout from "./BaseLayout.astro";
 import { Image } from 'astro:assets';
 import Icon from '../components/Icon.astro';
 import { calculateReadingTime } from '../utils/readingTime';
+import Footnotes from '../components/Footnotes.astro';
 
 interface Props {
   title: string;
@@ -11,10 +12,11 @@ interface Props {
   heroImageAlt?: string;
   heroVideo?: string;
   navItems?: Array<{ id: string; label: string }>;
-  metadata?: Array<{ label: string; value: string }>;
+  metadata?: Array<{ label: string; value?: string; values?: string[] }>;
+  footnotes?: Array<{ id: string; text: string }>;
 }
 
-const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [], metadata = [] } = Astro.props;
+const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [], metadata = [], footnotes = [] } = Astro.props;
 
 // Calculate reading time from the content
 const content = await Astro.slots.render('default');
@@ -56,14 +58,24 @@ const readingTime = calculateReadingTime(content);
         {metadata.map(item => (
           <div class="metadata-entry">
             <div class="label">{item.label}</div>
-            <div class="value">{item.value}</div>
+            <div class="value">
+              {item.values ? (
+                <>
+                  {item.values.map(value => (
+                    <div>{value}</div>
+                  ))}
+                </>
+              ) : (
+                item.value
+              )}
+            </div>
           </div>
         ))}
       </div>
     )}
 
     {heroVideo ? (
-      <div class="hero-video">
+      <div class="hero-media">
         <video 
           autoplay 
           loop 
@@ -84,7 +96,7 @@ const readingTime = calculateReadingTime(content);
         </video>
       </div>
     ) : heroImage && (
-      <div class="hero-image">
+      <div class="hero-media">
         <Image 
           src={heroImage} 
           alt={heroImageAlt || title} 
@@ -98,6 +110,8 @@ const readingTime = calculateReadingTime(content);
     <article class="project-content">
       <slot />
     </article>
+
+    <Footnotes footnotes={footnotes} />
   </main>
 </BaseLayout>
 
@@ -205,37 +219,35 @@ const readingTime = calculateReadingTime(content);
     }
   }
 
-  .hero-image {
+  .hero-media {
     width: 100%;
     border: 1px solid var(--color-edge-subtle);
-    padding: var(--size-xxs);
     background-color: var(--color-white);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--border-radius-lg);
     overflow: hidden;
     
-    img {
+    img, video {
       width: 100%;
       height: auto;
       display: block;
+    }
+
+    img {
       image-rendering: -webkit-optimize-contrast;
-      padding: 2px;
+      padding: var(--size-xxxs);
       border-radius: var(--border-radius-sm);
       border: 1px solid var(--color-edge-subtle);
       background-color: var(--color-white);
     }
-  }
 
-  .hero-video {
-    width: 100%;
-    border: 1px solid var(--color-edge-subtle);
-    background-color: var(--color-white);
-    border-radius: var(--border-radius-md);
-    overflow: hidden;
-    
+    &:has(video) {
+      padding: var(--size-md);
+      background-color: #888B9A;
+    }
+
     video {
-      width: 100%;
-      height: auto;
-      display: block;
+      border-radius: var(--border-radius-sm);
+      overflow: hidden;
     }
   }
 
@@ -317,8 +329,6 @@ const readingTime = calculateReadingTime(content);
     gap: var(--size-xl);
   }
 
-  
-
   .metadata-entry {
     display: flex;
     flex-direction: column;
@@ -335,10 +345,10 @@ const readingTime = calculateReadingTime(content);
   }
 
   .project-content p + p {
-  margin-top: var(--size-xxs);
-}
+    margin-top: var(--size-xxs);
+  }
 
-.project-content section {
-  display: block !important;
-}
+  .project-content section {
+    display: block !important;
+  }
 </style>

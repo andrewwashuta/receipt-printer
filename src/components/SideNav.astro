@@ -1,16 +1,25 @@
 ---
 import { Image } from "astro:assets";
 import wLogo from '../assets/w.svg'
+import wLogoHover from '../assets/w-hover.svg'
 ---
 
 <aside class="side-nav">
     <nav>
-        <Image 
-          src={wLogo} 
-          alt="A cursive w" 
-          height={24}
-          class="w-logo"
-        />
+        <a href="#top" class="logo-container">
+          <Image 
+            src={wLogo} 
+            alt="A cursive W logo" 
+            height={24}
+            class="w-logo"
+          />
+          <Image 
+            src={wLogoHover} 
+            alt="A cursive W logo" 
+            height={24}
+            class="w-logo hover"
+          />
+        </a>
         <ul>
             <li><a href="#intro">Intro</a></li>
             <li><a href="#now">Now</a></li>
@@ -23,8 +32,10 @@ import wLogo from '../assets/w.svg'
     </nav>
 
     <footer class="footer">
-        <p>Typeset in MNKY Banana Grotesk</p>
-        <p>© 2024</p>
+        <p>
+            Typeset in <a href="https://mnkytype.com/banana-grotesk">MNKY Banana Grotesk</a><br />
+            © 2024
+        </p>
     </footer>
 </aside>
 
@@ -61,9 +72,38 @@ import wLogo from '../assets/w.svg'
     }
   }
 
-  .w-logo {
+  .logo-container {
+    display: flex;
+    justify-content: left;
+    align-items: left;
     margin-bottom: var(--size-lg);
+    width: fit-content;
+  }
+
+  .logo-container:hover {
+    .w-logo {
+      opacity: 0;
+      
+      &.hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .logo-container:active {
+    transform: scale(0.92);
+  }
+
+  .w-logo {
     filter: drop-shadow(1px 1px 4px rgba(76, 76, 76, 0.16));
+    transition: opacity 1s ease;
+
+    &.hover {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+    }
   }
 
     .footer {

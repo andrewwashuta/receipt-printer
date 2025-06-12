@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+import Modal from "./Modal.astro";
+
+interface Props {
+  src: any;
+  alt: string;
+  showCaption?: boolean;
+  mediaType?: 'image' | 'video';
+}
+
+const { src, alt, showCaption = false, mediaType = 'image' } = Astro.props;
+const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="project-media">
+  <a href="#" class="modal-trigger" data-modal-id={modalId} tabindex="0">
+    {mediaType === 'image' ? (
+      <Image 
+        src={src}
+        alt={alt}
+        quality={100}
+        format="webp"
+      />
+    ) : (
+      <video 
+        src={src}
+        preload="auto"
+        muted
+        playsinline
+        loop
+        autoplay
+      />
+    )}
+  </a>
+  <Modal 
+    id={modalId}
+    imageUrl={src}
+    imageAlt={alt}
+    mediaType={mediaType}
+  />
+  {showCaption && (
+    <div class="media-caption">
+      <slot />
+    </div>
+  )}
+</div>
+
+<style>
+.project-media {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-sm);
+  width: 100%;
+  margin-top: var(--size-xl);
+}
+
+.project-media img,
+.project-media video {
+  width: 100%;
+  height: auto;
+  display: block;
+  padding: 2px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-edge-subtle);
+  background-color: var(--color-white);
+}
+
+.project-media video {
+  width: 100%;
+  height: auto;
+  display: block;
+  padding: 2px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-edge-subtle);
+  background-color: var(--color-white);
+}
+
+.media-caption {
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-ink-subtle);
+  line-height: 1.4;
+}
+</style> 
