@@ -14,7 +14,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <div class="project-media">
-  <a href="#" class="modal-trigger" data-modal-id={modalId} tabindex="0">
+  <div class="modal-trigger" data-modal-id={modalId} tabindex="0">
     {mediaType === 'image' ? (
       <Image 
         src={src}
@@ -31,7 +31,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
         autoplay
       />
     )}
-  </a>
+  </div>
   <Modal 
     id={modalId}
     imageUrl={src}
@@ -81,5 +81,9 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
   font-weight: var(--font-weight-normal);
   color: var(--color-ink-subtle);
   line-height: 1.4;
+}
+
+.modal-trigger {
+  cursor: pointer;
 }
 </style> 
