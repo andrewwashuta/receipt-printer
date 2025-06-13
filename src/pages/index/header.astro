@@ -1,0 +1,37 @@
+---
+import Avatar from '../../assets/index/images/andrewwashuta.png';
+---
+<header>
+    <img 
+        src={Avatar.src}
+        alt="Andrew Washuta"
+        class="profile-image"
+        width={64}
+        height={64}
+    />
+    <div class="name-container">
+      <h1>Andrew Washuta</h1>
+      <span class="name-char">ジ</span>
+    </div>
+    <p>Product Designer</p>
+</header>
+
+<style>
+.profile-image {
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+}
+
+.name-container {
+  display: flex;
+  align-items: baseline;
+  gap: var(--size-xs);
+}
+
+.name-char {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-subtle);
+}
+</style> 

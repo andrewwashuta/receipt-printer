@@ -10,7 +10,7 @@ const navItems = [
 ];
 
 const metadata = [
-  { label: "Role", values: ["Senior UI Designer", "Lead Product Designer"] },
+  { label: "Role", values: ["Lead Product Designer", "Senior UI Designer"] },
   { label: "Company", value: "84.51°" },
   { label: "Timeline", value: "2017 – 2021" }
 ];
@@ -18,14 +18,18 @@ const metadata = [
 const footnotes = [
   {
     id: "1",
-    text: "Reports run as of 6/11/2025"
+    text: "Total number of reports run as of 6/11/2025"
   }
 ];
 ---
 
+<head>
+  <title>Stratum | Andrew Washuta</title>
+</head>
+
 <ProjectLayout 
   title="Stratum: Kroger's Analytics Platform"
-  description="Led design of Kroger's flagship analytics platform from the ground up—transforming messy data from 62M+ households into insights that CPG brands can actually understand and act on. Generated $1B+ in contracts by making complex retail data feel intuitive."
+  description="Led design of 84.51°'s flagship analytics platform from the ground up—transforming messy Kroger data from 62M+ households into insights that CPG brands can actually act on. Generated $1B+ in contracts to date by making complex retail data feel simple."
   heroImage={stratumMedia.hero.image}
   heroImageAlt="Stratum Analytics Platform Dashboard"
   heroVideo={stratumMedia.hero.video}
@@ -35,23 +39,22 @@ const footnotes = [
 >
   <section id="overview">
     <h2 class="project-heading"><span>Overview</span></h2>
-    <p>Kroger was in the process of sunsetting their legacy analytics platform in 2017, and decided to bring the build of the new platform in-house. 
-      This was the beginning of what would eventually become Stratum, a robust analytics platform that would go on to generate $1B+ in contracts for Kroger,
-      and surface over 3.8M+ reports for our CPG partners.<a href="#footnote-1" id="footnote-ref-1" class="footnote-ref">1</a></p>
-    <p>Until 2021, I had the pleasure of leading design of Kroger's flagship analytics platform, Stratum, along a myriad of incredible people. 
-      I was the lead UI designer, but equally responsible for discovery research, design systems (at a time when we didn't have one!), and the overall
-      design approach.</p>
-    <p>I'll be honest with you; I didn't know a thing about what it meant to build a product.</p>
-  </section>
-
-  <section id="key-features">
-    <h2 class="project-heading"><span>Key Features</span></h2>
-    <!-- Add your new content here -->
+    <p>Kroger was in the process of sunsetting their legacy analytics platform in 2017, and brought the build of the new platform in-house. 
+      This was the beginning of what would eventually become Stratum, a robust analytics platform that has gone on to generate <strong>$1B+ in contracts</strong> for Kroger,
+      and surface over <strong>3.8M+ reports</strong> for 84.51°'s CPG partners.<a href="#footnote-1" id="footnote-ref-1" class="footnote-ref">1</a></p>
+    <p>Until 2021, I had the pleasure of leading design Stratum, along a myriad of incredible people. 
+      I was the lead UI designer, but equally responsible for discovery research, design systems (at a time when we didn't have one!), and visual
+      design. It was truly a balancing act of parity and innovation—we had to meet existing needs of our users, while building with a forward-thinking mindset. </p>
+    <p>It took months of vision workshops and hundreds of hours of research to align on what we were building, at a company that truly had not built bespoke products before.
+      Despite the challenges, I'm deeply proud of what Stratum became. Let me start by showing you where we ended up—the latest exploratory work on Stratum AI—before diving into the full journey of how we got there.</p>
   </section>
 
   <section id="ai-poc">
-    <h2 class="project-heading"><span>Stratum AI: Proof of Concept</span></h2>
-    <p>It's 2024, and everyone is talking about AI. I designed a proof-of-concept for a text- and voice-based AI, integrated neatly within Stratum to help users better navigate and take action on reports.</p>
+    <div class="project-header">
+      <h2 class="project-heading"><span>Stratum AI</span></h2>
+      <p class="project-subheading">Proof-of-concept, 2024</p>
+    </div>
+    <p>Imagine it's 2024, and everyone is talking about AI. I designed a proof-of-concept for a text-based AI, integrated neatly within Stratum to help users better navigate and take action on reports.</p>
     <p>I firmly believe in the power of storytelling, so this was a quick build to demonstrate how our Meridian Design System might be used to create a more engaging and intuitive experience.</p>
 
     <ProjectMedia
@@ -80,5 +83,21 @@ const footnotes = [
 <style>
 .project-content section {
   display: block !important;
+}
+
+.project-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: var(--size-xs);
+  margin-bottom: var(--size-md);
+}
+
+.project-subheading {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-subtle);
+  white-space: nowrap;
+  margin-top: calc(-1 * var(--size-lg));
 }
 </style>
