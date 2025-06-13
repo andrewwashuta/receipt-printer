@@ -1,4 +1,4 @@
-document.addEventListener('astro:page-load', () => {
+const initializeModals = () => {
   const triggers = document.querySelectorAll('.modal-trigger');
   const modalBackdrops = document.querySelectorAll('.modal-backdrop');
   const closeButtons = document.querySelectorAll('.modal-close');
@@ -53,4 +53,8 @@ document.addEventListener('astro:page-load', () => {
       if (visibleModal) closeModal(visibleModal);
     }
   });
-}); 
+};
+
+// Initialize on both DOMContentLoaded and astro:page-load
+document.addEventListener('DOMContentLoaded', initializeModals);
+document.addEventListener('astro:page-load', initializeModals); 
