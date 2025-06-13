@@ -18,15 +18,26 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
     <div class="modal-backdrop"></div>
     <div class="modal-container">
         {imageUrl && mediaType === 'image' ? (
-            <Image 
-                src={imageUrl} 
-                alt={imageAlt || ''} 
-                quality={100}
-                class="modal-image"
-                loading="eager"
-                {...(width ? { width } : {})}
-                {...(height ? { height } : {})}
-            />
+            typeof imageUrl === 'object' && 'src' in imageUrl ? (
+                <Image 
+                    src={imageUrl} 
+                    alt={imageAlt || ''} 
+                    quality={100}
+                    class="modal-image"
+                    loading="eager"
+                    {...(width ? { width } : {})}
+                    {...(height ? { height } : {})}
+                />
+            ) : (
+                <img
+                    src={imageUrl as string}
+                    alt={imageAlt || ''}
+                    class="modal-image"
+                    loading="eager"
+                    {...(width ? { width } : {})}
+                    {...(height ? { height } : {})}
+                />
+            )
         ) : imageUrl && mediaType === 'video' ? (
             <video 
                 src={imageUrl as string}
