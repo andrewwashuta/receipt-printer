@@ -6,7 +6,7 @@ import Modal from "../../components/Modal.astro";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
-  { id: 'ai-poc', label: 'Stratum AI: Proof of Concept' }
+  { id: 'ai-poc', label: 'Stratum AI' }
 ];
 
 const metadata = [
@@ -19,13 +19,13 @@ const footnotes = [
   {
     id: "1",
     text: "Total number of reports run as of 6/11/2025"
+  },
+  {
+    id: "2",
+    text: "AI prototype built entirely in Figma, using a series of complex variables and prototyping. Have you ever made a functional keyboard in Figma? Reach out to me if you'd like to see the file."
   }
 ];
 ---
-
-<head>
-  <title>Stratum | Andrew Washuta</title>
-</head>
 
 <ProjectLayout 
   title="Stratum: Kroger's Analytics Platform"
@@ -46,7 +46,7 @@ const footnotes = [
       I was the lead UI designer, but equally responsible for discovery research, design systems (at a time when we didn't have one!), and visual
       design. It was truly a balancing act of parity and innovation—we had to meet existing needs of our users, while building with a forward-thinking mindset. </p>
     <p>It took months of vision workshops and hundreds of hours of research to align on what we were building, at a company that truly had not built bespoke products before.
-      Despite the challenges, I'm deeply proud of what Stratum became. Let me start by showing you where we ended up—the latest exploratory work on Stratum AI—before diving into the full journey of how we got there.</p>
+      Despite the challenges, I'm deeply proud of what Stratum became over the course of its first four years. Let me start by showing the latest exploratory work on Stratum AI—before diving into the full journey of how we got there.</p>
   </section>
 
   <section id="ai-poc">
@@ -54,28 +54,38 @@ const footnotes = [
       <h2 class="project-heading"><span>Stratum AI</span></h2>
       <p class="project-subheading">Proof-of-concept, 2024</p>
     </div>
-    <p>Imagine it's 2024, and everyone is talking about AI. I designed a proof-of-concept for a text-based AI, integrated neatly within Stratum to help users better navigate and take action on reports.</p>
-    <p>I firmly believe in the power of storytelling, so this was a quick build to demonstrate how our Meridian Design System might be used to create a more engaging and intuitive experience.</p>
-
+    <p>It's 2024, amidst the beginning of the AI boom. As a member of our design systems team at the time, I designed a proof-of-concept for a text-based AI command prompt,
+       integrated neatly within Stratum to help users quickly take action on reports. I mean, how cool would it be to be able to generate micro-dashboards based on commands.</p>
+    <p>I firmly believe in the power of storytelling, so this was a quick build done entirely in Figma<a href="#footnote-2" id="footnote-ref-2" class="footnote-ref">2</a> to demonstrate how our Meridian Design System might be used experimentally to 
+      craft a fast, engaging experience for people using our products.</p>
+      <ProjectMedia
+      src={stratumMedia.stratumPoc.image}
+      alt="Proof-of-concept design for a dashboard with a text-based AI command prompt"
+      showCaption={false}
+    ></ProjectMedia>
+    <p>Over many years of researching and building Stratum, it had become evident how important it was to bring focus to workflows as much as possible. Striking a balance between
+      progressive disclosure and context—things like filters—at the end of the day, should never get in the way of reporting. But, that context is especially important when cycling through hundreds of reports a day.
+    </p>
+    <ProjectMedia
+    src={stratumMedia.progressive.video}
+    alt="Progressively disclosing actions"
+    mediaType="video"
+    showCaption={true}
+  >
+    <span>
+      Progressive disclosure of actions, filters, and content to cut down on congitive load and drive focus
+    </span>
+  </ProjectMedia>
     <ProjectMedia
       src={stratumMedia.quickLauncher.image}
       alt="Quick launcher displaying report actions"
       showCaption={true}
     >
       <span>
-        Quick launcher enables users to rapidly access reports, dashboards and perform actions—all through an intuitive, AI-driven CLI
+        Quick launcher enables users to rapidly access reports, dashboards and perform actions—all through an intuitive, fast, AI-driven CLI
       </span>
     </ProjectMedia>
-  <ProjectMedia
-  src={stratumMedia.progressive.video}
-  alt="Progressively disclosing actions"
-  mediaType="video"
-  showCaption={true}
->
-  <span>
-    Progressively disclosing actions and content to cut down on congitive load and encourage focus
-  </span>
-</ProjectMedia>
+ 
 
   </section>
 </ProjectLayout>

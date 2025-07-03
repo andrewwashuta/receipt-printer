@@ -3,6 +3,8 @@ import stratumHeroVideo from '../../assets/projects/stratum/videos/stratum_ai.mp
 import quickLauncher from '../../assets/projects/stratum/images/quick_launcher.png';
 import progressive from '../../assets/projects/stratum/videos/progressive-disclosure.mp4';
 import workshop from '../../assets/projects/stratum/images/workshop.png';
+import stratumPoc from '../../assets/projects/stratum/images/stratum-poc.png';
+import quickDash from '../../assets/projects/stratum/images/quick-dash.png';
 
 export const stratumMedia = {
   hero: {
@@ -18,4 +20,10 @@ export const stratumMedia = {
   workshop: {
     image: workshop,
   },
+  stratumPoc: {
+    image: stratumPoc,
+  },
+  quickDash: {
+    image: quickDash,
+  }
 } as const; 
