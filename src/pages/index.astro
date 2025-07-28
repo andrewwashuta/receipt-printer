@@ -9,9 +9,10 @@ import Header from "../pages/index/header.astro";
 ---
 
 <BaseLayout>
-    <SideNav />
+    <SideNav variant="sidebar" />
     <main>
         <Header />
+        <SideNav variant="mobile" />
         <Intro />
         <Now />
         <Experience />

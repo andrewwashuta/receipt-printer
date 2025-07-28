@@ -2,42 +2,50 @@
 import { Image } from "astro:assets";
 import wLogo from '../assets/w.svg'
 import wLogoHover from '../assets/w-hover.svg'
+import Footer from './Footer.astro'
+
+interface Props {
+  variant?: 'sidebar' | 'mobile';
+}
+
+const { variant = 'sidebar' } = Astro.props;
 ---
 
-<aside class="side-nav">
-    <nav>
-        <a href="#top" class="logo-container">
-          <Image 
-            src={wLogo} 
-            alt="A cursive W logo" 
-            height={24}
-            class="w-logo"
-          />
-          <Image 
-            src={wLogoHover} 
-            alt="A cursive W logo" 
-            height={24}
-            class="w-logo hover"
-          />
-        </a>
-        <ul>
-            <li><a href="#intro">Intro</a></li>
-            <li><a href="#now">Now</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <!-- <li><a href="#photo">Photography</a></li> -->
-            <!-- <li><a href="#fun">Fun</a></li> -->
-            <!-- <li><a href="#misc">Misc</a></li> -->
-        </ul>
-    </nav>
+{variant === 'sidebar' && (
+  <aside class="side-nav">
+      <nav>
+          <a href="#top" class="logo-container">
+            <Image 
+              src={wLogo} 
+              alt="A cursive W logo" 
+              height={24}
+              class="w-logo"
+            />
+            <Image 
+              src={wLogoHover} 
+              alt="A cursive W logo" 
+              height={24}
+              class="w-logo hover"
+            />
+          </a>
+          <ul>
+              <li><a href="#intro">Intro</a></li>
+              <li><a href="#now">Now</a></li>
+              <li><a href="#experience">Experience</a></li>
+              <li><a href="#projects">Projects</a></li>
+              <!-- <li><a href="#photo">Photography</a></li> -->
+              <!-- <li><a href="#fun">Fun</a></li> -->
+              <!-- <li><a href="#misc">Misc</a></li> -->
+          </ul>
+      </nav>
+  </aside>
+)}
 
-    <footer class="footer">
-        <p>
-            Typeset in <a href="https://mnkytype.com/banana-grotesk">MNKY Banana Grotesk</a><br />
-            © 2024
-        </p>
-    </footer>
-</aside>
+{variant === 'mobile' && (
+  <nav class="mobile-nav">
+      <a href="#intro">Intro</a>, <a href="#now">Now</a>, <a href="#experience">Experience</a>, <a href="#projects">Projects</a>
+  </nav>
+)}
 
 <style>
  .side-nav {
@@ -45,7 +53,7 @@ import wLogoHover from '../assets/w-hover.svg'
   top: var(--size-xxl);
   left: var(--size-xxl);
   
-  @media (max-width: var(--breakpoint-md)) {
+  @media (max-width: 1000px) {
     display: none;
   }
 
@@ -106,12 +114,16 @@ import wLogoHover from '../assets/w-hover.svg'
     }
   }
 
-    .footer {
-        position: fixed;
-        bottom: var(--size-xxl);
-        left: var(--size-xxl);
-        font-size: var(--font-size-sm);
-        color: var(--color-text-subtle);
-        z-index: var(--z-nav);
+}
+
+.mobile-nav {
+    display: none;
+    
+    @media (max-width: 1000px) {
+        display: block;
+        font-weight: var(--font-weight-medium);
+        margin-top: var(--size-lg);
+        margin-bottom: calc(-1 * var(--size-lg));
     }
+}
 </style> 
