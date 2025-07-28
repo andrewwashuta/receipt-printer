@@ -1,8 +1,9 @@
 ---
 import Modal from '../../components/Modal.astro';
 import Icon from '../../components/Icon.astro';
-import ImageFamily from '../../assets/index/images/family.jpeg';
+import ImageFamily from '../../assets/index/images/family.jpg';
 import ImageBrochures from '../../assets/index/images/nationalparks.png';
+import ImageHip from '../../assets/index/images/hip.jpg';
 ---
 
 <section id="now">
@@ -11,12 +12,23 @@ import ImageBrochures from '../../assets/index/images/nationalparks.png';
         <div class="now-item">
             <div class="item-label">                
                 <Icon name="chevron-right" />
-                <p>Cherishing every moment with my <a class="modal-trigger" data-modal-id="family">family</a>; my wife, Seneca, and my son, Thor</p>
+                <p>Cherishing every moment with my growing <a class="modal-trigger" data-modal-id="family">family</a>; my wife, Seneca, my son, Thor, and our new addition, a baby girl, due in late December</p>
             </div>
             <Modal 
             id="family"
             imageUrl={ImageFamily} 
-            imageAlt="A photo depicting myself, my wife, Seneca, and our son, Thor" 
+            imageAlt="A photo depicting myself holding a baby onesie, next to my wife, Seneca, while she holds our son, Thor" 
+            />
+        </div>
+        <div class="now-item">
+            <div class="item-label">
+                <Icon name="chevron-right" />
+                <p>Living as a "cyborg" with some <a class="modal-trigger" data-modal-id="hip">hardware</a> as I heal a broken hip socket. Targeting to be back on the trails in 2026</p>
+            </div>
+            <Modal 
+            id="hip"
+            imageUrl={ImageHip} 
+            imageAlt="A photo depicting my acetabular fracture and the hardware used to fix it" 
             />
         </div>
         <div class="now-item">
@@ -28,7 +40,7 @@ import ImageBrochures from '../../assets/index/images/nationalparks.png';
         <div class="now-item">
             <div class="item-label">
                 <Icon name="chevron-right" />
-                <p>Falling in love with code again; It's not perfect, but I built this from scratch</p>
+                <p>Falling in love with code again; I built this from scratch</p>
             </div>
         </div>
         <div class="now-item">
