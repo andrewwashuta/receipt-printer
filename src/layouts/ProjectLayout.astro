@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import { Image } from 'astro:assets';
-import Icon from '../components/Icon.astro';
-import Footer from '../components/Footer.astro';
+import SideNav from '../components/SideNav.astro';
 import { calculateReadingTime } from '../utils/readingTime';
+import { resetFootnotes } from '../utils/footnotes';
 import Footnotes from '../components/Footnotes.astro';
 
 interface Props {
@@ -19,29 +19,20 @@ interface Props {
 
 const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [], metadata = [], footnotes = [] } = Astro.props;
 
+// Reset footnote counter for this page
+resetFootnotes();
+
 // Calculate reading time from the content
 const content = await Astro.slots.render('default');
 const readingTime = calculateReadingTime(content);
 ---
 
 <BaseLayout title={title}>
-  <aside class="side-nav">
-    <nav>
-      <a href="/" class="home-link">
-        <Icon name="jump-arrow" />
-        <span>Index</span>
-      </a>
-      <ul>
-        {navItems.map(item => (
-          <li>
-            <a href={`#${item.id}`} class="section-link">
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  </aside>
+  <SideNav 
+    navItems={navItems}
+    showHomeLink={true}
+    homeLinkText="Index"
+  />
 
   <main class="project-main">
     <header class="project-header">
@@ -82,7 +73,7 @@ const readingTime = calculateReadingTime(content);
           loop 
           muted 
           playsinline
-          preload="auto"
+          preload="metadata"
         >
           <source src={heroVideo} type="video/mp4" />
           {heroImage && (
@@ -131,52 +122,6 @@ const readingTime = calculateReadingTime(content);
 </script>
 
 <style lang="scss">
-  .side-nav {
-    position: fixed;
-    top: var(--size-xxl);
-    left: var(--size-xxl);
-    z-index: 100;
-    
-    @media (max-width: 1000px) {
-      display: none;
-    }
-
-    nav {
-      ul {
-        list-style: none;
-        
-        li {
-          margin-bottom: var(--size-sm);
-          position: relative;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          
-          a {
-            color: var(--color-ink);
-            text-decoration: none;
-
-            &:hover {
-              color: var(--color-ink-primary);
-            }
-          }
-        }
-      }
-
-      .home-link {
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: var(--size-xs);
-        color: var(--color-ink);
-        margin-bottom: var(--size-lg);
-        
-        &:hover {
-          color: var(--color-ink-primary);
-        }
-      }
-    }
-  }
 
   .project-main {
     margin-top: calc(var(--size-xxl) + var(--font-size-base) + var(--size-lg));

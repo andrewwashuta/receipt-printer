@@ -1,17 +1,20 @@
 ---
+import { getFootnotesInOrder } from '../utils/footnotes';
+
 interface Props {
   footnotes: Array<{ id: string; text: string }>;
 }
 
 const { footnotes } = Astro.props;
+const numberedFootnotes = getFootnotesInOrder(footnotes);
 ---
 
 {footnotes.length > 0 && (
   <footer class="project-footnotes">
     <ol>
-      {footnotes.map(footnote => (
+      {numberedFootnotes.map((footnote) => (
         <li id={`footnote-${footnote.id}`}>
-          <a href={`#footnote-ref-${footnote.id}`} class="footnote-backref">{footnote.id}</a>
+          <a href={`#footnote-ref-${footnote.id}`} class="footnote-backref">{footnote.number}</a>
           {footnote.text}
         </li>
       ))}

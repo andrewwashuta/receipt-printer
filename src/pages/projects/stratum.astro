@@ -1,8 +1,8 @@
 ---
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import ProjectMedia from "../../components/ProjectMedia.astro";
+import FootnoteRef from "../../components/FootnoteRef.astro";
 import { stratumMedia } from "../stratum/media";
-import Modal from "../../components/Modal.astro";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
@@ -17,11 +17,15 @@ const metadata = [
 
 const footnotes = [
   {
-    id: "1",
-    text: "Total number of reports run as of 6/11/2025"
+    id: "8451-description",
+    text: "You'll see me use Kroger and 84.51° somewhat interchangeably. 84.51° is best described as Kroger's data house. We take the raw data from Kroger, and transform it into insights so our partners can activate on it. At the end of the day, we're Kroger."
   },
   {
-    id: "2",
+    id: "reports-count",
+    text: "Total number of reports run as of 6/11/2025, nearly six years after launch."
+  },
+  {
+    id: "figma-prototype",
     text: "AI prototype built entirely in Figma, using a series of complex variables and prototyping. Have you ever made a functional keyboard in Figma? Reach out to me if you'd like to see the file."
   }
 ];
@@ -29,7 +33,7 @@ const footnotes = [
 
 <ProjectLayout 
   title="Stratum: Kroger's Analytics Platform"
-  description="Led design of 84.51°'s flagship analytics platform from the ground up—transforming messy Kroger data from 62M+ households into insights that CPG brands can actually act on. Generated $1B+ in contracts to date by making complex retail data feel simple."
+  description="Led design of 84.51°'s flagship analytics platform from the ground up—transforming messy Kroger shopper data from 62M+ households into insights that CPG brands can actually act on. Generated $1B+ in contracts to date by making complex retail data feel simple."
   heroImage={stratumMedia.hero.image}
   heroImageAlt="Stratum Analytics Platform Dashboard"
   heroVideo={stratumMedia.hero.video}
@@ -39,10 +43,10 @@ const footnotes = [
 >
   <section id="overview">
     <h2 class="project-heading"><span>Overview</span></h2>
-    <p>Kroger was in the process of sunsetting their legacy analytics platform in 2017, and brought the build of the new platform in-house. 
+    <p>Kroger was in the process of sunsetting their legacy analytics platform in 2017, and brought the build of the new platform in-house at 84.51°<FootnoteRef id="8451-description" />. 
       This was the beginning of what would eventually become Stratum, a robust analytics platform that has gone on to generate <strong>$1B+ in contracts</strong> for Kroger,
-      and surface over <strong>3.8M+ reports</strong> for 84.51°'s CPG partners.<a href="#footnote-1" id="footnote-ref-1" class="footnote-ref">1</a></p>
-    <p>Until 2021, I had the pleasure of leading design Stratum, along a myriad of incredible people. 
+      and surface over <strong>3.8M+ reports</strong> for 84.51°'s CPG partners.<FootnoteRef id="reports-count" /></p>
+    <p>Until 2021, I had the pleasure of leading the design of Stratum, along a myriad of incredible people. 
       I was the lead UI designer, but equally responsible for discovery research, design systems (at a time when we didn't have one!), and visual
       design. It was truly a balancing act of parity and innovation—we had to meet existing needs of our users, while building with a forward-thinking mindset. </p>
     <p>It took months of vision workshops and hundreds of hours of research to align on what we were building, at a company that truly had not built bespoke products before.
@@ -54,9 +58,9 @@ const footnotes = [
       <h2 class="project-heading"><span>Stratum AI</span></h2>
       <p class="project-subheading">Proof-of-concept, 2024</p>
     </div>
-    <p>It's 2024, amidst the beginning of the AI boom. As a member of our design systems team at the time, I designed a proof-of-concept for a text-based AI command prompt,
-       integrated neatly within Stratum to help users quickly take action on reports. I mean, how cool would it be to be able to generate micro-dashboards based on commands.</p>
-    <p>I firmly believe in the power of storytelling, so this was a quick build done entirely in Figma<a href="#footnote-2" id="footnote-ref-2" class="footnote-ref">2</a> to demonstrate how our Meridian Design System might be used experimentally to 
+    <p>It's 2024, amidst the most recent AI boom. As a member of our design systems team at the time, I designed a proof-of-concept for a text-based AI command prompt,
+       integrated neatly within Stratum to help users quickly take action on reports. This was a perfect opportunity to experiment with our design system, and revisit my work from three years prior. I mean, how cool would it be to be able to generate micro-reports and -dashboards based on simple commands?</p>
+    <p>I firmly believe in the power of storytelling, so this was a quick build done entirely in Figma<FootnoteRef id="figma-prototype" /> to demonstrate how our Meridian Design System might be used experimentally to 
       craft a fast, engaging experience for people using our products.</p>
       <ProjectMedia
       src={stratumMedia.stratumPoc.image}
@@ -64,11 +68,11 @@ const footnotes = [
       showCaption={false}
     ></ProjectMedia>
     <p>Over many years of researching and building Stratum, it had become evident how important it was to bring focus to workflows as much as possible. Striking a balance between
-      progressive disclosure and context—things like filters—at the end of the day, should never get in the way of reporting. But, that context is especially important when cycling through hundreds of reports a day.
+      progressive disclosure and context—filters should never get in the way of reporting. But, at the end of the day, that context is equally important when cycling through hundreds of reports a day.
     </p>
     <ProjectMedia
     src={stratumMedia.progressive.video}
-    alt="Progressively disclosing actions"
+    alt="Video showing progressive disclosure of UI and navigation"
     mediaType="video"
     showCaption={true}
   >
@@ -85,7 +89,19 @@ const footnotes = [
         Quick launcher enables users to rapidly access reports, dashboards and perform actions—all through an intuitive, fast, AI-driven CLI
       </span>
     </ProjectMedia>
- 
+    <p>Through years of feedback loops, we had learned that users were overwhelmed by the volume of reports, as well as the ability to quickly navigate between them. As such, you can imagine how many one-off, throwaway 
+      reports were generated and saved, and how many were never used again.
+    </p>
+    <p>The quick launcher concept allows users to quickly run micro-reports through a short command, or spin off agents to create new ones, greatly reducing the volume of saved, one-off reports.</p>
+    <ProjectMedia
+      src={stratumMedia.quickDash.image}
+      alt="Quick launcher with a micro-dashboard"
+      showCaption={true}
+    >
+      <span>
+        Displaying a micro-report generated by AI within the quick launcher. If this were circa 2025, it would be liquid glass (I joke)
+      </span>
+    </ProjectMedia>
 
   </section>
 </ProjectLayout>
