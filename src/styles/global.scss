@@ -7,7 +7,6 @@
   padding: 0;
 }
 
-// 2. HTML & Body Base Styles
 html {
   scroll-behavior: smooth;
 }
@@ -25,7 +24,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-// 3. Typography
 h1, h2, h3, h4 {
   line-height: inherit;
   font-size: inherit;
@@ -96,7 +94,15 @@ p:first-of-type {
 .label {
   font-size: var(--font-size-sm);
   color: var(--color-ink-subtle);
-  grid-column: 1;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: var(--size-xxs);
+  margin-bottom: var(--size-lg);
 }
 
 // 5. Layout Components

@@ -2,7 +2,7 @@
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import ProjectMedia from "../../components/ProjectMedia.astro";
 import FootnoteRef from "../../components/FootnoteRef.astro";
-import { stratumMedia } from "../stratum/media";
+import { stratumMedia } from "../media/stratum";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
@@ -42,7 +42,9 @@ const footnotes = [
   footnotes={footnotes}
 >
   <section id="overview">
-    <h2 class="project-heading"><span>Overview</span></h2>
+    <div class="section-header">
+      <h2 class="section-heading"><span>Overview</span></h2>
+    </div>
     <p>Kroger was in the process of sunsetting their legacy analytics platform in 2017, and brought the build of the new platform in-house at 84.51°<FootnoteRef id="8451-description" />. 
       This was the beginning of what would eventually become Stratum, a robust analytics platform that has gone on to generate <strong>$1B+ in contracts</strong> for Kroger,
       and surface over <strong>3.8M+ reports</strong> for 84.51°'s CPG partners.<FootnoteRef id="reports-count" /></p>
@@ -54,9 +56,9 @@ const footnotes = [
   </section>
 
   <section id="ai-poc">
-    <div class="project-header">
-      <h2 class="project-heading"><span>Stratum AI</span></h2>
-      <p class="project-subheading">Proof-of-concept, 2024</p>
+    <div class="section-header">
+      <h2 class="section-heading"><span>Stratum AI</span></h2>
+      <small class="label">Proof-of-concept, 2024</small>
     </div>
     <p>It's 2024, amidst the most recent AI boom. As a member of our design systems team at the time, I designed a proof-of-concept for a text-based AI command prompt,
        integrated neatly within Stratum to help users quickly take action on reports. This was a perfect opportunity to experiment with our design system, and revisit my work from three years prior. I mean, how cool would it be to be able to generate micro-reports and -dashboards based on simple commands?</p>
@@ -106,24 +108,3 @@ const footnotes = [
   </section>
 </ProjectLayout>
 
-<style>
-.project-content section {
-  display: block !important;
-}
-
-.project-header {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: baseline;
-  gap: var(--size-xs);
-  margin-bottom: var(--size-md);
-}
-
-.project-subheading {
-  font-size: var(--font-size-sm);
-  color: var(--color-ink-subtle);
-  white-space: nowrap;
-  margin-top: calc(-1 * var(--size-lg));
-}
-</style>

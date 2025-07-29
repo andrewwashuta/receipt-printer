@@ -36,35 +36,33 @@ const readingTime = calculateReadingTime(content);
 
   <main class="project-main">
     <header class="project-header">
-      <div class="header-content">
         <div class="title-container">
           <h1>{title}</h1>
           <span class="reading-time">{readingTime} min read</span>
         </div>
-        {description && <p class="project-description">{description}</p>}
-      </div>
-    </header>
-
-    {metadata.length > 0 && (
-      <div class="project-metadata">
-        {metadata.map(item => (
-          <div class="metadata-entry">
-            <div class="label">{item.label}</div>
-            <div class="value">
-              {item.values ? (
-                <>
-                  {item.values.map(value => (
-                    <div>{value}</div>
-                  ))}
-                </>
-              ) : (
-                item.value
-              )}
-            </div>
+        {description && <p>{description}</p>}
+        
+        {metadata.length > 0 && (
+          <div class="project-metadata">
+            {metadata.map(item => (
+              <div class="metadata-entry">
+                <div class="label">{item.label}</div>
+                <div>
+                  {item.values ? (
+                    <>
+                      {item.values.map(value => (
+                        <div>{value}</div>
+                      ))}
+                    </>
+                  ) : (
+                    item.value
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    )}
+        )}
+    </header>
 
     {heroVideo ? (
       <div class="hero-media">
@@ -125,6 +123,10 @@ const readingTime = calculateReadingTime(content);
 
   .project-main {
     margin-top: calc(var(--size-xxl) + var(--font-size-base) + var(--size-lg));
+
+    @media (max-width: 1000px) {
+        margin-top: var(--size-xxl);
+    }
   }
 
   .project-header {
@@ -132,23 +134,17 @@ const readingTime = calculateReadingTime(content);
     flex-direction: column;
     gap: var(--size-sm);
 
-    .header-content {
-      text-align: left;
-    }
-
     .title-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: var(--size-md);
-      margin-bottom: var(--size-sm);
       width: 100%;
     }
 
     h1 {
       font-size: var(--font-size-lg);
       color: var(--color-ink-primary);
-      margin: 0;
     }
 
     .reading-time {
@@ -160,9 +156,22 @@ const readingTime = calculateReadingTime(content);
       border-radius: var(--border-radius-md);
     }
 
-    .project-description {
-      color: var(--color-ink);
-      font-size: var(--font-size-base);
+    .project-metadata {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--size-xl);
+      margin-top: var(--size-md);
+
+      @media (max-width: 1000px) {
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: var(--size-sm);
+    }
+    }
+
+    .metadata-entry {
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-xxs);
     }
   }
 
@@ -201,13 +210,9 @@ const readingTime = calculateReadingTime(content);
   .project-content {
     display: flex;
     flex-direction: column;
-    gap: var(--size-xxxxl);
+    gap: var(--size-xxxl);
     max-width: 100%;
     margin: 0 auto;
-
-    .project-heading {
-      margin-bottom: var(--size-md);
-    }
 
     p {
       margin-top: 0;
@@ -229,69 +234,25 @@ const readingTime = calculateReadingTime(content);
       scroll-margin-top: var(--size-xxl);
     }
 
-    :global(.project-heading) {
+    :global(.section-header) {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: baseline;
+      gap: var(--size-xxxs);
+      margin-bottom: var(--size-md);
+    }
+
+    :global(.section-heading) {
       display: block;
       scroll-margin-top: var(--size-xxl);
       transition: color var(--transition-smooth);
-      margin-bottom: var(--size-md);
-
-      > span {
-        position: relative;
-        display: inline;
-      }
+      margin-bottom: 0;
 
       &::after {
         display: none;
       }
     }
-
-    article:target :global(.project-heading) > span {
-      color: var(--color-accent-dark);
-      transition: color var(--transition-default);
-      animation: resetColor 2s ease-out forwards;
-
-      &::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        background: var(--color-accent-light);
-        width: auto;
-        height: 100%;
-        left: calc(-1 * var(--size-xxs));
-        right: calc(-1 * var(--size-xxs));
-        border-radius: var(--size-xxs);
-        animation: highlight 2s ease-out forwards;
-      }
-    }
-
-    h2 {
-      margin-bottom: var(--size-md);
-    }
-  }
-
-  .project-metadata {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--size-xl);
-  }
-
-  .metadata-entry {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-xs);
-
-    .label {
-      color: var(--color-ink-subtle);
-      font-size: var(--font-size-sm);
-    }
-
-    .value {
-      font-weight: var(--font-weight-regular);
-    }
-  }
-
-  .project-content p + p {
-    margin-top: var(--size-xxs);
   }
 
   .project-content section {

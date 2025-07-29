@@ -1,0 +1,66 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import ProjectMedia from "../../components/ProjectMedia.astro";
+import FootnoteRef from "../../components/FootnoteRef.astro";
+import { meridianMedia } from "../media/meridian";
+
+const navItems = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'design-system', label: 'Design System' }
+];
+
+const metadata = [
+  { label: "Role", values: ["Design Systems Lead", "Senior Product Designer"] },
+  { label: "Company", value: "84.51°" },
+  { label: "Timeline", value: "2021 – 2024" }
+];
+
+const footnotes = [
+  {
+    id: "meridian-description",
+    text: "Meridian is 84.51°'s design system, built to create consistent, accessible, and scalable experiences across all our products."
+  }
+];
+---
+
+<ProjectLayout 
+  title="Meridian: 84.51° Design System"
+  description="Led the design and development of 84.51°'s comprehensive design system, creating a unified design language that powers all internal products and ensures consistency across millions of user interactions."
+  heroImage={meridianMedia.hero.image}
+  heroImageAlt="Meridian Design System Components"
+  heroVideo={meridianMedia.hero.video}
+  navItems={navItems}
+  metadata={metadata}
+  footnotes={footnotes}
+>
+  <section id="overview">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Overview</span></h2>
+    </div>
+    <p>After years of building products like Stratum without a formal design system, 84.51° recognized the need for a unified design language<FootnoteRef id="meridian-description" />. 
+      This was the beginning of Meridian, a comprehensive design system that would ensure consistency, accessibility, and scalability across all our products.</p>
+    <p>As the Design Systems Lead, I was responsible for establishing the foundational principles, component library, documentation, and governance processes that would enable our teams to build better products faster.</p>
+    <p>This project represents a significant evolution in how we approach design at 84.51°, moving from ad-hoc solutions to a systematic, scalable approach that benefits both our designers and the millions of users who interact with our products.</p>
+  </section>
+
+  <section id="design-system">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Design System</span></h2>
+      <small class="label">Components & Documentation</small>
+    </div>
+    <p>Meridian encompasses everything from foundational design tokens and typography to complex interactive components. The system is built with accessibility, scalability, and developer experience in mind.</p>
+    
+    <!-- TODO: Add ProjectMedia components as you add actual media files -->
+    <!-- <ProjectMedia
+      src={meridianMedia.components.image}
+      alt="Meridian design system components showcase"
+      showCaption={true}
+    >
+      <span>
+        Core component library showcasing buttons, forms, navigation, and data visualization elements
+      </span>
+    </ProjectMedia> -->
+    
+    <p>The design system includes comprehensive documentation, usage guidelines, and interactive examples that help designers and developers understand when and how to use each component effectively.</p>
+  </section>
+</ProjectLayout>
