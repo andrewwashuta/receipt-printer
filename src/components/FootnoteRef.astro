@@ -9,7 +9,7 @@ const { id } = Astro.props;
 const footnoteNumber = getFootnoteNumber(id);
 ---
 
-<a href={`#footnote-${id}`} id={`footnote-ref-${id}`} class="footnote-ref">{footnoteNumber}</a>
+<a href={`#footnote-${id}`} id={`footnote-ref-${id}`} class="footnote-ref" onclick="document.documentElement.style.scrollBehavior = 'smooth';">{footnoteNumber}</a>
 
 <style>
   .footnote-ref {
