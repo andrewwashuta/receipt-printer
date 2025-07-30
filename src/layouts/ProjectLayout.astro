@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-import { Image } from 'astro:assets';
 import SideNav from '../components/SideNav.astro';
 import { calculateReadingTime } from '../utils/readingTime';
 import { resetFootnotes } from '../utils/footnotes';
@@ -9,16 +8,20 @@ import Footnotes from '../components/Footnotes.astro';
 interface Props {
   title: string;
   description?: string;
-  heroImage?: ImageMetadata;
-  heroImageAlt?: string;
-  heroVideo?: string;
   navItems?: Array<{ id: string; label: string }>;
   metadata?: Array<{ label: string; value?: string; values?: string[] }>;
   footnotes?: Array<{ id: string; text: string }>;
   backNavigation?: boolean;
 }
 
-const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [], metadata = [], footnotes = [], backNavigation = false } = Astro.props;
+const { 
+  title, 
+  description, 
+  navItems = [], 
+  metadata = [], 
+  footnotes = [], 
+  backNavigation = false 
+} = Astro.props;
 
 // Reset footnote counter for this page
 resetFootnotes();
@@ -65,39 +68,6 @@ const readingTime = calculateReadingTime(content);
           </div>
         )}
     </header>
-
-    {heroVideo ? (
-      <div class="hero-media">
-        <video 
-          autoplay 
-          loop 
-          muted 
-          playsinline
-          preload="metadata"
-        >
-          <source src={heroVideo} type="video/mp4" />
-          {heroImage && (
-            <Image 
-              src={heroImage} 
-              alt={heroImageAlt || title} 
-              quality={100}
-              format="webp"
-              loading="eager"
-            />
-          )}
-        </video>
-      </div>
-    ) : heroImage && (
-      <div class="hero-media">
-        <Image 
-          src={heroImage} 
-          alt={heroImageAlt || title} 
-          quality={100}
-          format="webp"
-          loading="eager"
-        />
-      </div>
-    )}
 
     <article class="project-content">
       <slot />
@@ -176,39 +146,7 @@ const readingTime = calculateReadingTime(content);
       gap: var(--size-xxs);
     }
   }
-
-  .hero-media {
-    width: 100%;
-    border: 1px solid var(--color-edge-subtle);
-    background-color: var(--color-white);
-    border-radius: var(--border-radius-sm);
-    overflow: hidden;
-    
-    img, video {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    img {
-      image-rendering: -webkit-optimize-contrast;
-      padding: var(--size-xxxs);
-      border-radius: var(--border-radius-sm);
-      border: 1px solid var(--color-edge-subtle);
-      background-color: var(--color-white);
-    }
-
-    &:has(video) {
-      padding: var(--size-md);
-      background-color: #888B9A;
-    }
-
-    video {
-      border-radius: var(--border-radius-md);
-      overflow: hidden;
-    }
-  }
-
+  
   .project-content {
     display: flex;
     flex-direction: column;
