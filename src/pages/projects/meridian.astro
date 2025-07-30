@@ -6,19 +6,23 @@ import { meridianMedia } from "../media/meridian";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
-  { id: 'design-system', label: 'Design System' }
+  { id: 'system-evolution', label: 'System Evolution' },
+  { id: 'components', label: 'Components' },
+  { id: 'iconography', label: 'Iconographic System' },
+  { id: 'brand-identity', label: 'Brand & Identity Work' },
+  { id: 'documentation', label: 'Documentation' }
 ];
 
 const metadata = [
-  { label: "Role", values: ["Design Systems Lead", "Senior Product Designer"] },
+  { label: "Role", values: ["Lead Product Designer"] },
   { label: "Company", value: "84.51°" },
-  { label: "Timeline", value: "2021 – 2024" }
+  { label: "Timeline", value: "2021 – 2025" }
 ];
 
 const footnotes = [
   {
-    id: "meridian-description",
-    text: "Meridian is 84.51°'s design system, built to create consistent, accessible, and scalable experiences across all our products."
+    id: "mentorship",
+    text: "Over my 10+ years, this message from one of our interns is still one of the best I've ever received: “I think sometimes you sell yourself short on just how incredible of a mentor you are; not only did you play a big part in welcoming me to the team and making me feel comfortable, but you have truly taught me so, so much—more than you even know. I genuinely wouldn't be where I am today without your mentorship and guidance. Getting to watch you work and learn the design process from your perspective was such a privilege, and I feel like I always learned something new every time we paired on a project.”"
   }
 ];
 ---
@@ -37,15 +41,17 @@ const footnotes = [
     <div class="section-header">
       <h2 class="section-heading"><span>Overview</span></h2>
     </div>
-    <p>After years of building products like Stratum without a formal design system, 84.51° recognized the need for a unified design language<FootnoteRef id="meridian-description" />. 
-      This was the beginning of Meridian, a comprehensive design system that would ensure consistency, accessibility, and scalability across all our products.</p>
-    <p>As the Design Systems Lead, I was responsible for establishing the foundational principles, component library, documentation, and governance processes that would enable our teams to build better products faster.</p>
+    <p>After years of building products like Stratum and its predecessors without a formal design system, 84.51° recognized the need for a unified design language in 2019. 
+      This was the beginning of Meridian, the fabric of 84.51° products, a design system that would ensure cohesiveness, accessibility, and scalability across the entire ecosystem—both for designers and engineers alike.</p>
+    <p>I reached out to my good friend and collaborator, <a href="https://richgustke.design">Rich Gustke</a>, to join 84.51° and help steward Meridian.
+      As the system began to grow, I joined the team in early 2021, collaborating with Rich and our many developers. I was responsible for upkeep of the Figma component library, creation of new components, system documentation, processes and measurement that would enable our teams to build better products faster.</p>
+    <p>Over time, I fell in love with mentorship. I worked closely with many of our co-ops and interns, several of which would go on to become full-time designers at 84.51°<FootnoteRef id="mentorship" />. I love helping designers grow, and sometimes I think I learn more than them!</p>
     <p>This project represents a significant evolution in how we approach design at 84.51°, moving from ad-hoc solutions to a systematic, scalable approach that benefits both our designers and the millions of users who interact with our products.</p>
   </section>
 
   <section id="design-system">
     <div class="section-header">
-      <h2 class="section-heading"><span>Design System</span></h2>
+      <h2 class="section-heading"><span>System Evolution</span></h2>
       <small class="label">Components & Documentation</small>
     </div>
     <p>Meridian encompasses everything from foundational design tokens and typography to complex interactive components. The system is built with accessibility, scalability, and developer experience in mind.</p>

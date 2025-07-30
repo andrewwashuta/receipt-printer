@@ -9,6 +9,7 @@ interface Props {
   navItems?: Array<{ id: string; label: string }>;
   showHomeLink?: boolean;
   homeLinkText?: string;
+  backNavigation?: boolean;
 }
 
 const { 
@@ -21,7 +22,8 @@ const {
     { id: 'education', label: 'Education' }
   ],
   showHomeLink = false,
-  homeLinkText = 'Index'
+  homeLinkText = 'Index',
+  backNavigation = false
 } = Astro.props;
 ---
 
@@ -29,10 +31,17 @@ const {
   <aside class="side-nav">
       <nav>
           {showHomeLink ? (
-            <a href="/" class="home-link">
-              <Icon name="jump-arrow" />
-              <span>{homeLinkText}</span>
-            </a>
+            backNavigation ? (
+              <a href="#" class="home-link" onclick="history.back(); return false;">
+                <Icon name="jump-arrow" />
+                <span>Back</span>
+              </a>
+            ) : (
+              <a href="/" class="home-link">
+                <Icon name="jump-arrow" />
+                <span>{homeLinkText}</span>
+              </a>
+            )
           ) : (
             <a href="#top" class="logo-container">
               <Image 
@@ -49,15 +58,15 @@ const {
               />
             </a>
           )}
-          <ul>
-              {navItems.map(item => (
-                <li>
-                  <a href={`#${item.id}`} class="section-link">
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-          </ul>
+              <ul>
+                  {navItems.map(item => (
+                    <li>
+                      <a href={`#${item.id}`} class="section-link" onclick="document.documentElement.style.scrollBehavior = 'smooth';">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+              </ul>
       </nav>
   </aside>
 )}

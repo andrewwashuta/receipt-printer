@@ -15,9 +15,10 @@ interface Props {
   navItems?: Array<{ id: string; label: string }>;
   metadata?: Array<{ label: string; value?: string; values?: string[] }>;
   footnotes?: Array<{ id: string; text: string }>;
+  backNavigation?: boolean;
 }
 
-const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [], metadata = [], footnotes = [] } = Astro.props;
+const { title, description, heroImage, heroImageAlt, heroVideo, navItems = [], metadata = [], footnotes = [], backNavigation = false } = Astro.props;
 
 // Reset footnote counter for this page
 resetFootnotes();
@@ -32,6 +33,7 @@ const readingTime = calculateReadingTime(content);
     navItems={navItems}
     showHomeLink={true}
     homeLinkText="Index"
+    backNavigation={backNavigation}
   />
 
   <main class="project-main">
