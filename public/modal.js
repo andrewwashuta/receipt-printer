@@ -10,7 +10,7 @@ const initializeModals = () => {
   };
 
   triggers.forEach(trigger => {
-    trigger.addEventListener('click', (e) => {
+    const openModal = (e) => {
       e.preventDefault();
       const modalId = trigger.getAttribute('data-modal-id');
       const modal = document.querySelector(`.modal[data-modal-id="${modalId}"]`);
@@ -19,6 +19,17 @@ const initializeModals = () => {
         modal.offsetHeight;
         modal.classList.add('visible');
         document.body.style.overflow = 'hidden';
+      }
+    };
+
+    // Handle click events
+    trigger.addEventListener('click', openModal);
+    
+    // Handle keyboard events (Enter and Space keys)
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(e);
       }
     });
   });
