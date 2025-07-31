@@ -76,6 +76,11 @@ a {
   &:hover {
     color: var(--color-accent-dark);
   }
+
+  &:focus {
+    color: var(--color-accent-dark);
+    outline: none;
+  }
 }
 
 p + p {
@@ -128,7 +133,7 @@ section {
   &:target h2 > span {
     color: var(--color-accent-dark);
     transition: color var(--transition-default);
-    animation: resetColor 2s ease-out forwards;
+    animation: resetColor 1.5s ease-out forwards;
 
     &::before {
       content: "";
@@ -139,8 +144,8 @@ section {
       height: 100%;
       left: calc(-1 * var(--size-xxs));
       right: calc(-1 * var(--size-xxs));
-      border-radius: var(--size-xxs);
-      animation: highlight 2s ease-out forwards;
+      border-radius: var(--border-radius-sm);
+      animation: highlight 1.5s ease-out forwards;
     }
   }
 }

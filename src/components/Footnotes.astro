@@ -40,7 +40,7 @@ const numberedFootnotes = getFootnotesInOrder(footnotes);
     padding-left: var(--size-sm);
   }
 
-  .footnote-backref {
+  a.footnote-backref {
     position: absolute;
     padding: 0 var(--size-xxxs);
     left: 0;
@@ -51,6 +51,11 @@ const numberedFootnotes = getFootnotesInOrder(footnotes);
 
     &:hover {
       color: var(--color-accent-dark);
+    }
+
+    &:focus {
+      background-color: var(--color-accent-light);
+      color: var(--color-accent-dark) !important;
     }
   }
 }
@@ -73,6 +78,12 @@ const numberedFootnotes = getFootnotesInOrder(footnotes);
 
   &:hover {
     color: var(--color-accent-dark);
+  }
+
+  &:focus {
+    background-color: var(--color-accent-light);
+    color: var(--color-accent-dark) !important;
+    border-radius: 2px;
   }
 }
 </style> 
