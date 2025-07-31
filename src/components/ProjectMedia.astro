@@ -16,22 +16,45 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <div class={`project-media ${hero ? 'hero-media' : ''}`}>
-  <div class="media-wrapper modal-trigger" data-modal-id={modalId} tabindex="0" style={backgroundColor ? `background-color: ${backgroundColor}` : undefined}>
-    {mediaType === 'image' ? (
-      <Image 
-        src={src}
-        alt={alt}
-        quality={100}
-      />
+  <div class="media-wrapper modal-trigger" data-modal-id={modalId} tabindex="0">
+    {backgroundColor ? (
+      <div class="inner-background" style={`background-color: ${backgroundColor}`}>
+        {mediaType === 'image' ? (
+          <Image 
+            src={src}
+            alt={alt}
+            quality={100}
+          />
+        ) : (
+          <video 
+            src={src}
+            preload="metadata"
+            muted
+            playsinline
+            loop
+            autoplay
+          />
+        )}
+      </div>
     ) : (
-      <video 
-        src={src}
-        preload="metadata"
-        muted
-        playsinline
-        loop
-        autoplay
-      />
+      <>
+        {mediaType === 'image' ? (
+          <Image 
+            src={src}
+            alt={alt}
+            quality={100}
+          />
+        ) : (
+          <video 
+            src={src}
+            preload="metadata"
+            muted
+            playsinline
+            loop
+            autoplay
+          />
+        )}
+      </>
     )}
   </div>
   <Modal 
@@ -58,7 +81,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 
 .media-wrapper {
   padding: 2px;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-md);
   border: 1px solid var(--color-edge-subtle);
   background-color: var(--color-white);
 }
@@ -68,16 +91,20 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
   width: 100%;
   height: auto;
   display: block;
+  border-radius: calc(var(--border-radius-sm) + 2px);
 }
 
-/* When background color is provided, add padding to inset the content */
-.media-wrapper[style*="background-color"] {
+/* Inner background container for colored backgrounds */
+.inner-background {
   padding: var(--size-md);
+  border-radius: calc(var(--border-radius-sm) + 2px);
+  width: 100%;
+  height: 100%;
 }
 
 /* Apply border-radius to interior image/video when background is present */
-.media-wrapper[style*="background-color"] img,
-.media-wrapper[style*="background-color"] video {
+.inner-background img,
+.inner-background video {
   border-radius: var(--border-radius-sm);
 }
 

@@ -105,12 +105,7 @@ const {
         gap: var(--size-xxs);
         
         a {
-          color: var(--color-ink);
           text-decoration: none;
-
-          &:hover {
-            color: var(--color-ink-primary);
-          }
         }
       }
     }
@@ -123,8 +118,10 @@ const {
       color: var(--color-ink);
       margin-bottom: var(--size-lg);
       
-      &:hover {
-        color: var(--color-ink-primary);
+      &:hover,
+      &:focus {
+        color: var(--color-accent-dark);
+        outline: none;
       }
     }
   }
@@ -137,7 +134,8 @@ const {
     width: fit-content;
   }
 
-  .logo-container:hover {
+  .logo-container:hover,
+  .logo-container:focus {
     .w-logo {
       opacity: 0;
       
@@ -149,6 +147,10 @@ const {
 
   .logo-container:active {
     transform: scale(0.92);
+  }
+
+  .logo-container:focus {
+    outline: none;
   }
 
   .w-logo {

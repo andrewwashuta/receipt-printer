@@ -105,7 +105,7 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
         position: absolute;
         inset: -4px;
         border: 4px solid var(--color-edge-subtle);
-        border-radius: calc(var(--border-radius-sm) + 4px);
+        border-radius: 12px;
         opacity: 0;
         transition: opacity var(--transition-default);
     }
@@ -117,7 +117,6 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
         opacity: 1;
     }
 
-    /* Remove all focus outlines */
     :global(.modal-trigger:focus),
     :global(.modal-trigger:focus img),
     :global(.modal-trigger:focus video) {
@@ -125,7 +124,15 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
         box-shadow: none !important;
     }
 
-    /* Remove focus outline from images/videos in modal triggers when modal is closed */
+    :global(a.modal-trigger) {
+        cursor: pointer;
+    }
+    
+    :global(a.modal-trigger:focus) {
+        color: var(--color-accent-dark) !important;
+        outline: none;
+    }
+
     :global(.modal:not(.visible) ~ .modal-trigger:focus img),
     :global(.modal:not(.visible) ~ .modal-trigger:focus video) {
         outline: none !important;
