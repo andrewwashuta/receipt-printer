@@ -22,7 +22,23 @@ const metadata = [
 const footnotes = [
   {
     id: "mentorship",
-    text: "Over my 10+ years, this message from one of our interns is still one of the best I've ever received: “I think sometimes you sell yourself short on just how incredible of a mentor you are; not only did you play a big part in welcoming me to the team and making me feel comfortable, but you have truly taught me so, so much—more than you even know. I genuinely wouldn't be where I am today without your mentorship and guidance. Getting to watch you work and learn the design process from your perspective was such a privilege, and I feel like I always learned something new every time we paired on a project.”"
+    text: "Over my 10+ years, this message from one of our interns is still one of the best I've ever received: “Sometimes you sell yourself short on just how incredible of a mentor you are; not only did you play a big part in welcoming me to the team and making me feel comfortable, but you have truly taught me so, so much—more than you even know. I genuinely wouldn't be where I am today without your mentorship and guidance. Getting to watch you work and learn the design process from your perspective was such a privilege, and I feel like I always learned something new every time we paired on a project.”"
+  },
+  {
+    id: "hours-saved",
+    text: "Hours saved building the Kroger Ad Platform in 2024."
+  },
+  {
+    id: "mds",
+    text: "Meridian Design System. You'll see me use this abbreviation throughout this project."
+  },
+  {
+    id: "tailwind",
+    text: "We built our own CSS utilities on top of Tailwind."
+  },
+  {
+    id: "figma-updates",
+    text: "I've pushed several hundred updates to the system during my tenure on Meridian."
   }
 ];
 ---
@@ -45,32 +61,94 @@ hero={true}
     <div class="section-header">
       <h2 class="section-heading"><span>Overview</span></h2>
     </div>
-    <p>After years of building products like Stratum and its predecessors without a formal design system, 84.51° recognized the need for a unified design language in 2019. 
+    <p>After years of building products like <a href="/projects/stratum">Stratum</a> and its predecessors without a formal design system, 84.51° recognized the need for a unified design language in 2019. 
       This was the beginning of Meridian, the fabric of 84.51° products, a design system that would ensure cohesiveness, accessibility, and scalability across the entire ecosystem—both for designers and engineers alike.</p>
-    <p>I reached out to my good friend and collaborator, <a href="https://richgustke.design">Rich Gustke</a>, to join 84.51° and help steward Meridian.
-      As the system began to grow, I joined the team in early 2021, collaborating with Rich and our many developers. I was responsible for upkeep of the Figma component library, creation of new components, system documentation, processes and measurement that would enable our teams to build better products faster.</p>
-    <p>Over time, I fell in love with mentorship. I worked closely with many of our co-ops and interns, several of which would go on to become full-time designers at 84.51°<FootnoteRef id="mentorship" />. I love helping designers grow, and sometimes I think I learn more than them!</p>
-    <p>This project represents a significant evolution in how we approach design at 84.51°, moving from ad-hoc solutions to a systematic, scalable approach that benefits both our designers and the millions of users who interact with our products.</p>
+    <p>I reached out to my good friend and collaborator, <a href="https://richgustke.design">Rich Gustke</a>, in the hopes he would join 84.51° and help steward Meridian.
+      As the system began to grow, I joined the team in early 2021, continuing to collaborate with Rich and our many developers. Rich and I would partner consistently; it was very much a shared ownership. 
+      <p>I was responsible for upkeep of the Figma component library, creation of new components, system documentation, processes and measurement that would enable our teams to build better products faster.</p>
+    <p>My biggest surprise? Over time, I fell in love with mentorship. I worked closely with many of our co-ops and interns, several of which would go on to become full-time designers at 84.51°<FootnoteRef id="mentorship" />. I found that I love sharing knowledge and fostering young designers' growth and learning.</p>
+    <p>I'm insanely proud of the work we accomplished over four years: we instantiated countless new components and enhancements, shifted to a neater UI implementation approach with Svelte, and massively enhanced the MDS<FootnoteRef id="mds" /> Figma design system; the list goes on. And while the (incredible) Meridian team was formally disbanded in early 2025, the system still receives contributions and updates from various teams today.</p>
+    <p>Our biggest claim to fame? With our components, we saved roughly 6.1 engineers' worth of time in 2024 alone—that's not even counting the time saved by our Figma design system!</p>
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="metric-value">11,455</div>
+        <div class="label">Hours saved<FootnoteRef id="hours-saved" /></div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">1,235</div>
+        <div class="label">Components implemented</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">1,783</div>
+        <div class="label">CSS utilities used<FootnoteRef id="tailwind" /></div>
+      </div>
+    </div>
   </section>
 
-  <section id="design-system">
+  <section id="system-evolution">
     <div class="section-header">
       <h2 class="section-heading"><span>System Evolution</span></h2>
-      <small class="label">Components & Documentation</small>
+      <small class="label">Figma Design System</small>
     </div>
-    <p>Meridian encompasses everything from foundational design tokens and typography to complex interactive components. The system is built with accessibility, scalability, and developer experience in mind.</p>
-    
-    <!-- TODO: Add ProjectMedia components as you add actual media files -->
-    <!-- <ProjectMedia
-      src={meridianMedia.components.image}
-      alt="Meridian design system components showcase"
+    <p>I'll admit it, I'm obsessed with Figma. I'm obsessed with making life easier for both designers and developers; keeping the Figma design system consistent and up-to-date with code is a big part of that. 
+      When a designer needs to use a button, I want that button to match 1:1 with code. When a developer is implementing a design, the handoff and build should be frictionless. Many components include implementation tips and tricks as well as direct links to the documentation site.
+    </p>
+    <ProjectMedia
+        src={meridianMedia.cardExample.image}
+        alt="Showcasing multiple UI elements in Figma, all built with the Meridian Design System"
+        showCaption={true}
+      >
+        <span>
+          A snippet of my work with the Kroger Ad Platform, showcasing Kroger-themed MDS UI instances within Figma—the system is built to be flexible and adaptable to many use cases across 84.51°- and Kroger-branded products
+        </span>
+    </ProjectMedia>
+    <ProjectMedia
+      src={meridianMedia.popover.image}
+      alt="The popover component page as it appears in our Figma design system"
       showCaption={true}
     >
       <span>
-        Core component library showcasing buttons, forms, navigation, and data visualization elements
+        Just one of over 45+ organized component pages in Figma today
       </span>
-    </ProjectMedia> -->
-    
-    <p>The design system includes comprehensive documentation, usage guidelines, and interactive examples that help designers and developers understand when and how to use each component effectively.</p>
+    </ProjectMedia>
+    <p>Not every designer has coding experience, and equally so, not every developer has design experience. We built our own CSS utility classes on top of Tailwind, allowing developers to quickly tack on modifiers to elements.</p>
+    <p>Speaking of modifiers, aside from a few smaller sizes, we've typically used multiples of eight for spacing, padding, and margins—these all correlate to t-shirt sizes. One of the huge unlocks was when Figma introduced the ability to encode variables. 
+      This is especially useful for newer team members who may not be familiar with the system, but are still able to leverage the variables and then communicate their intent to the developer. It helps everyone speak the same language—and not one that includes static values (e.g. 24px).
+    </p>
+    <ProjectMedia
+    src={meridianMedia.variables.image}
+    alt="A panel of popover components in Figma"
+    showCaption={true}
+  >
+    <span>
+      We have variables set forth for spacing, including padding, margin and gap, border-radii, semantic color, thematic color, typography, and more
+    </span>
+  </ProjectMedia>
+  <p>I've meticulously gone through the system in Figma, turning over every pixel, quite literally. Each component, whether it's an organism or underlying scaffolding, has been set up 
+    with a variants, boolean properties, and usage guidelines—all in the name of helping designers build faster.</p>
+  <p>One designer in particular, reached out to me about the popover when we made updates in late 2024, “Btw, I am so jazzed about the new popover component and am using the hell out of the chip in design exploration! Love the composability, and I love how concise it is.” 
+    Feedback like that fuels me, and over the past four years, I've made a significant number<FootnoteRef id="figma-updates" /> of updates to the system—all based on feedback from our designers.
+  </p>
+  <ProjectMedia
+    src={meridianMedia.properties.image}
+    alt="An MDS single select component with a popover shown, as well as the underlying properties panel"
+    showCaption={true}
+  >
+    <span>
+      This is a perfect example of composability within MDS, where the popover component is fed into the single select trigger, and matches our approach in code. Our consumers can then choose what type of popover they want, as well as the trigger
+    </span>
+  </ProjectMedia>
+  <p>It's both wildly beautiful and slightly jarring to reflect on how much the system evolved over the past four years; proof you have to start somewhere. 
+    Although we began with a mildly jumbled mess of components, inconsistencies abound between code and design, it's just a reminder that starting somewhere—anywhere—is how you get somewhere else.
+  </p>
+  <ProjectMedia
+    src={meridianMedia.oldSystem.image}
+    alt="A capture of the old MDS system, one page with all the components messily laid out"
+    showCaption={true}
+  >
+    <span>
+      This is MDS, circa 2020, with every component and style compiled on one screen
+    </span>
+  </ProjectMedia>
   </section>
 </ProjectLayout>
