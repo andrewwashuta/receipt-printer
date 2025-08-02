@@ -34,7 +34,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: var(--size-xxxxl);
+    height: var(--size-xxxl);
     background: linear-gradient(180deg, 
       var(--color-surface-primary) 0,
       rgba(243, 243, 243, 0.95) 8%,
@@ -239,6 +239,12 @@ section {
 
 @keyframes resetColor {
   0% {
+    color: var(--color-accent-dark);
+  }
+  20% {
+    color: var(--color-accent-dark);
+  }
+  80% {
     color: var(--color-accent-dark);
   }
   100% {
