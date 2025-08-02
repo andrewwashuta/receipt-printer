@@ -73,12 +73,28 @@ const {
 
 {variant === 'mobile' && (
   <nav class="mobile-nav">
-      {navItems.map((item, index) => (
+      {showHomeLink ? (
+        backNavigation ? (
+          <a href="#" class="mobile-home-link" onclick="document.documentElement.style.scrollBehavior = 'auto'; history.back(); setTimeout(() => { window.scrollTo(0, 0); document.documentElement.style.scrollBehavior = 'smooth'; }, 100); return false;">
+            <Icon name="jump-arrow" />
+            <span>{homeLinkText}</span>
+          </a>
+        ) : (
+          <a href="/" class="mobile-home-link">
+            <Icon name="jump-arrow" />
+            <span>{homeLinkText}</span>
+          </a>
+        )
+      ) : (
         <>
-          <a href={`#${item.id}`}>{item.label}</a>
-          {index < navItems.length - 1 && ', '}
+          {navItems.map((item, index) => (
+            <>
+              <a href={`#${item.id}`}>{item.label}</a>
+              {index < navItems.length - 1 && ', '}
+            </>
+          ))}
         </>
-      ))}
+      )}
   </nav>
 )}
 
@@ -173,8 +189,21 @@ const {
     @media (max-width: 1000px) {
         display: block;
         font-weight: var(--font-weight-medium);
-        margin-top: var(--size-lg);
         margin-bottom: calc(-1 * var(--size-lg));
+    }
+
+    .mobile-home-link {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: var(--size-xs);
+        color: var(--color-ink);
+        
+        &:hover,
+        &:focus {
+            color: var(--color-accent-dark);
+            outline: none;
+        }
     }
 }
 </style> 
