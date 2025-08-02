@@ -14,7 +14,7 @@ const numberedFootnotes = getFootnotesInOrder(footnotes);
     <ol>
       {numberedFootnotes.map((footnote) => (
         <li>
-          <a href={`#footnote-ref-${footnote.id}`} id={`footnote-${footnote.id}`} class="footnote-backref" onclick="document.documentElement.style.scrollBehavior = 'smooth';">{footnote.number}</a>
+          <a href={`#footnote-ref-${footnote.id}`} id={`footnote-${footnote.id}`} class="footnote-backref">{footnote.number}</a>
           {footnote.text}
         </li>
       ))}

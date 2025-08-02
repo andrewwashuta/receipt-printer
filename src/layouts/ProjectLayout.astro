@@ -12,6 +12,7 @@ interface Props {
   metadata?: Array<{ label: string; value?: string; values?: string[] }>;
   footnotes?: Array<{ id: string; text: string }>;
   backNavigation?: boolean;
+  homeLinkText?: string;
 }
 
 const { 
@@ -20,7 +21,8 @@ const {
   navItems = [], 
   metadata = [], 
   footnotes = [], 
-  backNavigation = false 
+  backNavigation = false,
+  homeLinkText = "Index"
 } = Astro.props;
 
 // Reset footnote counter for this page
@@ -35,11 +37,17 @@ const readingTime = calculateReadingTime(content);
   <SideNav 
     navItems={navItems}
     showHomeLink={true}
-    homeLinkText="Index"
+    homeLinkText={homeLinkText}
     backNavigation={backNavigation}
   />
 
   <main class="project-main">
+    <SideNav 
+      variant="mobile"
+      showHomeLink={true}
+      homeLinkText={homeLinkText}
+      backNavigation={backNavigation}
+    />
     <header class="project-header">
         <div class="title-container">
           <h1>{title}</h1>
