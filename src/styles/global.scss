@@ -9,7 +9,6 @@
 
 html {
   scroll-behavior: auto;
-  height: 100dvh;
 }
 
 body {
@@ -26,9 +25,6 @@ body {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  min-height: 100dvh;
-  margin: 0;
-  padding: 0;
 }
 
 h1, h2, h3, h4 {
@@ -157,7 +153,6 @@ main {
   gap: var(--size-xxxxl);
   scroll-behavior: smooth;
   padding: 0 var(--size-lg);
-  min-height: 0;
 }
 
 // 6. Section Styles
@@ -224,11 +219,4 @@ section {
 ::selection {
     background-color: var(--color-accent-light);
     color: var(--color-accent-dark);
-}
-
-// Ensure proper viewport handling on mobile
-@media screen and (max-width: 1000px) {
-  body {
-    overflow-x: hidden;
-  }
 }
