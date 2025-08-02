@@ -10,7 +10,6 @@
 html {
   scroll-behavior: auto;
   height: 100%;
-  overflow-x: hidden;
 }
 
 body {
@@ -228,8 +227,7 @@ section {
 
 // Handle orientation changes on mobile
 @media screen and (orientation: landscape) {
-  html, body {
-    height: 100%;
+  body {
     overflow-x: hidden;
   }
   
