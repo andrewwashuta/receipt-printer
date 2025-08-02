@@ -9,6 +9,8 @@
 
 html {
   scroll-behavior: auto;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -25,6 +27,9 @@ body {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 h1, h2, h3, h4 {
@@ -219,4 +224,16 @@ section {
 ::selection {
     background-color: var(--color-accent-light);
     color: var(--color-accent-dark);
+}
+
+// Handle orientation changes on mobile
+@media screen and (orientation: landscape) {
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+  }
+  
+  main {
+    min-height: 100vh;
+  }
 }
