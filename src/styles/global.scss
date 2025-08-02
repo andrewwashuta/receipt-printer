@@ -110,9 +110,16 @@ a {
     color: var(--color-accent-dark);
   }
 
-  &:focus {
+  // Only show focus styles when using keyboard navigation
+  &:focus-visible {
     color: var(--color-accent-dark);
     outline: none;
+  }
+
+  // Remove focus styles on mobile/touch devices
+  &:focus:not(:focus-visible) {
+    outline: none;
+    color: var(--color-ink);
   }
 }
 
