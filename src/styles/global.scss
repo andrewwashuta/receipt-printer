@@ -157,6 +157,7 @@ main {
   gap: var(--size-xxxxl);
   scroll-behavior: smooth;
   padding: 0 var(--size-lg);
+  min-height: 0;
 }
 
 // 6. Section Styles
@@ -225,13 +226,14 @@ section {
     color: var(--color-accent-dark);
 }
 
-// Handle orientation changes on mobile
-@media screen and (orientation: landscape) {
-  body {
-    overflow-x: hidden;
+// Ensure proper viewport handling on mobile
+@media screen and (max-width: 1000px) {
+  html, body {
+    height: 100%;
+    width: 100%;
   }
   
-  main {
-    min-height: 100vh;
+  body {
+    overflow-x: hidden;
   }
 }
