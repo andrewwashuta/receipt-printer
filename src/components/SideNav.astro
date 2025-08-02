@@ -32,7 +32,7 @@ const {
       <nav>
           {showHomeLink ? (
             backNavigation ? (
-              <a href="#" class="home-link" onclick="history.back(); return false;">
+              <a href="#" class="home-link" onclick="document.documentElement.style.scrollBehavior = 'auto'; history.back(); setTimeout(() => { window.scrollTo(0, 0); document.documentElement.style.scrollBehavior = 'smooth'; }, 100); return false;">
                 <Icon name="jump-arrow" />
                 <span>Back</span>
               </a>
@@ -61,7 +61,7 @@ const {
               <ul>
                   {navItems.map(item => (
                     <li>
-                      <a href={`#${item.id}`} class="section-link" onclick="document.documentElement.style.scrollBehavior = 'smooth';">
+                      <a href={`#${item.id}`} class="section-link">
                         {item.label}
                       </a>
                     </li>
