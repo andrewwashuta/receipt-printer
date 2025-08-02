@@ -4,6 +4,10 @@ import cardExample from '../../assets/projects/meridian/images/card-example.png'
 import variables from '../../assets/projects/meridian/images/variables.png';
 import properties from '../../assets/projects/meridian/images/properties.png';
 import oldSystem from '../../assets/projects/meridian/images/old-system.png';
+import marketingConcept from '../../assets/projects/meridian/videos/8451-website-concept.mp4';
+import newSystem from '../../assets/projects/meridian/images/new-system.png';
+import loginConcept from '../../assets/projects/meridian/videos/login-concept.mp4';
+import filterConcept from '../../assets/projects/meridian/videos/filter-concept.mp4';
 
 export const meridianMedia = {
   hero: {
@@ -23,5 +27,17 @@ export const meridianMedia = {
   },
   oldSystem:{
     image: oldSystem,
+  },
+  marketingConcept: {
+    video: marketingConcept,
+  },
+  newSystem:{
+    image: newSystem,
+  },
+  loginConcept: {
+    video: loginConcept,
+  },
+  filterConcept: {
+    video: filterConcept,
   }
 } as const; 

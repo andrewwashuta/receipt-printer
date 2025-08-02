@@ -4,6 +4,7 @@ import Icon from '../../components/Icon.astro';
 import ImageFamily from '../../assets/index/images/family.jpg';
 import ImageBrochures from '../../assets/index/images/nationalparks.png';
 import ImageHip from '../../assets/index/images/hip.jpg';
+import ImageDisney from '../../assets/index/images/disney.jpeg';
 ---
 
 <section id="now">
@@ -12,12 +13,17 @@ import ImageHip from '../../assets/index/images/hip.jpg';
         <div class="now-item">
             <div class="item-label">                
                 <Icon name="chevron-right" color="var(--color-ink-subtle)" />
-                <p>Cherishing every moment with my growing <a class="modal-trigger" data-modal-id="family" tabindex="0">family</a>; my wife, Seneca, my son, Thor, and our new addition, a baby girl, due in late December</p>
+                <p>Cherishing every <a class="modal-trigger" data-modal-id="moment" tabindex="0">moment</a> with my growing <a class="modal-trigger" data-modal-id="family" tabindex="0">family</a>; my wife, Seneca, my son, Thor, and our new addition, a baby girl, due in late December</p>
             </div>
             <Modal 
             id="family"
             imageUrl={ImageFamily} 
             imageAlt="A photo depicting myself holding a baby onesie, next to my wife, Seneca, while she holds our son, Thor" 
+            />
+            <Modal 
+            id="moment"
+            imageUrl={ImageDisney} 
+            imageAlt="A photo of our family taken at Disney's California Adventure" 
             />
         </div>
         <div class="now-item">
