@@ -106,22 +106,14 @@ a {
   text-decoration-color: inherit;
   text-underline-offset: auto;
   text-underline-position: from-font;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
 
   &:hover {
     color: var(--color-accent-dark);
   }
 
-  // Only show focus styles when using keyboard navigation
-  &:focus-visible {
+  &:focus {
     color: var(--color-accent-dark);
     outline: none;
-  }
-
-  // Remove focus styles on mobile/touch devices
-  &:focus:not(:focus-visible) {
-    outline: none;
-    color: var(--color-ink);
   }
 }
 
