@@ -8,6 +8,13 @@ import marketingConcept from '../../assets/projects/meridian/videos/8451-website
 import newSystem from '../../assets/projects/meridian/images/new-system.png';
 import loginConcept from '../../assets/projects/meridian/videos/login-concept.mp4';
 import filterConcept from '../../assets/projects/meridian/videos/filter-concept.mp4';
+import filterFinal from '../../assets/projects/meridian/videos/filter-final.mp4';
+import bourbonSociety from '../../assets/projects/meridian/images/bourbon-society.png';
+import building from '../../assets/projects/meridian/images/8451-building.png';
+import insightsCertification from '../../assets/projects/meridian/images/insights-certification.png';
+import clearSpace from '../../assets/projects/meridian/images/clear-space.png';
+import productLogos from '../../assets/projects/meridian/images/product-logos.png';
+import cloud from '../../assets/projects/meridian/images/cloud.png';
 
 export const meridianMedia = {
   hero: {
@@ -39,5 +46,27 @@ export const meridianMedia = {
   },
   filterConcept: {
     video: filterConcept,
+  },
+  filterFinal: {
+    video: filterFinal,
+  },
+  bourbonSociety: {
+    image: bourbonSociety,
+  },
+  building: {
+    image: building,
+  },
+  insightsCertification: {
+    image: insightsCertification,
+  },
+  clearSpace: {
+    image: clearSpace,
+  },
+  productLogos: {
+    image: productLogos,
+  },
+  cloud: {
+    image: cloud,
   }
+  
 } as const; 

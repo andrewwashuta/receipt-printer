@@ -8,8 +8,8 @@ const navItems = [
   { id: 'overview', label: 'Overview' },
   { id: 'system-evolution', label: 'System Evolution' },
   { id: 'components', label: 'Components' },
-  { id: 'brand-identity', label: 'Brand & Identity' },
   { id: 'interaction', label: 'Interaction' },
+  { id: 'brand-identity', label: 'Brand & Identity' },
   { id: 'iconography', label: 'Iconography' },
   { id: 'documentation', label: 'Documentation' }
 ];
@@ -44,6 +44,10 @@ const footnotes = [
   {
     id: "figma-hours-saved",
     text: "Measured from July 2024 to July 2025. Based on internal design system analytics and time-savings methodology, our design system adds 10.5 designers worth of capacity to the team, assuming a net savings of 1.5 minutes per insert."
+  },
+  {
+    id: "bourbon-society",
+    text: "I seem to have temporarily lost the image of the bottle, but I'll have it soon!"
   }
 ];
 ---
@@ -176,8 +180,77 @@ hero={true}
   </div>
 </div>
 <p>
-  Having saved 10.5 designers worth of time from July 2024 to July 2025 is quite significant. The system is still heavily used today, and will continue to live on. 
-  It's a testament to the power and importance of design systems, regardless of the maturity level of the organization.
+  Having saved 10.5 designers' worth of time from July 2024 to July 2025 is quite significant. The system is still heavily used today, and will continue to live on as a 
+  testament to the power and importance of design systems. 
+</p>
+  </section>
+  <section id="interaction">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Interaction</span></h2>
+    </div>
+    <p>Thoughtful motion is one of my core tenets. I care deeply about interaction design, however, I'm not a fan of motion design for motion's sake. There are sacrifices you make when you
+      introduce motion—especially when it negatively impacts accessibility or load times.
+      </p> 
+      <ProjectMedia
+      src={meridianMedia.marketingConcept.video}
+      alt="Showcasing multiple UI elements in Figma, all built with the Meridian Design System"
+      showCaption={true}
+      mediaType="video"
+    >
+      <span>
+        Marketing site concept, featuring a custom particle system that morphs data points into the 84.51° degree symbol
+      </span>
+  </ProjectMedia>
+      <p>One of my favorite examples of thoughtful motion was when marketing tapped on Rich and I to help them 
+      with some concepts for our new marketing site. We put our heads together and came up with the above, perfectly illustrating how messy data is connected and comes together to tell a story. The culmination of this concept
+      was an After Effects build by yours truly, leveraging my <a href="https://www.rowbyte.com/plexus">favorite particle system</a>, that helped me morph fluid data points into 84.51°'s degree symbol.
+    </p>
+    <ProjectMedia
+    src={meridianMedia.loginConcept.video}
+    alt="Interaction concept for the new login experience for 84.51° platforms"
+    showCaption={true}
+    mediaType="video"
+  >
+    <span>
+      A fluid interaction concept for the new login experience of 84.51° platforms. This never came to fruition, but was a fun exercise
+    </span>
+  </ProjectMedia>
+<p>
+  In another instance, I was tasked with enhancing our outdated login experience for 84.51° platforms. I looked to iOS and some of the interaction patterns there, especially how headings and text are often reused
+  and animated between screens. 
+</p>
+<p>
+  This is another case where I was able to leverage a combination of Figma's prototyping capabilities and Meridian's underlying design system with some slight modifications, to help tell the story.
+  I am always cognizant of how a human might interact with an interface, so I oriented the motion entirely around the static location of the primary actions. While the wrapper height transitions from screen-to-screen,
+  the actions remain mostly stationary.
+</p>
+<ProjectMedia
+src={meridianMedia.filterConcept.video}
+alt="Filter concept for tables within 84.51° platforms"
+showCaption={true}
+mediaType="video"
+>
+<span>
+  An example of a filter motion concept that never came to fruition. It prioritizes aesthetics over functionality—not what we want when filtering through tons of data
+</span>
+</ProjectMedia>
+<ProjectMedia
+src={meridianMedia.filterFinal.video}
+alt="Final filtering approach for tables within 84.51° platforms"
+showCaption={true}
+mediaType="video"
+>
+<span>
+The final filters, implemented in the Kroger Ad Platform, with a much more functional approach to the experience, allowing users to narrow down from 250k+ campaigns in a matter of seconds
+</span>
+</ProjectMedia>
+<p>I'm glad the initial filter concept never came to fruition, for a couple reasons. When filtering content in tables, the user wants the table to load near instantaneously, but also expects the filters
+to respond and function much the same. By animating and sliding in the selected values, it heavily increases the transition duration, as well as the width of filters. Imagine a world where the
+table returns results faster than the filter finishes animating.
+</p>
+<p>
+Where we landed was a much more instantaneous approach, with the filters quickly updating the selected content, and the table returning as fast as it possibly can. In the example above, the table 
+is effectively narrowing down 250k+ campaigns into several thousand, in only a couple seconds.
 </p>
   </section>
 
@@ -186,64 +259,64 @@ hero={true}
       <h2 class="section-heading"><span>Brand & Identity</span></h2>
     </div>
     <p>
-      84.51° doesn't really have any brand designers, per se. A lot of times product identities, iconography, and even marketing materials would fall into the lap of 
+      84.51° doesn't really have brand designers, at least, not in the traditional sense. A lot of times product identities, iconography, and even marketing materials would fall into the lap of 
       our Meridian team. Having a background in branding originally, I very much enjoyed leaning in and lending my expertise whenever the opportunity presented itself.
     </p>
-    </section>
-
-    <section id="interaction">
-      <div class="section-header">
-        <h2 class="section-heading"><span>Interaction</span></h2>
-      </div>
-      <p>Thoughtful motion is one of my core tenets. I care deeply about interaction design, however, I'm not a fan of motion for motion's sake. There are sacrifices you make when you
-        introduce motion—especially when it negatively impacts accessibility or load times.
-        </p> 
-        <ProjectMedia
-        src={meridianMedia.marketingConcept.video}
-        alt="Showcasing multiple UI elements in Figma, all built with the Meridian Design System"
-        showCaption={true}
-        mediaType="video"
-      >
-        <span>
-          Marketing site concept, featuring a custom particle system that morphs data points into the 84.51° degree symbol
-        </span>
-    </ProjectMedia>
-        <p>One of my favorite examples of thoughtful motion was when marketing tapped on Rich and I to help them 
-        with some concepts for our new marketing site. We put our heads together and came up with the above, perfectly illustrating how messy data is connected and comes together to tell a story. The culmination of this concept
-        was an After Effects build by yours truly, leveraging my <a href="https://www.rowbyte.com/plexus">favorite particle system</a>, that helped me morph fluid data points into 84.51°'s degree symbol.
-      </p>
-      <ProjectMedia
-      src={meridianMedia.loginConcept.video}
-      alt="Interaction concept for the new login experience for 84.51° platforms"
-      showCaption={true}
-      mediaType="video"
-    >
-      <span>
-        A fluid interaction concept for the new login experience of 84.51° platforms. This never came to fruition, but was a fun exercise
-      </span>
-    </ProjectMedia>
-  <p>
-    In another instance, I was tasked with enhancing our outdated login experience for 84.51° platforms. I looked to iOS and some of the interaction patterns there, especially how headings and text are often reused
-    and animated between screens. 
-  </p>
-  <p>
-    This is another case where I was able to leverage a combination of Figma's prototyping capabilities and Meridian's underlying design system with some slight modifications, to help tell the story.
-    I am always cognizant of how a human might interact with an interface, so I oriented the motion entirely around the static location of the primary actions. While the wrapper height transitions from screen-to-screen,
-    the actions remain mostly stationary.
-  </p>
+    <ProjectMedia
+    src={meridianMedia.productLogos.image}
+    alt="A screenshot of the 84.51° product logos, including Stratum, Meridian, and more"
+    showCaption={true}
+  >
+    <span>
+      A collection of 84.51° product logos I designed
+    </span>
+  </ProjectMedia>
   <ProjectMedia
-  src={meridianMedia.filterConcept.video}
-  alt="Filter concept for tables within 84.51° platforms"
+  src={meridianMedia.cloud.image}
+  alt="A screenshot of the 84.51° cloud logo, featuring the 84.51° building"
   showCaption={true}
-  mediaType="video"
 >
   <span>
-    An example of motion that prioritizes aesthetics over functionality.
+    A breakdown of the Collaborative Cloud mark
   </span>
 </ProjectMedia>
-<p>I'm glad the preceding filter concept never came to fruition, for a couple reasons. When filtering content in tables, the user wants the table to load near instantaneously, but also expects the filters
-  to respond and function much the same. By animating and sliding in the selected values, it heavily increases the transition duration, as well as thewidth of filters. Imagine a world where the
-  table returns results faster than the filter finishes animating.
+  <p>
+    I've designed roughly 80% of the marks for 84.51° products over eight years from 2017 to 2025. Though there have been a few that have been "sketched" by others, I always ensure consistency and prepare final files
+    for the organization to use, whether that context is in product, marketing, or some internal use. I've partnered a lot with marketing over the years to ensure cohesiveness and consistency between the marks.
+    A lot of this work is simply side-of-desk, but it's something I take pride in and it's not lost on me the impact it has across the organization.
+  </p>
+    <ProjectMedia
+    src={meridianMedia.building.image}
+    alt="A screenshot of the 84.51° building, referenced in the Bourbon Society badge"
+    showCaption={false}
+  >
+    <span>
+      The 84.51° building, referenced in the Bourbon Society badge
+    </span>
+  </ProjectMedia>
+  <ProjectMedia
+  src={meridianMedia.bourbonSociety.image}
+  alt="The 84.51° Bourbon Society badge, that reads 84.51° Bourbon Society, Barrel Select, Purveyors of Fine Whiskey"
+  showCaption={true}
+>
+  <span>
+    The Bourbon Society badge, reminiscent of old military ranks, pays homage to the 84.51° building and the sharp edges of the building's facade<FootnoteRef id="bourbon-society" />
+  </span>
+</ProjectMedia>
+<p>
+  The 84.51° Bourbon Society (yes, that's a thing), just one of many self-organized employee groups, was doing a Barrel pick with a local distillery. They tapped on me to create what would ultimately be glass-etched into 
+  the bottles. I crafted a badge that paid homage to our beautiful Cincinnati headquarters, referencing the distinct, sharp edges of the building.
+</p>
+<ProjectMedia
+src={meridianMedia.insightsCertification.image}
+alt="A screenshot of the insights certification, featuring the 84.51° building"
+showCaption={false}
+>
+</ProjectMedia>
+<p>
+  On another occasion, I was tasked with creating a badge for an insights certification. That quickly snowballed into an ask for the certificate itself, which I designed in collaboration
+  with marketing. I care deeply about the details, as I spend time finessing type, hierarchy and structure. In this case, I rendered the certificate in 3D, with three different levels that effectively stack
+  upon achievement. This was intended to be a LinkedIn-style badge that could be proudly displayed.
 </p>
     </section>
 </ProjectLayout>
