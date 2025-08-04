@@ -15,6 +15,8 @@ import insightsCertification from '../../assets/projects/meridian/images/insight
 import clearSpace from '../../assets/projects/meridian/images/clear-space.png';
 import productLogos from '../../assets/projects/meridian/images/product-logos.png';
 import cloud from '../../assets/projects/meridian/images/cloud.png';
+import myIconography from '../../assets/projects/meridian/images/my-iconography.png';
+import iconists from '../../assets/projects/meridian/images/iconists.png';
 
 export const meridianMedia = {
   hero: {
@@ -67,6 +69,12 @@ export const meridianMedia = {
   },
   cloud: {
     image: cloud,
+  },
+  myIconography: {
+    image: myIconography,
+  },
+  iconists: {
+    image: iconists,
   }
   
 } as const; 
