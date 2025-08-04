@@ -22,7 +22,6 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
                 <Image 
                     src={imageUrl} 
                     alt={imageAlt || ''} 
-                    quality={100}
                     class="modal-image"
                     loading="eager"
                     {...(width ? { width } : {})}
