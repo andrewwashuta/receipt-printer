@@ -7,11 +7,11 @@ import { meridianMedia } from "../media/meridian";
 const navItems = [
   { id: 'overview', label: 'Overview' },
   { id: 'system-evolution', label: 'System Evolution' },
-  { id: 'components', label: 'Components' },
+ /* { id: 'components', label: 'Components' }, */
   { id: 'interaction', label: 'Interaction' },
   { id: 'brand-identity', label: 'Brand & Identity' },
-  { id: 'iconography', label: 'Iconography' },
-  { id: 'documentation', label: 'Documentation' }
+  { id: 'iconography', label: 'Iconography' }, 
+  /* { id: 'documentation', label: 'Documentation' } */
 ];
 
 const metadata = [
@@ -48,6 +48,10 @@ const footnotes = [
   {
     id: "bourbon-society",
     text: "I seem to have temporarily lost the image of the bottle, but I'll have it soon!"
+  },
+  {
+    id: "iconists",
+    text: "Martin David and Andreas Storm. Our claim to fame at 84.51° was that we hired them before they famously crafted Twitter's (now X) iconographic system. Pretty cool, huh?"
   }
 ];
 ---
@@ -318,5 +322,19 @@ showCaption={false}
   with marketing. I care deeply about the details, as I spend time finessing type, hierarchy and structure. In this case, I rendered the certificate in 3D, with three different levels that effectively stack
   upon achievement.
 </p>
+    </section>
+    <section id="iconography">
+      <div class="section-header">
+        <h2 class="section-heading"><span>Iconography</span></h2>
+      </div>
+      <p>
+        Our first set of iconography really wasn't much of a set at all. It was a combination of icons sourced from all over, ripe with inconsistency.
+         We knew we needed to call on some experts, so we paired up with the <a href="https://iconists.co/">Iconists</a><FootnoteRef id="iconists" />, 
+         to help us craft a set of icons that would be used across our products.
+      </p>
+      <p>
+        We worked closely with Martin & Andreas to build a grid and the initial set of 60 or so icons, ultimately deciding on 1.5px stroke widths for 
+        better visibility. Since working with them around 2020, I've added about 60+ more to the system, overseeing consistency and creation on the same, exact grid.
+      </p>
     </section>
 </ProjectLayout>
