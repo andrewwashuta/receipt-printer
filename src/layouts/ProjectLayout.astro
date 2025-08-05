@@ -103,6 +103,7 @@ const readingTime = calculateReadingTime(content);
 
   .project-main {
     margin-top: calc(var(--size-xxl) + var(--font-size-base) + var(--size-lg));
+    padding: 0 !important;
 
     @media (max-width: 1000px) {
         margin-top: var(--size-xxl);
@@ -113,6 +114,18 @@ const readingTime = calculateReadingTime(content);
     display: flex;
     flex-direction: column;
     gap: var(--size-sm);
+
+    h1 {
+      padding: 0 var(--size-lg);
+    }
+
+    p {
+      padding: 0 var(--size-lg);
+    }
+
+    .project-metadata {
+      padding: 0 var(--size-lg);
+    }
 
     .title-container {
       display: flex;
@@ -162,9 +175,20 @@ const readingTime = calculateReadingTime(content);
     max-width: 100%;
     margin: 0 auto;
 
-    p {
+    :global(p) {
       margin-top: 0;
       margin-bottom: var(--size-xs);
+      padding: 0 var(--size-lg) !important;
+      text-indent: var(--size-md);
+    }
+
+    :global(p:first-of-type) {
+      text-indent: 0;
+    }
+
+    // Also target paragraphs within sections
+    :global(section p) {
+      padding: 0 var(--size-lg) !important;
     }
 
     p + p {
@@ -189,6 +213,7 @@ const readingTime = calculateReadingTime(content);
       align-items: baseline;
       gap: var(--size-xxxs);
       margin-bottom: var(--size-md);
+      padding: 0 var(--size-lg);
     }
 
     :global(.section-heading) {
@@ -201,10 +226,24 @@ const readingTime = calculateReadingTime(content);
         display: none;
       }
     }
+
+    .metrics-grid {
+      padding: 0 var(--size-lg);
+    }
   }
 
   .project-content section {
     display: block !important;
+  }
+
+  // Project media captions
+  :global(.project-media .media-caption) {
+    padding: 0 var(--size-lg);
+  }
+
+  // Footnotes
+  :global(.footnotes) {
+    padding: 0 var(--size-lg);
   }
 
 </style>
