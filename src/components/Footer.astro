@@ -3,6 +3,10 @@ import '../styles/global.scss'
 ---
 
 <footer class="footer">
+  <div class="social-links">
+    <a href="https://x.com/awashuta" target="_blank" rel="noopener noreferrer">X</a>
+    <a href="mailto:hello@andrew.cv">Email</a>
+  </div>
   <p>
     <a href="/colophon">Colophon</a><br />
     © 2025
@@ -26,5 +30,11 @@ import '../styles/global.scss'
       max-width: 700px;
       width: 100%;
     }
+
+    .social-links {
+      margin-bottom: var(--size-sm);
+      display: flex;
+      flex-direction: column;
+        }
   }
 </style> 
