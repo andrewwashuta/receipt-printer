@@ -23,11 +23,17 @@ const numberedFootnotes = getFootnotesInOrder(footnotes);
 )}
 
 <style lang="scss">
+  @use '../styles/global.scss' as *;
+
 .project-footnotes {
   width: 100%;
-  padding-top: var(--size-xl);
+  padding: var(--size-xl) var(--size-lg) 0;
   border-top: 1px solid var(--color-edge-subtle);
   font-size: var(--font-size-sm);
+
+  @include mobile {
+    padding: var(--size-xl) 0 0;
+  }
 
   ol {
     list-style: none;

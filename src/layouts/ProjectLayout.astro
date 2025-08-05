@@ -4,6 +4,7 @@ import SideNav from '../components/SideNav.astro';
 import { calculateReadingTime } from '../utils/readingTime';
 import { resetFootnotes } from '../utils/footnotes';
 import Footnotes from '../components/Footnotes.astro';
+import '../styles/global.scss';
 
 interface Props {
   title: string;
@@ -100,12 +101,15 @@ const readingTime = calculateReadingTime(content);
 </script>
 
 <style lang="scss">
+@use '../styles/global.scss' as *;
 
   .project-main {
     margin-top: calc(var(--size-xxl) + var(--font-size-base) + var(--size-lg));
+    max-width: calc(700px + (var(--size-lg) * 2));
 
-    @media (max-width: 1000px) {
+    @include mobile {
         margin-top: var(--size-xxl);
+        gap: var(--size-xxxl);
     }
   }
 
@@ -113,6 +117,11 @@ const readingTime = calculateReadingTime(content);
     display: flex;
     flex-direction: column;
     gap: var(--size-sm);
+    padding: 0 var(--size-lg);
+
+    @include mobile {
+      padding: 0;
+    }
 
     .title-container {
       display: flex;
@@ -142,7 +151,7 @@ const readingTime = calculateReadingTime(content);
       gap: var(--size-xl);
       margin-top: var(--size-md);
 
-      @media (max-width: 1000px) {
+      @include mobile {
         grid-template-columns: repeat(2, 1fr);
         row-gap: var(--size-sm);
     }
@@ -162,13 +171,8 @@ const readingTime = calculateReadingTime(content);
     max-width: 100%;
     margin: 0 auto;
 
-    p {
-      margin-top: 0;
-      margin-bottom: var(--size-xs);
-    }
-
-    p + p {
-      margin-top: var(--size-xxs);
+    @include mobile {
+      gap: var(--size-xxxl);
     }
 
     img,
@@ -182,15 +186,6 @@ const readingTime = calculateReadingTime(content);
       scroll-margin-top: var(--size-xxl);
     }
 
-    :global(.section-header) {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: baseline;
-      gap: var(--size-xxxs);
-      margin-bottom: var(--size-md);
-    }
-
     :global(.section-heading) {
       display: block;
       scroll-margin-top: var(--size-xxl);
@@ -201,10 +196,58 @@ const readingTime = calculateReadingTime(content);
         display: none;
       }
     }
+
+    :global(p){
+      padding: 0 var(--size-lg);
+
+      @include mobile {
+        padding: 0;
+    }
+    }
+
+    :global(.section-header) {
+      padding: 0 var(--size-lg);
+      
+      @include mobile {
+        padding: 0;
+    }
+    }
   }
 
   .project-content section {
     display: block !important;
   }
+
+// Project-specific utility classes
+:global(.metrics-grid) {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--size-md);
+  margin: var(--size-lg) 0;
+  width: 100%;
+  padding: 0 var(--size-lg);
+
+  @include mobile {
+    padding: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+:global(.metric) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--size-xxs);
+}
+
+:global(.metric-value) {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-ink-primary);
+  line-height: 1.2;
+}
 
 </style>
