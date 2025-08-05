@@ -1,4 +1,5 @@
 ---
+import '../styles/global.scss'
 ---
 
 <footer class="footer">
@@ -8,7 +9,9 @@
   </p>
 </footer>
 
-<style>
+<style lang="scss">
+@use '../styles/global.scss' as *;
+
   .footer {
     font-size: var(--font-size-sm);
     color: var(--color-text-subtle);
@@ -16,7 +19,7 @@
     bottom: var(--size-xxl);
     left: var(--size-xxl);
     
-    @media (max-width: 1000px) {
+    @include mobile {
       position: static;
       padding: var(--size-lg) var(--size-lg);
       margin: var(--size-xxl) auto 0;

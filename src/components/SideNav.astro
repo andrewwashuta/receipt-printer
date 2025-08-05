@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import wLogo from '../assets/w.svg'
 import wLogoHover from '../assets/w-hover.svg'
 import Icon from './Icon.astro'
+import '../styles/global.scss'
 
 interface Props {
   variant?: 'sidebar' | 'mobile';
@@ -98,14 +99,16 @@ const {
   </nav>
 )}
 
-<style>
+<style lang="scss">
+@use '../styles/global.scss' as *;
+
  .side-nav {
   position: fixed;
   top: var(--size-xxl);
   left: var(--size-xxl);
   z-index: 100;
   
-  @media (max-width: 1000px) {
+  @include mobile {
     display: none;
   }
 
@@ -186,10 +189,10 @@ const {
 .mobile-nav {
     display: none;
     
-    @media (max-width: 1000px) {
+    @include mobile {
         display: block;
         font-weight: var(--font-weight-medium);
-        margin-bottom: calc(-1 * var(--size-lg));
+        margin-bottom: calc(-1 * var(--size-sm));
     }
 
     .mobile-home-link {

@@ -1,5 +1,12 @@
 @use 'variables' as *;
 
+// Media Query Mixins
+@mixin mobile {
+  @media (max-width: 1120px) {
+    @content;
+  }
+}
+
 // 1. Reset
 *, *::before, *::after {
   box-sizing: border-box;
@@ -57,6 +64,7 @@ body {
   }
 }
 
+// 2. Typography
 h1, h2, h3, h4 {
   line-height: inherit;
   font-size: inherit;
@@ -70,10 +78,6 @@ h1, h2 {
 
 h3 {
   color: var(--color-ink-primary);
-}
-
-strong {
-  font-weight: var(--font-weight-medium);
 }
 
 h2 {
@@ -94,6 +98,10 @@ h2 {
     background-color: var(--color-edge-subtle);
     flex: 1;
   }
+}
+
+strong {
+  font-weight: var(--font-weight-medium);
 }
 
 a {
@@ -129,50 +137,7 @@ p:first-of-type {
   text-indent: 0;
 }
 
-// 4. Utility Classes
-.label {
-  font-size: var(--font-size-sm);
-  color: var(--color-ink-subtle);
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--size-md);
-  margin: var(--size-lg) 0;
-  width: 100%;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.metric {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--size-xxs);
-}
-
-.metric-value {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-normal);
-  color: var(--color-ink-primary);
-  line-height: 1.2;
-}
-
-.section-header {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: baseline;
-  gap: var(--size-xxs);
-  margin-bottom: var(--size-lg);
-}
-
-
-
-// 5. Layout Components
+// 3. Layout Components
 main {
   width: 100%;
   max-width: 700px;
@@ -187,7 +152,6 @@ main {
   padding: 0 var(--size-lg);
 }
 
-// 6. Section Styles
 section {
   scroll-margin-top: var(--size-xxl);
   width: 100%;
@@ -212,6 +176,15 @@ section {
   }
 }
 
+.section-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: var(--size-xxxs);
+  margin-bottom: var(--size-md);
+}
+
 .section-grid {
   display: grid;
   grid-template-columns: [start] repeat(4, 1fr) [end];
@@ -224,6 +197,15 @@ section {
   }
 }
 
+// 4. Utility Classes
+.label {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-subtle);
+}
+
+
+
+// 5. Animations
 @keyframes highlight {
   0% {
     opacity: 0;
@@ -254,6 +236,7 @@ section {
   }
 }
 
+// 6. Selection Styles
 ::selection {
     background-color: var(--color-accent-light);
     color: var(--color-accent-dark);
