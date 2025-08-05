@@ -62,9 +62,9 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
     mediaType={mediaType}
   />
   {showCaption && (
-    <div class="media-caption">
+    <figcaption class="media-caption">
       <slot />
-    </div>
+    </figcaption>
   )}
 </div>
 

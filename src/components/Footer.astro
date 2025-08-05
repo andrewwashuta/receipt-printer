@@ -22,6 +22,9 @@ import '../styles/global.scss'
     position: fixed;
     bottom: var(--size-xxl);
     left: var(--size-xxl);
+    z-index: 10;
+    transform: translateZ(0); /* Force hardware acceleration */
+    will-change: transform; /* Optimize for animations */
     
     @include mobile {
       position: static;
@@ -29,12 +32,14 @@ import '../styles/global.scss'
       margin: var(--size-xxl) auto 0;
       max-width: 700px;
       width: 100%;
+      transform: none;
+      will-change: auto;
     }
 
     .social-links {
       margin-bottom: var(--size-sm);
       display: flex;
       flex-direction: column;
-        }
+    }
   }
 </style> 

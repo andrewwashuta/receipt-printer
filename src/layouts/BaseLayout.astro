@@ -17,6 +17,11 @@ const pageTitle = title ? `${title} | ${siteName}` : siteName;
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="description" content={title ? `${title} | ${siteName}` : siteName} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Font preloading to prevent FOUT -->
+    <link rel="preload" href="/fonts/mnkybananagrotesk-regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/mnkybananagrotesk-medium.woff2" as="font" type="font/woff2" crossorigin>
+    
     <title>{pageTitle}</title>
     <ClientRouter />
   </head>
