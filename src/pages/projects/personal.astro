@@ -6,7 +6,8 @@ import { personalMedia } from "../media/personal";
 
 const navItems = [
   { id: 'holiday', label: 'Holiday Card' },
-  { id: 'star-wars', label: 'Star Wars' }
+  { id: 'star-wars', label: 'Star Wars' },
+  { id: 'valentines', label: 'Valentine\'s Day' },
 ];
 
 const footnotes = [
@@ -25,6 +26,10 @@ const footnotes = [
   {
     id: "nixie",
     text: "Vintage displays that contain neon gas and metal cathodes shaped like numbers. When electricity is applied to the cathode, it glows with that characteristic orange-amber neon light."
+  },
+  {
+    id: "dad-joke",
+    text: "I'm sorry, I had to."
   }
 ];
 ---
@@ -122,7 +127,7 @@ const footnotes = [
     </ProjectMedia>
     <ProjectMedia
       src={personalMedia.holiday2024.image}
-      alt="2024 holiday card design featuring a purple and pink sky with a baby angel in the foreground"
+      alt="2024 holiday card design featuring a purple and pink sky with an angel in the foreground"
       mediaType="image"
       showCaption={true}
     >
@@ -142,10 +147,11 @@ const footnotes = [
     </span>
   </ProjectMedia>
   <p>
-    I'm honestly super proud of these—they're very much a labor of love, and a collaborative effort with my wife, who I have affectionately dubbed the <strong>art director</strong>.
+    I'm honestly super proud of these—they're very much a labor of love and a collaborative effort with my wife, who I have affectionately dubbed my <strong>art director</strong>.
     Here's to another year and another holiday card on the horizon!
   </p>
   </section>
+ 
   <section id="Star Wars">
     <div class="section-header">
       <h2 class="section-heading"><span>Star Wars</span></h2>
@@ -207,13 +213,64 @@ const footnotes = [
         </span>
       </ProjectMedia>
 <p>
-  This is a perfect example of my versatility as a designer. The backdrop of the Death Star, tie fighters, and space, were all generated in 
-  After Effects. I leveraged some 3D object files as a base, but heavily translated them into a particle system. The result is a tesselated Death Star, 
+  This is a perfect example of my versatility as a designer. The backdrop of the Death Star, tie fighters, and space, were all rendered in 
+  After Effects. I leveraged some object files as a base, but heavily translated them into a particle system. The result is a tessellated Death Star, 
   fully capable of being animated three-dimensionally, with custom UI spatially overlaid. Remember that nixie tube font? I put that to good use, as well.
 </p>
 <p>
   This is truly the type of stuff that fuels me creatively as a designer. I'm not sure if I'll ever get the opportunity to work on UI for a Star Wars film, 
   but in the words of Han Solo, “Never tell me the odds.”
 </p>
+<ProjectMedia
+  src={personalMedia.mandoShirt.image}
+  alt="A t-shirt with a puffy green half Mandalorian helmet on the front, with the words 'This is the way', and a mythosaur on the upper back"
+  mediaType="image"
+  showCaption={true}
+>
+  <span>
+    Puffy Cricut Mandalorian shirt for Thor, complete with a mythosaur on the upper back
+  </span>
+</ProjectMedia>
+<p>
+  As a parent, I genuinely love being able to create for my son. After all, he's a huge fan of Young Jedi Adventures. 
+  This was right around May 2025, and the night before, my wife had picked up some puffy Cricut material. I quickly spun up Illustrator 
+  to whip up this concept, keeping in mind my color restrictions. We (quietly) got it Cricut-ed, and had a happy little guy the next morning before Star Wars Day.
+</p>
+<ProjectMedia
+  src={personalMedia.thorMando.image}
+  alt="A photo of my son, Thor, in his one-of-one puffy Mandalorian shirt"
+  mediaType="image"
+  showCaption={true}
+>
+  <span>
+    Thor sporting his one-of-one, puffy Mandalorian shirt—he was thrilled
+  </span>
+</ProjectMedia>
+  </section>
+
+  <section id="valentines">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Valentine's Day</span></h2>
+      <small class="label">2024</small>
+    </div>
+    <ProjectMedia
+      src={personalMedia.valentine2024.image}
+      alt="A Valentine's Day card design featuring a heart with a purple and pink sky"
+      mediaType="image"
+      showCaption={true}
+    >
+      <span>
+        The full set of Valentine's Day cards for Thor to hand out to his classmates
+      </span>
+    </ProjectMedia>
+    <p>
+      Seneca and I make a great team on these types of projects. We'll collaborate early on the concept, 
+      then we balance activities of cutting, assembling, and in this case, affixing the little dino poppers.
+    </p>
+    <p>
+      It's projects like these that make me realize how far I've come as a designer—with the ability to stretch
+      across various mediums, and like much of my product work, the ability to take a dino-licious<FootnoteRef id="dad-joke" /> concept and bring it to life.
+      Seeing Thor's face light up when he got to hand these out to his classmates was by far the best part.
+    </p>
   </section>
 </ProjectLayout> 
