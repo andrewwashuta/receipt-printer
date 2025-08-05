@@ -3,33 +3,74 @@ const initializeModals = () => {
   const modalBackdrops = document.querySelectorAll('.modal-backdrop');
   const closeButtons = document.querySelectorAll('.modal-close');
 
+  let currentModalIndex = -1;
+
   const closeModal = (modal) => {
     modal.classList.remove('visible');
     document.body.style.overflow = 'auto';
     modal.style.display = 'none';
+    currentModalIndex = -1;
+  };
+
+  const openModal = (modalId) => {
+    const modal = document.querySelector(`.modal[data-modal-id="${modalId}"]`);
+    if (modal) {
+      modal.style.display = 'block';
+      modal.offsetHeight;
+      modal.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+      
+      const trigger = document.querySelector(`.modal-trigger[data-modal-id="${modalId}"]`);
+      if (trigger) {
+        currentModalIndex = Array.from(triggers).indexOf(trigger);
+      }
+    }
+  };
+
+  const navigateToModal = (direction) => {
+    if (currentModalIndex === -1) return;
+    
+    let newIndex;
+    if (direction === 'next') {
+      if (currentModalIndex >= triggers.length - 1) {
+        const currentModal = document.querySelector('.modal.visible');
+        if (currentModal) closeModal(currentModal);
+        return;
+      }
+      newIndex = currentModalIndex + 1;
+    } else {
+      if (currentModalIndex <= 0) {
+        const currentModal = document.querySelector('.modal.visible');
+        if (currentModal) closeModal(currentModal);
+        return;
+      }
+      newIndex = currentModalIndex - 1;
+    }
+    
+    const newTrigger = triggers[newIndex];
+    if (newTrigger) {
+      const newModalId = newTrigger.getAttribute('data-modal-id');
+      const currentModal = document.querySelector('.modal.visible');
+      if (currentModal) {
+        closeModal(currentModal);
+      }
+      openModal(newModalId);
+    }
   };
 
   triggers.forEach(trigger => {
-    const openModal = (e) => {
+    const handleOpenModal = (e) => {
       e.preventDefault();
       const modalId = trigger.getAttribute('data-modal-id');
-      const modal = document.querySelector(`.modal[data-modal-id="${modalId}"]`);
-      if (modal) {
-        modal.style.display = 'block';
-        modal.offsetHeight;
-        modal.classList.add('visible');
-        document.body.style.overflow = 'hidden';
-      }
+      openModal(modalId);
     };
 
-    // Handle click events
-    trigger.addEventListener('click', openModal);
+    trigger.addEventListener('click', handleOpenModal);
     
-    // Handle keyboard events (Enter and Space keys)
     trigger.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        openModal(e);
+        handleOpenModal(e);
       }
     });
   });
@@ -44,9 +85,14 @@ const initializeModals = () => {
     });
   });
 
-  // Add click handler for modal container
   document.querySelectorAll('.modal-container').forEach(container => {
     container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-image')) {
+        const modal = container.closest('.modal');
+        if (modal) {
+          closeModal(modal);
+        }
+      }
       e.stopPropagation();
     });
   });
@@ -62,10 +108,13 @@ const initializeModals = () => {
     if (e.key === 'Escape') {
       const visibleModal = document.querySelector('.modal.visible');
       if (visibleModal) closeModal(visibleModal);
+    } else if (e.key === 'ArrowLeft') {
+      navigateToModal('prev');
+    } else if (e.key === 'ArrowRight') {
+      navigateToModal('next');
     }
   });
 };
 
-// Initialize on both DOMContentLoaded and astro:page-load
 document.addEventListener('DOMContentLoaded', initializeModals);
 document.addEventListener('astro:page-load', initializeModals); 
