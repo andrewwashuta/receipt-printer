@@ -150,6 +150,10 @@ main {
   gap: var(--size-xxxxl);
   scroll-behavior: smooth;
   padding: 0 var(--size-lg);
+
+  @include mobile {
+    gap: var(--size-xxxl);
+  }
 }
 
 section {
