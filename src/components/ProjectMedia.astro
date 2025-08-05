@@ -118,4 +118,9 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 .project-media.hero-media {
   margin: 0;
 }
+
+/* Remove bottom margin for last ProjectMedia in a section */
+:global(section .project-media:last-child) {
+  margin-bottom: 0 !important;
+}
 </style> 
