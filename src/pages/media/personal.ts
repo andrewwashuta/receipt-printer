@@ -11,7 +11,7 @@ import stag from '../../assets/projects/personal/images/stag.png';
 import electrobinoculars from '../../assets/projects/personal/images/hoth-macrobinoculars.png';
 import flyby from '../../assets/projects/personal/images/star-wars-flyby.png';
 import nixie from '../../assets/projects/personal/images/nixie-numerals.png';
-import thorMando from '../../assets/projects/personal/images/thor-mando.jpg';
+import thorMando from '../../assets/projects/personal/images/thor-mando.png';
 import mandoShirt from '../../assets/projects/personal/images/mando-shirt.png';
 import valentine2024 from '../../assets/projects/personal/images/valentines-2024.png';
 
