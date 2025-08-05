@@ -117,12 +117,12 @@ a {
   }
 }
 
-p + p {
-  margin-top: var(--size-sm);
-}
-
 p {
   text-indent: var(--size-md);
+}
+
+p + p {
+  margin-top: var(--size-sm);
 }
 
 p:first-of-type {
