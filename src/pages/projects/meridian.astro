@@ -9,8 +9,8 @@ const navItems = [
   { id: 'system-evolution', label: 'System Evolution' },
  /* { id: 'components', label: 'Components' }, */
   { id: 'interaction', label: 'Interaction' },
-  { id: 'brand-identity', label: 'Brand & Identity' },
   { id: 'iconography', label: 'Iconography' }, 
+  { id: 'brand-identity', label: 'Brand & Identity' },
   /* { id: 'documentation', label: 'Documentation' } */
 ];
 
@@ -65,7 +65,7 @@ const footnotes = [
 >
 <ProjectMedia
 src={meridianMedia.hero.video}
-alt="Proof-of-concept design for a dashboard with a text-based AI command prompt"
+alt="A walkthrough of the Meridian Design System documentation site"
 mediaType="video"
 showCaption={false}
 hero={true}
@@ -257,7 +257,38 @@ Where we landed was a much more instantaneous approach, with the filters quickly
 is effectively narrowing down 250k+ campaigns into several thousand, in only a couple seconds.
 </p>
   </section>
-
+  <section id="iconography">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Iconography</span></h2>
+    </div>
+    <p>
+      Our first set of iconography really wasn't much of a set at all. It was a combination of icons sourced from all over, ripe with inconsistency.
+       We knew we needed to call on some experts, so we paired up with the <a href="https://iconists.co/">Iconists</a><FootnoteRef id="iconists" />, 
+       to help us craft a set of icons that would be used across our products.
+    </p>
+    <ProjectMedia
+    src={meridianMedia.iconists.image}
+    alt="A screenshot of the Iconists' grid, featuring the 84.51° building"
+    showCaption={true}
+  >
+    <span>
+      A sampling of the initial set of icons the Iconists crafted for us
+    </span>
+  </ProjectMedia>
+    <p>
+      We worked closely with Martin & Andreas to build a grid and the initial set of 60 or so icons, ultimately deciding on 1.5px stroke widths for 
+      better visibility. Since working with them in 2020, I've added about 60+ additional icons to the system, overseeing consistency and creation on the original grid.
+    </p>
+    <ProjectMedia
+    src={meridianMedia.myIconography.image}
+    alt="A screenshot of the 84.51° iconography, featuring the 84.51° building"
+    showCaption={true}
+  >
+    <span>
+      A collection of iconography I designed, based off the Iconists' grid
+    </span>
+  </ProjectMedia>
+  </section>
   <section id="brand-identity">
     <div class="section-header">
       <h2 class="section-heading"><span>Brand & Identity</span></h2>
@@ -323,36 +354,5 @@ showCaption={false}
   upon achievement.
 </p>
     </section>
-    <section id="iconography">
-      <div class="section-header">
-        <h2 class="section-heading"><span>Iconography</span></h2>
-      </div>
-      <p>
-        Our first set of iconography really wasn't much of a set at all. It was a combination of icons sourced from all over, ripe with inconsistency.
-         We knew we needed to call on some experts, so we paired up with the <a href="https://iconists.co/">Iconists</a><FootnoteRef id="iconists" />, 
-         to help us craft a set of icons that would be used across our products.
-      </p>
-      <ProjectMedia
-      src={meridianMedia.iconists.image}
-      alt="A screenshot of the Iconists' grid, featuring the 84.51° building"
-      showCaption={true}
-    >
-      <span>
-        A sampling of the initial set of icons the Iconists crafted for us
-      </span>
-    </ProjectMedia>
-      <p>
-        We worked closely with Martin & Andreas to build a grid and the initial set of 60 or so icons, ultimately deciding on 1.5px stroke widths for 
-        better visibility. Since working with them in 2020, I've added about 60+ additional icons to the system, overseeing consistency and creation on the original grid.
-      </p>
-      <ProjectMedia
-      src={meridianMedia.myIconography.image}
-      alt="A screenshot of the 84.51° iconography, featuring the 84.51° building"
-      showCaption={true}
-    >
-      <span>
-        A collection of iconography I designed, based off the Iconists' grid
-      </span>
-    </ProjectMedia>
-    </section>
+
 </ProjectLayout>
