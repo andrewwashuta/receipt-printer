@@ -234,6 +234,11 @@ const readingTime = calculateReadingTime(content);
   &:last-child {
     margin-bottom: 0;
   }
+
+  // When there's only one child, make it span the full width
+  &:has(> :only-child) {
+    grid-template-columns: 1fr;
+  }
 }
 
 :global(.metric) {

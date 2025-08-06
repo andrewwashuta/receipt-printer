@@ -8,17 +8,19 @@ interface Props {
   showCaption?: boolean;
   mediaType?: 'image' | 'video';
   backgroundColor?: string;
+  gradientStartColor?: string;
+  gradientEndColor?: string;
   hero?: boolean;
 }
 
-const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, hero = false } = Astro.props;
+const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, gradientStartColor, gradientEndColor, hero = false } = Astro.props;
 const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <div class={`project-media ${hero ? 'hero-media' : ''}`}>
   <div class="media-wrapper modal-trigger" data-modal-id={modalId} tabindex="0">
-    {backgroundColor ? (
-      <div class="inner-background" style={`background-color: ${backgroundColor}`}>
+    {(backgroundColor || (gradientStartColor && gradientEndColor)) ? (
+      <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
         {mediaType === 'image' ? (
           <Image 
             src={src}
@@ -96,16 +98,19 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 
 /* Inner background container for colored backgrounds */
 .inner-background {
-  padding: var(--size-md);
+  padding: var(--size-xl);
   border-radius: calc(var(--border-radius-sm) + 2px);
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 /* Apply border-radius to interior image/video when background is present */
 .inner-background img,
 .inner-background video {
   border-radius: var(--border-radius-sm);
+  box-shadow: 150px 50px 250px 0 rgba(40, 39, 38, 0.12);
+  box-shadow: 0px 16px 24px 0 rgba(40, 39, 38, 0.08);
 }
 
 .media-caption {

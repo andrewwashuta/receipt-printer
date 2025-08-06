@@ -1,0 +1,176 @@
+---
+import ProjectLayout from "../../layouts/ProjectLayout.astro";
+import FootnoteRef from "../../components/FootnoteRef.astro";
+import ProjectMedia from "../../components/ProjectMedia.astro";
+import { krogerAdPlatformMedia } from "../media/kroger-ad-platform";
+
+const navItems = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'friction', label: 'Friction' },
+  { id: 'intake-reimagined', label: 'Intake Reimagined' }
+];
+
+const metadata = [
+  { label: "Role", values: ["Lead Product Designer"] },
+  { label: "Company", value: "Kroger Precision Marketing, 84.51°" },
+  { label: "Timeline", value: "2025 – Now" }
+];
+
+const footnotes = [
+  {
+    id: "data-disclosure",
+    text: "While I can't publicly disclose actual data, I can say that Kroger's advertising business is a significant revenue driver for the company."
+  },
+  {
+    id: "kpm",
+    text: "Kroger Precision Marketing, or KPM, is Kroger's retail media business—a close partnership between Kroger and 84.51°."
+  },
+  {
+    id: "sales-improvement",
+    text: "Per 1,000 households, compared to third-party alternatives."
+  },
+  {
+    id: "onsite-explainer",
+    text: "The onsite experience is comprised of campaigns, with a subset of ad groups that drive the campaign."
+  }
+];
+---
+
+<ProjectLayout 
+  title="Kroger Ad Platform: Offsite"
+  description="Building a self-serve ad platform for Kroger's offsite advertising, empowering brands to leverage Kroger audience data to activate across external touchpoints."
+  navItems={navItems}
+  metadata={metadata}
+  footnotes={footnotes}
+>
+<ProjectMedia
+src={krogerAdPlatformMedia.hero.image}
+alt="Kroger Ad Platform entry dashboard showing campaign management interface"
+mediaType="image"
+showCaption={true}
+hero={true}
+>
+    <span>
+        Entry point for the Kroger Ad Platform, built in collaboration with <a href="https://richgustke.design" target="_blank" rel="noopener noreferrer">Rich Gustke</a>—the starting point for the offsite experience that I've been building.
+        We've shifted the navigation to leverage the new Meridian side navigation, allowing for key content to use more screen real estate
+    </span>
+</ProjectMedia>
+  <section id="overview">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Overview</span></h2>
+    </div>
+    <p>
+        Advertising is valuable. Coming from the insights side of the business, I never realized how much advertisers spend targeting shoppers.<FootnoteRef id="data-disclosure" />
+        In early 2025, after a large reorganization at 84.51°, I was transferred over to lead design on the Kroger Ad Platform, one of Kroger Precision Marketing's<FootnoteRef id="kpm" /> driving businesses. With <strong>91% of campaigns 
+        improving sales</strong> and achieving <strong>5.1x higher average sales</strong><FootnoteRef id="sales-improvement" />, Kroger Ad Platform provides brands with access to Kroger's vast audience data and targeting capabilities.
+    </p>
+    <p>
+        For the past 5 months, my team of incredible engineers and I have been working hard to deliver a self-serve ad platform for Kroger's offsite advertising by Q4. But what exactly is offsite advertising?
+        </p>
+<ProjectMedia
+src={krogerAdPlatformMedia.adExample.image}
+alt="An example showing two ads, one surfaced in the Kroger mobile app, another surfaced via Instagram"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+    <span>
+        An example of a featured, onsite ad in the Kroger mobile app, as well as an offsite ad surfaced via Instagram
+    </span>
+</ProjectMedia>
+    <p>
+        Imagine a customer comes to us, and they want to run an ad on one of Meta's platforms, Instagram, for example—those ads you might see as you're scrolling through your feed or watching stories. 
+        They come to us because they want audience data from Kroger shoppers, and our offsite experience allows them to do that; they 
+        can input all the details relating to the ad, create custom audiences, and then connect to their Meta account so that fresh audience data flows through. In the above example,
+        Kodiak Cakes can leverage Kroger's shopper and audience data, and drive back to their own site or a Kroger entity, depending on the goal of the campaign.
+    </p>
+    <ProjectMedia
+src={krogerAdPlatformMedia.problem.image}
+alt="The current offsite experience, a Microsoft Form"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+    <span>
+        The current offsite experience is a Microsoft Form, heavily prone to human error
+    </span>
+</ProjectMedia>
+<p>
+    So, why are we building this? Well, the answer is simple—today's offsite experience is a Microsoft Form. We've received tons of feedback from our customers, 
+    partners and internal stakeholders that it's too manual, prone to human error, and requires a lot of back and forth. If you make an error while filling it out, what follows
+    is an email chain with often futile attempts to remedy the issue. 84.51° media buyers have to manually build audiences in the platform according to specs laid 
+    out in the form, context switching consistently, another opportunity for error; it's just not sustainable.
+</p>
+  </section>
+  <section id="friction">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Friction</span></h2>
+      <small class="label">Current intake pain points</small>
+    </div>
+    <p>
+        Thinking about the Kroger Ad Platform as the parent, there are customers who will have access to onsite, offsite, and both. Onsite's<FootnoteRef id="onsite-explainer" /> experience came first, and when I was on <a href="/projects/meridian">Meridian</a>,
+        we leaned in to help them cohesively shape parts of that experience. So, I was familiar with what it entailed, but at the end of the day, that team owned the production code.
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.onsiteIntake.image}
+alt="The current onsite intake experience, a Microsoft Form"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+    <span>
+        Onsite intake experience in the Kroger Ad Platform, featuring a heavily segmented workflow in a Meridian content overlay
+    </span>
+</ProjectMedia>
+    <p>
+        There's a couple of key issues with the above experience, highlighted in blue. (a) Empty fields trigger validation errors immediately <code>onblur</code>, before the user has a chance to enter data. This is
+        jarring, especially as a person is tabbing through fields, making them feel like they've done something wrong before submission. (b) This flow is extremely complex, with six to seven steps, and up to three
+        layers deep in some cases. “Jumping around all over the place is very inefficient and not practical,” one advertiser said. (c) The locations of the actions are not intuitive and cause the eye to bounce around
+        the page; important actions are fixed to the bottom of the page, out of line of sight.
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.contentOverlay.image}
+alt="The content overlay in the Kroger Ad Platform"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+    <span>
+        Showcasing the depth of the content overlay, with a sub-flow for selecting products that overlays the current page, leading to locational confusion
+    </span>
+</ProjectMedia>
+    <p>
+        Advertisers complained about jumping around too many pages, with too many clicks and repetitive steps. They also had trouble establishing their location. The content overlay has functionality to facilitate 
+        several layers deep of sub-flows, but switching contexts is really, really hard. In the above example, when the user drills into the product selection step to add products, they're brought
+        to what appears to be a new page, when really it's just another layer in the content overlay. Often times, there would be abandonment because of this fatigue.
+    </p>
+    <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-value">44%</div>
+          <div class="label">mentioned frustration with the inefficient workflow</div>
+        </div>
+      </div>
+  </section>
+
+  <section id="intake-reimagined">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Intake Reimagined</span></h2>
+    </div>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.offsiteIntake.video}
+    alt="The new offsite intake experience, in a single, scrollable page"
+    mediaType="video"
+    showCaption={true}
+    hero={false}
+    gradientStartColor="#EFF7FD"
+    gradientEndColor="#D2EAFA"
+  >
+  <span>
+    The new offsite intake experience, featuring a streamlined, intuitive, single-page experience
+  </span>
+</ProjectMedia>
+    <p>
+        So, what's the solution? Well, we're building a new intake experience that's more intuitive, efficient, and less prone to human error.
+    </p>
+  </section>
+</ProjectLayout> 
