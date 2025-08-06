@@ -207,7 +207,18 @@ section {
   color: var(--color-ink-subtle);
 }
 
-
+// Code snippet styles
+code {
+  font-family: var(--font-mono);
+  font-size: calc(1em - var(--size-xxxs));
+  color: var(--color-ink);
+  background-color: var(--color-surface-hover);
+  padding: 0 var(--size-xxs);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+  display: inline-block;
+  text-indent: 0;
+}
 
 // 5. Animations
 @keyframes highlight {

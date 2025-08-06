@@ -27,6 +27,10 @@ const footnotes = [
   {
     id: "figma-prototype",
     text: "AI prototype built entirely in Figma, using a series of complex variables and prototyping. Have you ever made a functional keyboard in Figma? Reach out to me if you'd like to see the file."
+  },
+  {
+    id: "data-disclosure",
+    text: "All data you see within is simply mock data, and not actual data from Kroger."
   }
 ];
 ---
@@ -43,9 +47,13 @@ const footnotes = [
   alt="Proof-of-concept design for a dashboard with a text-based AI command prompt"
   mediaType="video"
   backgroundColor="#888B9A"
-  showCaption={false}
+  showCaption={true}
   hero={true}
-  ></ProjectMedia>
+  >
+    <span>
+      A walkthrough of the Stratum AI proof-of-concept<FootnoteRef id="data-disclosure" />, built entirely in Figma
+    </span>
+</ProjectMedia>
   
   <section id="overview">
     <div class="section-header">
