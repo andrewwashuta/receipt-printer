@@ -58,7 +58,7 @@ const footnotes = [
 
 <ProjectLayout 
   title="Meridian: 84.51° Design System"
-  description="Maintaining and scaling the design of 84.51°'s comprehensive design system, a unified design language that powers all internal products and ensures consistency across millions of user interactions."
+  description="Leading the evolution and scaling of 84.51°'s comprehensive design system, a unified design language that ensures cohesiveness across internal products and millions of user interactions."
   navItems={navItems}
   metadata={metadata}
   footnotes={footnotes}
@@ -80,7 +80,7 @@ gradientEndColor="#DFDBFA"
     </div>
     <p>After years of building products like <a href="/projects/stratum">Stratum</a> and its predecessors without a formal design system, 84.51° recognized the need for a unified design language in 2019. 
       This was the beginning of Meridian, the fabric of 84.51° products, a design system that would ensure cohesiveness, accessibility, and scalability across the entire ecosystem—both for designers and engineers alike.</p>
-    <p>I reached out to my good friend and collaborator, <a href="https://richgustke.design">Rich Gustke</a>, in the hopes he would join 84.51° and help steward Meridian.
+    <p>I reached out to my good friend and collaborator, <a href="https://richgustke.design">Rich Gustke</a>, in the hopes he would join 84.51° and help steward our no-name design system—and that he did.
       As the system began to grow, I joined the team in early 2021, continuing to collaborate with Rich and our many developers. 
       <p>I was responsible for upkeep of the Figma component library, creation of new components, system documentation, processes and measurement that would enable our teams to build better products faster.</p>
     <p>My biggest surprise? Over time, I fell in love with mentorship. I worked closely with many of our co-ops and interns, several of which would go on to become full-time designers at 84.51°<FootnoteRef id="mentorship" />. I found that I love sharing knowledge and fostering young designers' growth and learning.</p>
@@ -129,9 +129,10 @@ gradientEndColor="#DFDBFA"
         Just one of over 45+ organized component pages in Figma today; each has its own nested components and scaffolding, so in reality, there are over 200 components in the system (and that's not counting variants)
       </span>
     </ProjectMedia>
-    <p>Not every designer has coding experience, and equally so, not every developer has design experience. We built our own CSS utility classes on top of Tailwind, allowing developers to quickly tack on modifiers to elements.</p>
-    <p>Speaking of modifiers, aside from a few smaller sizes, we've typically used multiples of eight for spacing, padding, and margins—these all correlate to t-shirt sizes. One of the huge unlocks was when Figma introduced the ability to encode variables. 
-      This is especially useful for newer team members who may not be familiar with the system, but are still able to leverage the variables and then communicate their intent to the developer. It helps everyone speak the same language—and not one that includes static values (e.g. 24px).
+    <p>Not every designer has coding experience, and equally so, not every developer has design experience. We built our own CSS utility classes on top of Tailwind, allowing developers to quickly tack on modifiers to elements, like <code>m-mb-sm</code>, which 
+      correlates to <code>margin-bottom: 8px;</code>.</p>
+    <p>Speaking of modifiers, aside from a few smaller sizes, we've typically used multiples of eight for spacing, padding, and margins. One of the huge unlocks was when Figma introduced the ability to encode variables. 
+      This is especially useful for newer team members who may not be familiar with the system, but are still able to leverage variables like <code>size-sm</code> and then communicate their intent to the developer. It helps everyone speak the same language—and not one that includes static values (e.g. <code>24px</code>).
     </p>
     <ProjectMedia
     src={meridianMedia.variables.image}
@@ -280,7 +281,7 @@ is effectively narrowing down 250k+ campaigns into several thousand, in only a c
     </span>
   </ProjectMedia>
     <p>
-      We worked closely with Martin & Andreas to build a grid and the initial set of 60 or so icons, ultimately deciding on 1.5px stroke widths for 
+      We worked closely with Martin & Andreas to build a grid and the initial set of 60 or so icons, ultimately deciding on <code>1.5pt</code> stroke widths for 
       better visibility. Since working with them in 2020, I've added about 60+ additional icons to the system, overseeing consistency and creation on the original grid.
     </p>
     <ProjectMedia
@@ -315,8 +316,9 @@ is effectively narrowing down 250k+ campaigns into several thousand, in only a c
     of blending or overlap, to create a sense of depth. 
   </p>
   <p>
-    Vroom, a route optimization platform, leverages smooth lines to convey forward motion and directionality. Meridian is supposed to feel interplanetary, longitudinal, much like our data; a central 
-    connection point for all products. Collaborative Cloud, Cloud for short, is explained in further detail below:
+    Vroom, a route optimization platform, leverages smooth lines to convey forward motion and directionality. Meridian is supposed to feel interplanetary, longitudinal; a central 
+    connection point for all products. AI embodies the interconnected, unique patterns found in data; like a snowflake, no two are the same. 
+    Collaborative Cloud, or Cloud for short, features a neatly hidden infinity symbol, referencing one of 84.51°'s core values: Limitless Minds. 
   </p>
   <ProjectMedia
   src={meridianMedia.cloud.image}

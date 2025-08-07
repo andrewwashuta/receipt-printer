@@ -7,7 +7,8 @@ export function calculateReadingTime(content: string, excludeCaptions = true): n
     textContent = content
       .replace(/<figcaption[^>]*>.*?<\/figcaption>/gs, '')
       .replace(/alt="[^"]*"/g, '')
-      .replace(/title="[^"]*"/g, '');
+      .replace(/title="[^"]*"/g, '')
+      .replace(/<a[^>]*class="[^"]*footnote-ref[^"]*"[^>]*>.*?<\/a>/gs, '');
   }
   
   const wordCount = textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
