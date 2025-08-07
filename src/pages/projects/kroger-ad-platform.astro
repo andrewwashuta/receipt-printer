@@ -7,7 +7,8 @@ import { krogerAdPlatformMedia } from "../media/kroger-ad-platform";
 const navItems = [
   { id: 'overview', label: 'Overview' },
   { id: 'friction', label: 'Friction' },
-  { id: 'intake-reimagined', label: 'Intake Reimagined' }
+  { id: 'intake-reimagined', label: 'Intake Reimagined' },
+  { id: 'audience', label: 'Audience' }
 ];
 
 const metadata = [
@@ -36,6 +37,14 @@ const footnotes = [
   {
     id: "campaign-build-speed",
     text: "With the first iteration of the “continuous scroll” experience, we measured a 32% improvement in campaign build speed. The second iteration saw that number jump to 44%."
+  },
+  {
+    id: "audience-segment",
+    text: "An audience is comprised of individual segments, whether pre-built or custom."
+  },
+  {
+    id: "activation-backdrop",
+    text: "Throughout any of the sub-flows, including product selection and segment creation, you'll see Create Activation in the backdrop, thus maintaining context."
   }
 ];
 ---
@@ -112,18 +121,28 @@ hero={false}
       <small class="label">Current onsite pain points</small>
     </div>
     <p>
-        Thinking about the Kroger Ad Platform as the parent, there are customers who will have access to onsite, offsite, and both. Onsite's<FootnoteRef id="onsite-explainer" /> experience came first, and when I was on <a href="/projects/meridian">Meridian</a>,
-        we leaned in to help them cohesively shape parts of that experience. So, I was familiar with what it entailed, but at the end of the day, that team owned the production code.
+        Within the Kroger Ad Platform, there are two distinct experiences: onsite and offsite campaigns.
+    </p>
+    <p>Onsite<FootnoteRef id="onsite-explainer" /> campaigns came first in the platform, centered around complex campaign building and measurement workflows. 
+        Campaigns are structured through ad groups and require ongoing control and measurement. 
+    </p>
+    <p>
+        Offsite activations, take a slightly different approach. These are streamlined, one-off activations that transfer Kroger audiences to external 
+        platforms for media buyers to leverage. 
+    </p>
+    <p>While offsite activations are structurally simpler, there are shared similarities with the onsite experience, namely creating an activation loosely
+        resembles the ad group creation flow. It creates opportunities to reuse familiar patterns, while also providing a feedback loop for learning 
+        continuously from users across both experiences.
     </p>
     <ProjectMedia
     src={krogerAdPlatformMedia.onsiteIntake.image}
-alt="The current onsite intake experience, a Microsoft Form"
+alt="The current onsite ad group creation experience, form fields in a content overlay"
 mediaType="image"
 showCaption={true}
 hero={false}
 >
     <span>
-        Onsite intake experience in the Kroger Ad Platform, featuring a heavily segmented workflow in a Meridian content overlay
+        Onsite ad group creation experience in the Kroger Ad Platform, featuring a heavily segmented workflow in a Meridian content overlay
     </span>
 </ProjectMedia>
     <p>
@@ -143,7 +162,7 @@ showCaption={true}
 hero={false}
 >
     <span>
-        Showcasing the depth of the content overlay, with a sub-flow for selecting products that overlays the current page, leading to locational confusion
+        Showcasing the depth of the content overlay, with the parent level of ad group creation (left), and a sub-flow (right) for selecting products. That sub-flow equates to three layers deep: the main level, ad group creation, and product selection
     </span>
 </ProjectMedia>
     <p>
@@ -174,16 +193,17 @@ hero={false}
     gradientEndColor="#D2EAFA"
   >
   <span>
-    The brand new offsite intake experience, featuring a streamlined, intuitive flow
+    The brand new offsite intake experience, featuring a streamlined, intuitive flow—it's a breeze to use
   </span>
 </ProjectMedia>
     <p>
        In our latest production build for the offsite intake experience, we've directly addressed the pain points advertisers expressed. The new flow centers around intuitive design principles: a single, scrollable page 
-        that maintains context, while sub-steps are surfaced through focused modals.
+        that maintains context, while sub-steps are surfaced through focused modals. Also, you might notice me tabbing through fields; it's fast, accessible (thanks to Meridian components), and a lot more efficient—just imagine
+        if those panels were separate pages.
     </p>
     <p>
-        Critical actions are now thoughtfully located at the top of content overlays, keeping them within the natural line of sight. Form field validation has been designed to be a lot more forgiving—there's validation built into fields (e.g. numeric requirements), but if a user decides to skip a field, they're not immediately plagued with errors. 
-        Requirements are instead parsed on submission, and the user is provided with a clear actionable error message.
+        Critical actions are now thoughtfully located at the top of content overlays, keeping them within the natural line of sight. Form field validation has been designed to be a lot more forgiving—there's validation built into fields 
+        (e.g. numeric requirements), but if a user decides to skip a field, they're not immediately plagued with errors. Requirements are instead parsed on submission, and the user is provided with a clear actionable message if any issues arise.
     </p>
     <div class="metrics-grid">
         <div class="metric">
@@ -199,5 +219,100 @@ hero={false}
             <div class="label">Campaign build speed increased<FootnoteRef id="campaign-build-speed" /></div>
         </div>
       </div>
+      <ProjectMedia
+      src={krogerAdPlatformMedia.offsiteModal.video}
+      alt="The new offsite intake experience, in a single, scrollable page"
+      mediaType="video"
+      showCaption={true}
+      hero={false}
+      gradientStartColor="#EFF7FD"
+      gradientEndColor="#D2EAFA"
+    >
+    <span>Sub-steps like product selection are now surfaced in a modal, helping to maintain context. The user can easily return to the main creation flow, with or without their selections</span>
+    </ProjectMedia>
+      <p>
+        Context is wildly important, “This is a lot more like what I'm used to with other platforms. [I] especially like that I don't have to be jumping around pages,” one advertiser said.
+        Product selection is a great example of this. Instead of being brought to a new page (as it is in the current onsite flow), the user can retain the same context while selecting products. 
+        It's a lot more efficient, and a lot more intuitive.
+      </p>
+  </section>
+  <section id="audience">
+    <div class="section-header">
+        <h2 class="section-heading"><span>Audience</span></h2>
+      </div>
+    <p>
+        Audience building is a key component of the offsite experience. It's the foundation of the activation; at the end of the day, buyers just want the audience and targeting data
+        to be ported over to the external platform of their choosing, whether that's Meta, Yahoo, The Trade Desk, or another platform.
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.onsiteAudience.video}
+    alt="The onsite audience building experience, in a long, dense page with no hierarchy"
+    mediaType="video"
+    showCaption={true}
+    hero={false}
+    gradientStartColor="#F8F9FA"
+    gradientEndColor="#DFE3E7"
+  >
+  <span>
+    Current onsite audience building experience; with no hierarchy or structure to the content
+  </span>
+</ProjectMedia>
+    <p>
+        Currently, audience building<FootnoteRef id="audience-segment" /> exists as a step in the ad group creation flow—the base level of the content overlay. Right away, when a user opens the <strong>Create Segment</strong> process, they're greeted with 
+        another <strong>✕</strong> in the top left, signaling the second layer of depth in the content overlay. This contributes to the confusion we've observed with nested overlays (see <a href="#friction">Friction</a>).
+    </p>
+    <p>
+        When users need to add products, they dive deeper into a third layer. But, the real usability challenge emerges in the segment configuration itself. The original design presents users with a dense, overwhelming form
+        where every option competes for attention. Headers, text, and inputs all blend together without clear, visual hierarchy. This creates significant cognitive load, as users try to parse 
+        how different selections interact with each other.
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.onsiteCreateSegment.image}
+    alt="A screenshot of the onsite create segment experience"
+    mediaType="image"
+    showCaption={true}
+    hero={false}
+  >
+  <span>
+    Before: The original segment creation experience, a dense, overwhelming form that presents all options simultaneously
+  </span>
+</ProjectMedia>
+<ProjectMedia
+src={krogerAdPlatformMedia.offsiteCreateSegment.image}
+alt="A screenshot of the offsite create segment experience"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+<span>
+    After: A streamlined modal that guides users through segment creation with clearer hierarchy and reduced cognitive load
+</span>
+</ProjectMedia>
+<p>
+    The redesigned experience transforms segment creation into a focused process. By isolating the creation in a modal, users can concentrate on one decision at a time without distractions. 
+    Clear visual hierarchy, simplified language, and logical grouping of related options reduce cognitive load and make the relationships between choices immediately apparent.
+</p>
+<p>
+    While this improved UI solves usability issues we identified, it's still only one piece of the puzzle. The segment creation process now unfolds seamlessly within a modal, maintaining
+    context throughout the process. Even when users dive deeper into product selection, which technically opens a second modal layer, they still have preserved their place in the activation
+    creation flow. This eliminates the disorienting navigation jumps that left users wondering where they were in the process.
+</p>
+<ProjectMedia
+src={krogerAdPlatformMedia.offsiteAudience.video}
+alt="A walkthrough of building a segment in the new offsite experience"
+mediaType="video"
+showCaption={true}
+hero={false}
+gradientStartColor="#EFF7FD"
+gradientEndColor="#D2EAFA"
+>
+<span>
+    A walkthrough of the new segment creation experience in offsite
+</span>
+</ProjectMedia>
+<p>
+    This new approach to building segments, and therefore audiences, demonstrates how thoughtful design and information architecture can transform a complex workflow into an intuitive experience.
+    Like product selection above, by containing the entire process in a modular, contextual modal, users maintain their mental model throughout the activation build process.<FootnoteRef id="activation-backdrop" />
+</p>
   </section>
 </ProjectLayout> 
