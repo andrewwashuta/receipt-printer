@@ -32,6 +32,10 @@ const footnotes = [
   {
     id: "onsite-explainer",
     text: "The onsite experience is comprised of campaigns, with a subset of ad groups that drive the campaign."
+  },
+  {
+    id: "campaign-build-speed",
+    text: "With the first iteration of the “continuous scroll” experience, we measured a 32% improvement in campaign build speed. The second iteration saw that number jump to 44%."
   }
 ];
 ---
@@ -105,7 +109,7 @@ hero={false}
   <section id="friction">
     <div class="section-header">
       <h2 class="section-heading"><span>Friction</span></h2>
-      <small class="label">Current intake pain points</small>
+      <small class="label">Current onsite pain points</small>
     </div>
     <p>
         Thinking about the Kroger Ad Platform as the parent, there are customers who will have access to onsite, offsite, and both. Onsite's<FootnoteRef id="onsite-explainer" /> experience came first, and when I was on <a href="/projects/meridian">Meridian</a>,
@@ -127,6 +131,9 @@ hero={false}
         jarring, especially as a person is tabbing through fields, making them feel like they've done something wrong before submission. (b) This flow is extremely complex, with six to seven steps, and up to three
         layers deep in some cases. “Jumping around all over the place is very inefficient and not practical,” one advertiser said. (c) The locations of the actions are not intuitive and cause the eye to bounce around
         the page; important actions are fixed to the bottom of the page, out of line of sight.
+    </p>
+    <p>
+        There are some users potentially filling out 20+ ad groups a day spread across multiple campaigns; clarity, continuity and context are immensely important.
     </p>
     <ProjectMedia
     src={krogerAdPlatformMedia.contentOverlay.image}
@@ -155,6 +162,7 @@ hero={false}
   <section id="intake-reimagined">
     <div class="section-header">
       <h2 class="section-heading"><span>Intake Reimagined</span></h2>
+      <small class="label">Offsite</small>
     </div>
     <ProjectMedia
     src={krogerAdPlatformMedia.offsiteIntake.video}
@@ -166,11 +174,30 @@ hero={false}
     gradientEndColor="#D2EAFA"
   >
   <span>
-    The new offsite intake experience, featuring a streamlined, intuitive, single-page experience
+    The brand new offsite intake experience, featuring a streamlined, intuitive flow
   </span>
 </ProjectMedia>
     <p>
-        So, what's the solution? Well, we're building a new intake experience that's more intuitive, efficient, and less prone to human error.
+       In our latest production build for the offsite intake experience, we've directly addressed the pain points advertisers expressed. The new flow centers around intuitive design principles: a single, scrollable page 
+        that maintains context, while sub-steps are surfaced through focused modals.
     </p>
+    <p>
+        Critical actions are now thoughtfully located at the top of content overlays, keeping them within the natural line of sight. Form field validation has been designed to be a lot more forgiving—there's validation built into fields (e.g. numeric requirements), but if a user decides to skip a field, they're not immediately plagued with errors. 
+        Requirements are instead parsed on submission, and the user is provided with a clear actionable error message.
+    </p>
+    <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-value">+67%</div>
+          <div class="label">Page simplicity improved</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">+71%</div>
+            <div class="label">Navigation streamlined</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">+44%</div>
+            <div class="label">Campaign build speed increased<FootnoteRef id="campaign-build-speed" /></div>
+        </div>
+      </div>
   </section>
 </ProjectLayout> 
