@@ -45,7 +45,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
       {(backgroundColor || (gradientStartColor && gradientEndColor)) ? (
         <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
           <video 
-            preload={eager ? "auto" : "none"}
+            preload="metadata"
             muted
             playsinline
             loop
@@ -60,7 +60,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
         </div>
       ) : (
         <video 
-          preload={eager ? "auto" : "none"}
+          preload="metadata"
           muted
           playsinline
           loop
