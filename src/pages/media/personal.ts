@@ -13,6 +13,8 @@ import nixie from '../../assets/projects/personal/images/nixie-numerals.jpg';
 import thorMando from '../../assets/projects/personal/images/thor-mando.png';
 import mandoShirt from '../../assets/projects/personal/images/mando-shirt.png';
 import valentine2024 from '../../assets/projects/personal/images/valentines-2024.jpg';
+import superBowl2024 from '../../assets/projects/personal/images/superbowl-2024.jpg';
+import superBowl2025 from '../../assets/projects/personal/images/superbowl-2025.jpg';
 
 export const personalMedia = {
   holiday2017: {
@@ -59,5 +61,11 @@ export const personalMedia = {
   },
   valentine2024: {
     image: valentine2024,
-  }
+  },
+  superBowl2024: {
+    image: superBowl2024,
+  },
+  superBowl2025: {
+    image: superBowl2025,
+  },
 } as const; 
