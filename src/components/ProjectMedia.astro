@@ -12,9 +12,10 @@ interface Props {
   gradientEndColor?: string;
   hero?: boolean;
   eager?: boolean;
+  poster?: string;
 }
 
-const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, gradientStartColor, gradientEndColor, hero = false, eager = false } = Astro.props;
+const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, gradientStartColor, gradientEndColor, hero = false, eager = false, poster } = Astro.props;
 const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
@@ -48,6 +49,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
             autoplay
             controls
             class="video-player"
+            {...(poster ? { poster } : {})}
           />
         </div>
       ) : (
@@ -60,6 +62,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
           autoplay
           controls
           class="video-player"
+          {...(poster ? { poster } : {})}
         />
       )}
     </div>
@@ -118,6 +121,10 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
   width: 100%;
   height: 100%;
   overflow: hidden;
+
+  @include mobile {
+    padding: var(--size-md);
+  }
 }
 
 /* Apply border-radius to interior image/video when background is present */
