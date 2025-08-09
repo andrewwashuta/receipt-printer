@@ -43,7 +43,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
         <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
           <video 
             src={src}
-            preload="metadata"
+            preload="auto"
             muted
             playsinline
             autoplay
@@ -56,7 +56,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
       ) : (
         <video 
           src={src}
-          preload="metadata"
+          preload="auto"
           muted
           playsinline
           autoplay
