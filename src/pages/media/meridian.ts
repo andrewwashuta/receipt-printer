@@ -1,12 +1,10 @@
 import meridianHero from '../../assets/projects/meridian/videos/meridian-hero.mp4';
-import meridianHeroWebm from '../../assets/projects/meridian/videos/meridian-hero.webm';
 import popover from '../../assets/projects/meridian/images/popover.png';
 import cardExample from '../../assets/projects/meridian/images/card-example.png';
 import variables from '../../assets/projects/meridian/images/variables.png';
 import properties from '../../assets/projects/meridian/images/properties.png';
 import oldSystem from '../../assets/projects/meridian/images/old-system.png';
 import marketingConcept from '../../assets/projects/meridian/videos/8451-website-concept.mp4';
-import marketingConceptWebm from '../../assets/projects/meridian/videos/8451-website-concept.webm';
 import newSystem from '../../assets/projects/meridian/images/new-system.png';
 import loginConcept from '../../assets/projects/meridian/videos/login-concept.mp4';
 import filterConcept from '../../assets/projects/meridian/videos/filter-concept.mp4';
@@ -23,10 +21,6 @@ import iconists from '../../assets/projects/meridian/images/iconists.png';
 export const meridianMedia = {
   hero: {
     video: meridianHero,
-    videoSources: {
-      webm: meridianHeroWebm,
-      mp4: meridianHero,
-    },
   },
   popover: {
     image: popover,
@@ -45,10 +39,6 @@ export const meridianMedia = {
   },
   marketingConcept: {
     video: marketingConcept,
-    videoSources: {
-      webm: marketingConceptWebm,
-      mp4: marketingConcept,
-    },
   },
   newSystem:{
     image: newSystem,
