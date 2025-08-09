@@ -13,9 +13,13 @@ interface Props {
   hero?: boolean;
   eager?: boolean;
   poster?: string;
+  videoSources?: {
+    webm?: string;
+    mp4: string;
+  };
 }
 
-const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, gradientStartColor, gradientEndColor, hero = false, eager = false, poster } = Astro.props;
+const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, gradientStartColor, gradientEndColor, hero = false, eager = false, poster, videoSources } = Astro.props;
 const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
@@ -41,7 +45,6 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
       {(backgroundColor || (gradientStartColor && gradientEndColor)) ? (
         <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
           <video 
-            src={src}
             preload={eager ? "auto" : "none"}
             muted
             playsinline
@@ -50,11 +53,13 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
             controls
             class="video-player"
             {...(poster ? { poster } : {})}
-          />
+          >
+            {videoSources?.webm && <source src={videoSources.webm} type="video/webm" />}
+            <source src={videoSources?.mp4 || src} type="video/mp4" />
+          </video>
         </div>
       ) : (
         <video 
-          src={src}
           preload={eager ? "auto" : "none"}
           muted
           playsinline
@@ -63,7 +68,10 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
           controls
           class="video-player"
           {...(poster ? { poster } : {})}
-        />
+        >
+          {videoSources?.webm && <source src={videoSources.webm} type="video/webm" />}
+          <source src={videoSources?.mp4 || src} type="video/mp4" />
+        </video>
       )}
     </div>
   )}
