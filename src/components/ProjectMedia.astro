@@ -11,9 +11,10 @@ interface Props {
   gradientStartColor?: string;
   gradientEndColor?: string;
   hero?: boolean;
+  eager?: boolean;
 }
 
-const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, gradientStartColor, gradientEndColor, hero = false } = Astro.props;
+const { src, alt, showCaption = false, mediaType = 'image', backgroundColor, gradientStartColor, gradientEndColor, hero = false, eager = false } = Astro.props;
 const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
@@ -40,7 +41,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
         <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
           <video 
             src={src}
-            preload="none"
+            preload={eager ? "auto" : "none"}
             muted
             playsinline
             loop
@@ -52,7 +53,7 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
       ) : (
         <video 
           src={src}
-          preload="none"
+          preload={eager ? "auto" : "none"}
           muted
           playsinline
           loop
