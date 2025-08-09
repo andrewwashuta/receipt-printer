@@ -108,6 +108,9 @@ const initializeModals = () => {
     if (e.key === 'Escape') {
       const visibleModal = document.querySelector('.modal.visible');
       if (visibleModal) closeModal(visibleModal);
+    } else if (e.key === 'Enter') {
+      const visibleModal = document.querySelector('.modal.visible');
+      if (visibleModal) closeModal(visibleModal);
     } else if (e.key === 'ArrowLeft') {
       navigateToModal('prev');
     } else if (e.key === 'ArrowRight') {
@@ -116,5 +119,12 @@ const initializeModals = () => {
   });
 };
 
-document.addEventListener('DOMContentLoaded', initializeModals);
+// Initialize modals when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeModals);
+} else {
+  initializeModals();
+}
+
+// Initialize modals for Astro page transitions
 document.addEventListener('astro:page-load', initializeModals); 

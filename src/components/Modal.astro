@@ -8,16 +8,15 @@ interface Props {
     width?: number;
     height?: number;
     class?: string;
-    mediaType?: 'image' | 'video';
 }
 
-const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'image' } = Astro.props;
+const { id, imageUrl, imageAlt, width, height, class: className } = Astro.props;
 ---
 
 <div class="modal" data-modal-id={id} role="dialog" aria-modal="true">
     <div class="modal-backdrop"></div>
     <div class="modal-container">
-        {imageUrl && mediaType === 'image' ? (
+        {imageUrl && (
             typeof imageUrl === 'object' && 'src' in imageUrl ? (
                 <Image 
                     src={imageUrl} 
@@ -37,17 +36,7 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
                     {...(height ? { height } : {})}
                 />
             )
-        ) : imageUrl && mediaType === 'video' ? (
-            <video 
-                src={imageUrl as string}
-                class="modal-image"
-                preload="auto"
-                muted
-                playsinline
-                loop
-                autoplay
-            />
-        ) : null}
+        )}
     </div>
 </div>
 
@@ -93,15 +82,14 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
         cursor: pointer;
     }
 
-    /* Modal trigger styles */
+    /* Modal trigger styles - only for images */
     :global(.modal-trigger) {
         position: relative;
         display: inline-block;
         cursor: pointer;
     }
 
-    :global(.modal-trigger:has(img))::after,
-    :global(.modal-trigger:has(video))::after {
+    :global(.modal-trigger:has(img))::after {
         content: '';
         position: absolute;
         inset: -4px;
@@ -112,15 +100,12 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
     }
 
     :global(.modal-trigger:has(img):hover)::after,
-    :global(.modal-trigger:has(img):focus)::after,
-    :global(.modal-trigger:has(video):hover)::after,
-    :global(.modal-trigger:has(video):focus)::after {
+    :global(.modal-trigger:has(img):focus)::after {
         opacity: 1;
     }
 
     :global(.modal-trigger:focus),
-    :global(.modal-trigger:focus img),
-    :global(.modal-trigger:focus video) {
+    :global(.modal-trigger:focus img) {
         outline: none !important;
         box-shadow: none !important;
     }
@@ -134,8 +119,7 @@ const { id, imageUrl, imageAlt, width, height, class: className, mediaType = 'im
         outline: none;
     }
 
-    :global(.modal:not(.visible) ~ .modal-trigger:focus img),
-    :global(.modal:not(.visible) ~ .modal-trigger:focus video) {
+    :global(.modal:not(.visible) ~ .modal-trigger:focus img) {
         outline: none !important;
         box-shadow: none !important;
     }

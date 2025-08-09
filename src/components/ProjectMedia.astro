@@ -18,51 +18,60 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <div class={`project-media ${hero ? 'hero-media' : ''}`}>
-  <div class="media-wrapper modal-trigger" data-modal-id={modalId} tabindex="0">
-    {(backgroundColor || (gradientStartColor && gradientEndColor)) ? (
-      <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
-        {mediaType === 'image' ? (
+  {mediaType === 'image' ? (
+    <div class="media-wrapper modal-trigger" data-modal-id={modalId} tabindex="0">
+      {(backgroundColor || (gradientStartColor && gradientEndColor)) ? (
+        <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
           <Image 
             src={src}
             alt={alt}
           />
-        ) : (
+        </div>
+      ) : (
+        <Image 
+          src={src}
+          alt={alt}
+        />
+      )}
+    </div>
+  ) : (
+    <div class="media-wrapper video-wrapper">
+      {(backgroundColor || (gradientStartColor && gradientEndColor)) ? (
+        <div class="inner-background" style={backgroundColor ? `background-color: ${backgroundColor}` : `background: linear-gradient(to bottom, ${gradientStartColor}, ${gradientEndColor})`}>
           <video 
             src={src}
-            preload="metadata"
+            preload="none"
             muted
             playsinline
             loop
             autoplay
+            controls
+            class="video-player"
           />
-        )}
-      </div>
-    ) : (
-      <>
-        {mediaType === 'image' ? (
-          <Image 
-            src={src}
-            alt={alt}
-          />
-        ) : (
-          <video 
-            src={src}
-            preload="metadata"
-            muted
-            playsinline
-            loop
-            autoplay
-          />
-        )}
-      </>
-    )}
-  </div>
-  <Modal 
-    id={modalId}
-    imageUrl={src}
-    imageAlt={alt}
-    mediaType={mediaType}
-  />
+        </div>
+      ) : (
+        <video 
+          src={src}
+          preload="none"
+          muted
+          playsinline
+          loop
+          autoplay
+          controls
+          class="video-player"
+        />
+      )}
+    </div>
+  )}
+  
+  {mediaType === 'image' && (
+    <Modal 
+      id={modalId}
+      imageUrl={src}
+      imageAlt={alt}
+    />
+  )}
+  
   {showCaption && (
     <figcaption class="media-caption">
       <slot />
@@ -88,6 +97,11 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
   background-color: var(--color-white);
 }
 
+.media-wrapper:hover,
+.media-wrapper:focus {
+  outline: none;
+}
+
 .project-media img,
 .project-media video {
   width: 100%;
@@ -111,6 +125,28 @@ const modalId = `modal-${Math.random().toString(36).substr(2, 9)}`;
   border-radius: var(--border-radius-sm);
   box-shadow: 150px 50px 250px 0 rgba(40, 39, 38, 0.12);
   box-shadow: 0px 16px 24px 0 rgba(40, 39, 38, 0.08);
+}
+
+/* Video-specific styles */
+.video-wrapper {
+  position: relative;
+}
+
+.video-player {
+  transition: all var(--transition-default);
+  width: 100%;
+  height: auto;
+}
+
+/* Simple approach: hide controls by default, show on hover/focus */
+.video-player::-webkit-media-controls {
+  opacity: 0;
+  transition: opacity var(--transition-default);
+}
+
+.video-wrapper:hover .video-player::-webkit-media-controls,
+.video-wrapper:focus-within .video-player::-webkit-media-controls {
+  opacity: 1;
 }
 
 .media-caption {
