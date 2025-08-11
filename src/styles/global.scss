@@ -1,5 +1,9 @@
 @use 'variables' as *;
 
+// ============================================================================
+// 1. IMPORTS & MIXINS
+// ============================================================================
+
 // Media Query Mixins
 @mixin mobile {
   @media (max-width: 1120px) {
@@ -7,7 +11,10 @@
   }
 }
 
-// 1. Reset
+// ============================================================================
+// 2. RESET & BASE STYLES
+// ============================================================================
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -64,7 +71,10 @@ body {
   }
 }
 
-// 2. Typography
+// ============================================================================
+// 3. TYPOGRAPHY
+// ============================================================================
+
 h1, h2, h3, h4 {
   line-height: inherit;
   font-size: inherit;
@@ -86,7 +96,6 @@ h2 {
   gap: var(--size-lg);
   margin-bottom: var(--size-lg);
 
-  // Wrap the text content in a span for better control
   > span {
     position: relative;
     display: inline-flex;
@@ -137,7 +146,10 @@ p:first-of-type {
   text-indent: 0;
 }
 
-// 3. Layout Components
+// ============================================================================
+// 4. LAYOUT & STRUCTURE
+// ============================================================================
+
 main {
   width: 100%;
   max-width: 700px;
@@ -201,13 +213,15 @@ section {
   }
 }
 
-// 4. Utility Classes
-.label {
-  font-size: var(--font-size-sm);
-  color: var(--color-ink-subtle);
+// ============================================================================
+// 5. COMPONENTS & ELEMENTS
+// ============================================================================
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
 }
 
-// Code snippet styles
 code {
   font-family: var(--font-mono);
   font-size: calc(1em - var(--size-xxxs));
@@ -220,7 +234,31 @@ code {
   text-indent: 0;
 }
 
-// 5. Animations
+// ============================================================================
+// 6. UTILITY CLASSES
+// ============================================================================
+
+.label {
+  font-size: var(--font-size-sm);
+  color: var(--color-ink-subtle);
+}
+
+.wip-note {
+  background-color: var(--color-accent-light);
+  color: var(--color-accent-dark);
+  border-radius: var(--border-radius-md);
+  padding: var(--size-sm) 0;
+  font-size: var(--font-size-sm);
+
+  @include mobile {
+    padding: var(--size-sm);
+  }
+}
+
+// ============================================================================
+// 7. ANIMATIONS & TRANSITIONS
+// ============================================================================
+
 @keyframes highlight {
   0% {
     opacity: 0;
@@ -251,7 +289,10 @@ code {
   }
 }
 
-// 6. Selection Styles
+// ============================================================================
+// 8. SELECTION & INTERACTION
+// ============================================================================
+
 ::selection {
     background-color: var(--color-accent-light);
     color: var(--color-accent-dark);

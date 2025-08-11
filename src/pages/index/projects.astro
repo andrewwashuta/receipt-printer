@@ -4,6 +4,7 @@ import meridian from '../../assets/index/images/meridian-thumb.png';
 import stratum from '../../assets/index/images/stratum-thumb.png';
 import personal from '../../assets/index/images/personal-thumb.png';
 import kap from '../../assets/index/images/ad-platform-thumb.png';
+import universal from '../../assets/index/images/universal-thumb.png';
 ---
 <section id="projects">
     <h2><span>Projects</span></h2>
@@ -70,6 +71,27 @@ import kap from '../../assets/index/images/ad-platform-thumb.png';
     </div>
 
     <div class="project-entry">
+        <a href="https://universal.xyz" target="_blank" class="project-link">
+            <div class="project-image">
+                <Image 
+                    src={universal} 
+                    alt="Universal"
+                    format="webp"
+                    loading="eager"
+                />
+            </div>
+            <div class="project-title">
+                <h3>Universal Platform</h3>
+                <p class="label">Universal</p>
+            </div>
+            <div class="project-content">
+                <p>Designing a cross-chain, wrapped asset protocol that enables seamless trading of any token on any 
+                    blockchain—facilitating $1B+ in trading volume and helping secure $9M in seed funding led by a16z Crypto. Case study coming soon.</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="project-entry">
         <a href="/projects/personal" class="project-link">
             <div class="project-image">
                 <Image 
@@ -87,7 +109,6 @@ import kap from '../../assets/index/images/ad-platform-thumb.png';
             </div>
         </a>
     </div>
-
 </section>
 
 <style lang="scss">
@@ -95,11 +116,10 @@ import kap from '../../assets/index/images/ad-platform-thumb.png';
         display: flex;
         flex-direction: column;
         gap: var(--size-md);
-        --hover-area: var(--size-sm);
-        padding: var(--hover-area);
-        margin: calc(-1 * var(--hover-area));
+        padding: var(--size-sm);
+        margin: calc(-1 * var(--size-sm));
         margin-bottom: var(--size-xl);
-        border-radius: var(--border-radius-md);
+        border-radius: calc(var(--border-radius-md) + var(--size-sm)) calc(var(--border-radius-md) + var(--size-sm)) var(--border-radius-md) var(--border-radius-md);
         cursor: pointer;
         transition: background-color var(--transition-default);
         
@@ -119,13 +139,16 @@ import kap from '../../assets/index/images/ad-platform-thumb.png';
             align-items: center;
             position: relative;
             cursor: pointer;
+            padding: var(--size-xxxs);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--color-edge-subtle);
+            background-color: var(--color-white);
             
             img {
                 width: 100%;
                 height: auto;
                 display: block;
-                image-rendering: -webkit-optimize-contrast;
-                transition: filter 0.3s ease;
+                border-radius: calc(var(--border-radius-sm) + 2px);
             }
         }
 
