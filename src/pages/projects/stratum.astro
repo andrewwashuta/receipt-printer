@@ -26,12 +26,12 @@ const footnotes = [
   },
   {
     id: "figma-prototype",
-    text: "AI prototype built entirely in Figma, using a series of complex variables and prototyping. Have you ever made a functional keyboard in Figma? Reach out to me if you'd like to see the file."
+    text: "AI prototype built entirely in Figma, using a series of complex variables and prototyping; let's just say, making a functional keyboard prototype in Figma is mildly challenging. Reach out to me if you'd like to see the file."
   },
   {
     id: "data-disclosure",
     text: "All data you see within is simply mock data, and not actual data from Kroger."
-  }
+  },
 ];
 ---
 
@@ -60,13 +60,22 @@ const footnotes = [
       <h2 class="section-heading"><span>Overview</span></h2>
     </div>
     <p>Kroger was in the process of sunsetting their legacy analytics platform in 2017, and brought the build of the new platform in-house at 84.51°<FootnoteRef id="8451-description" />. 
-      This was the beginning of what would eventually become Stratum, a robust analytics platform that has gone on to generate <strong>$1B+ in contracts</strong> for Kroger,
-      and surface over <strong>3.8M+ reports</strong> for 84.51°'s CPG partners.<FootnoteRef id="reports-count" /></p>
-    <p>Until 2021, I had the pleasure of leading the design of Stratum, along a myriad of incredible people. 
-      I was the lead UI designer, but equally responsible for discovery research, design systems (at a time when we didn't have one!), and visual
+      This was the beginning of what would eventually become Stratum, a robust analytics platform that has helped customer build millions of reports, andlived on as a significant revenue driver for Kroger.</p>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-value">$1B+</div>
+          <div class="label">in contracts for Kroger</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">3.8M+</div>
+          <div class="label">reports generated<FootnoteRef id="reports-count" /></div>
+        </div>
+      </div>
+    <p>From 2017 to 2021, I had the pleasure of leading the design of Stratum, along a myriad of incredible people. 
+      I began as a senior UI designer, but quickly upskilled to a lead, equally responsible for discovery research, design systems (at a time when we didn't have one!), and visual
       design. It was truly a balancing act of parity and innovation—we had to meet existing needs of our users, while building with a forward-thinking mindset. </p>
     <p>It took months of vision workshops and hundreds of hours of research to align on what we were building, at a company that truly had not built bespoke products before.
-      Despite the challenges, I'm deeply proud of what Stratum became over the course of its first four years. Let me start by showing the latest exploratory work on Stratum AI—before diving into the full journey of how we got there.</p>
+      Despite the challenges, I'm deeply proud of what Stratum became over the course of its first four years. Let me start by showing the latest exploratory work I did on Stratum AI—before diving into the full journey of how we got there.</p>
   </section>
 
   <section id="ai-poc">
@@ -74,17 +83,17 @@ const footnotes = [
       <h2 class="section-heading"><span>Stratum AI</span></h2>
       <small class="label">Proof-of-concept, 2024</small>
     </div>
-    <p>It's 2024, amidst the most recent AI boom. As a member of our design systems team at the time, I designed a proof-of-concept for a text-based AI command prompt,
+    <p>It's 2024, amidst the most recent AI boom. As a member of our systems team, <a href="/projects/meridian">Meridian</a>, at the time, I designed a proof-of-concept for a text-based AI command prompt,
        integrated neatly within Stratum to help users quickly take action on reports. This was a perfect opportunity to experiment with our design system, and revisit my work from three years prior. I mean, how cool would it be to be able to generate micro-reports and -dashboards based on simple commands?</p>
-    <p>I firmly believe in the power of storytelling, so this was a quick build done entirely in Figma<FootnoteRef id="figma-prototype" /> to demonstrate how our Meridian Design System might be used experimentally to 
+    <p>I firmly believe in the power of storytelling, so this was a quick build done entirely in Figma<FootnoteRef id="figma-prototype" /> to demonstrate how our <a href="/projects/meridian">Meridian Design System</a> might be used experimentally to 
       craft a fast, engaging experience for people using our products.</p>
       <ProjectMedia
       src={stratumMedia.stratumPoc.image}
       alt="Proof-of-concept design for a dashboard with a text-based AI command prompt"
       showCaption={false}
     ></ProjectMedia>
-    <p>Over many years of researching and building Stratum, it had become evident how important it was to bring focus to workflows as much as possible. Striking a balance between
-      progressive disclosure and context—filters should never get in the way of reporting. But, at the end of the day, that context is equally important when cycling through hundreds of reports a day.
+    <p>At its core, Stratum is a reporting and analytics platform. And over many years of researching and building Stratum, it had become evident how important it was to bring focus to workflows as much as possible; for example, striking a balance between
+      progressive disclosure and context—navigation and filters should never get in the way of viewing reports. But, at the end of the day, that context is equally important when cycling through hundreds of reports a day.
     </p>
     <ProjectMedia
     src={stratumMedia.progressive.video}
@@ -120,5 +129,9 @@ const footnotes = [
     </ProjectMedia>
 
   </section>
+
+  <div class="wip-note">
+    <p>This project is a work in progress. I'm in the process of collating files and documentation.</p>
+  </div>
 </ProjectLayout>
 

@@ -2,57 +2,73 @@
 ---
 <section id="experience">
     <h2><span>Experience</span></h2>
-    <div class="section-grid">
+    <div class="experience-grid">
         <div class="experience-entry">
             <div class="label">
                 <time datetime="2017">2017</time> – Now
             </div>
-            <hgroup>
+            <div class="roles">
                 <h3>Lead Product Designer, Ad Platforms</h3>
                 <h3>Lead Product Designer, Design Systems</h3>
                 <h3>Lead Product Designer, Insights</h3>
                 <h3>Senior UI Designer, Insights</h3>
                 <p class="label"><a href="https://8451.com">84.51°</a></p>
-            </hgroup>
+            </div>
         </div>
-    <div class="experience-entry">
-        <div class="label">
-            <time datetime="2017">2022</time> – Now
+        <div class="experience-entry">
+            <div class="label">
+                <time datetime="2017">2022</time> – Now
+            </div>
+            <div class="roles">
+                <h3>Design Lead, Contract</h3>
+                <p class="label"><a href="https://universal.xyz">Universal</a></p>
+            </div>
         </div>
-        <hgroup>
-            <h3>Lead Designer, Contract</h3>
-            <p class="label"><a href="https://universal.xyz">Universal</a></p>
-        </hgroup>
+        <div class="experience-entry">
+            <div class="label">
+                <time datetime="2016">2016</time> – <time datetime="2017">2017</time>
+            </div>
+            <div class="roles">
+                <h3>Web Designer</h3>
+                <p class="label"><a href="https://clubessential.com">Clubessential</a></p>
+            </div>
+        </div>
+        <div class="experience-entry">
+            <div class="label">
+                <time datetime="2014">2014</time> – <time datetime="2016">2016</time>
+            </div>
+            <div class="roles">
+                <h3>Brand Designer</h3>
+                <p class="label"><a href="https://www.uhc.com">UnitedHealthcare</a></p>
+            </div>
+        </div>
     </div>
-    <div class="experience-entry">
-        <div class="label">
-            <time datetime="2016">2016</time> – <time datetime="2017">2017</time>
-        </div>
-        <hgroup>
-            <h3>Web Designer</h3>
-            <p class="label"><a href="https://clubessential.com">Clubessential</a></p>
-        </hgroup>
-    </div>
-    <div class="experience-entry">
-        <div class="label">
-            <time datetime="2014">2014</time> – <time datetime="2016">2016</time>
-        </div>
-        <hgroup>
-            <h3>Brand Designer</h3>
-            <p class="label"><a href="https://www.uhc.com">UnitedHealthcare</a></p>
-        </hgroup>
-    </div>
-</div>
 </section>
 
-<style lang="scss">
-  .experience-entry {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-column: start/end;
-
-    hgroup {
-      grid-column: 2 / span 3;
+<style lang="scss" >
+    @use '../../styles/global.scss' as *;
+    
+    .experience-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--size-md);
+      width: 100%;
     }
-  }
+    
+    .experience-entry {
+      display: grid;
+      grid-template-columns: 1fr 3fr;
+      gap: var(--size-sm);
+      align-items: start;
+
+      .roles {
+        display: flex;
+        flex-direction: column;
+        gap: var(--size-xxxs);
+      }
+
+      h3 {
+        margin: 0;
+      }
+    }
 </style>
