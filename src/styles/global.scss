@@ -6,7 +6,7 @@
 
 // Media Query Mixins
 @mixin mobile {
-  @media (max-width: 1120px) {
+  @media (max-width: 1180px) {
     @content;
   }
 }
@@ -152,10 +152,8 @@ p:first-of-type {
 
 main {
   width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  margin-top: var(--size-xxl);
-  margin-bottom: var(--size-xxl);
+  max-width: 748px;
+  margin: var(--size-xxl) auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
