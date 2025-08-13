@@ -15,7 +15,7 @@ const { title, description, image, type = 'website' } = Astro.props;
 const siteName = "Andrew Washuta";
 const pageTitle = title ? `${title} | ${siteName}` : siteName;
 const pageDescription = description || "Lead Experience Designer specializing in design systems and analytics platforms. Currently at 84.51°, focused on building trust through thoughtful design.";
-const pageImage = image || "/og.jpg";
+const pageImage = image || "/og.png";
 const siteUrl = "https://andrew.cv";
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
 ---
