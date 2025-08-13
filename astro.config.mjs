@@ -4,7 +4,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   output: 'static',
   adapter: vercel(),
-  site: 'https://andrewwashuta.github.io',
+  site: 'https://andrew.cv',
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp'
