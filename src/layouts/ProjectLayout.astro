@@ -26,10 +26,8 @@ const {
   homeLinkText = "Index"
 } = Astro.props;
 
-// Reset footnote counter for this page
 resetFootnotes();
 
-// Calculate reading time from the content
 const content = await Astro.slots.render('default');
 const readingTime = calculateReadingTime(content);
 ---
@@ -93,7 +91,6 @@ const readingTime = calculateReadingTime(content);
 </BaseLayout>
 
 <script>
-  // Add project-section class to all sections within project-content
   document.addEventListener('DOMContentLoaded', () => {
     const projectContent = document.querySelector('.project-content');
     if (projectContent) {
@@ -115,7 +112,7 @@ const readingTime = calculateReadingTime(content);
     @include mobile {
         margin-top: var(--size-xxl);
         gap: var(--size-xxxl);
-        max-width: 748px; // Match index page on mobile
+        max-width: 748px;
     }
   }
 
@@ -224,7 +221,6 @@ const readingTime = calculateReadingTime(content);
     display: block !important;
   }
 
-// Project-specific utility classes
 :global(.metrics-grid) {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -241,7 +237,6 @@ const readingTime = calculateReadingTime(content);
     margin-bottom: 0;
   }
 
-  // When there's only one child, make it span the full width
   &:has(> :only-child) {
     grid-template-columns: 1fr;
   }
