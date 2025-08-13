@@ -110,11 +110,12 @@ const readingTime = calculateReadingTime(content);
 
   .project-main {
     margin-top: calc(var(--size-xxl) + var(--font-size-base) + var(--size-xl));
-    max-width: calc(748px + (var(--size-lg) * 2));
+    max-width: calc(700px + (var(--size-lg) * 2));
 
     @include mobile {
         margin-top: var(--size-xxl);
         gap: var(--size-xxxl);
+        max-width: 748px; // Match index page on mobile
     }
   }
 
