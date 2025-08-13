@@ -21,11 +21,8 @@ const currentYear = new Date().getFullYear();
 
   .footer {
     font-size: var(--font-size-sm);
-    margin-top: var(--size-xxl);
-    
-    // Match main content layout exactly
+    margin: var(--size-xxl) auto var(--size-lg);
     max-width: 700px;
-    margin: var(--size-xxl) auto;
     
     @include mobile {
       max-width: calc(700px + (var(--size-lg) * 2));
