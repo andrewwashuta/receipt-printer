@@ -14,7 +14,7 @@ interface Props {
 const { title, description, image, type = 'website' } = Astro.props;
 const siteName = "Andrew Washuta";
 const pageTitle = title ? `${title} | ${siteName}` : siteName;
-const pageDescription = description || "Lead Experience Designer specializing in design systems and analytics platforms. Currently at 84.51°, focused on building trust through thoughtful design.";
+const pageDescription = description || "New Mexico-based product and visual designer crafting empathy-driven digital experiences. Building ad platforms for Kroger and 84.51°, and crypto protocols at Universal.";
 const pageImage = image || "/og.png";
 const siteUrl = "https://andrew.cv";
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
@@ -36,8 +36,22 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <meta property="og:image" content={`${siteUrl}${pageImage}`} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={pageTitle} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="en_US" />
+    
+    <!-- iOS-specific meta tags to force image display -->
+    <meta name="twitter:image" content={`${siteUrl}${pageImage}`} />
+    <meta name="twitter:image:alt" content={pageTitle} />
+    
+    <!-- Add these for better iOS compatibility -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-title" content={siteName} />
+    
+    <!-- For better iOS Messages preview -->
+    <meta property="og:image:secure_url" content={`${siteUrl}${pageImage}`} />
+
     
     <!-- Twitter Card tags -->
     <meta name="twitter:card" content="summary_large_image" />
