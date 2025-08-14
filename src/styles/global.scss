@@ -138,6 +138,7 @@ a {
 
 p {
   text-indent: var(--size-md);
+  text-wrap: pretty;
 }
 
 p + p {
@@ -221,6 +222,10 @@ section {
 img {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: optimize-contrast;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 code {
