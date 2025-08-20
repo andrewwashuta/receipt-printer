@@ -5,6 +5,8 @@ import progressive from '../../assets/projects/stratum/videos/progressive-disclo
 import workshop from '../../assets/projects/stratum/images/workshop.jpg';
 import stratumPoc from '../../assets/projects/stratum/images/stratum-poc.png';
 import quickDash from '../../assets/projects/stratum/images/quick-dash.png';
+import quickAction from '../../assets/projects/stratum/videos/command-prompt.mp4';
+import conditionalDataViz from '../../assets/projects/stratum/videos/conditional-data-viz.mp4';
 
 export const stratumMedia = {
   hero: {
@@ -25,5 +27,11 @@ export const stratumMedia = {
   },
   quickDash: {
     image: quickDash,
+  },
+  quickAction: {
+    video: quickAction,
+  },
+  conditionalDataViz: {
+    video: conditionalDataViz,
   }
 } as const; 
