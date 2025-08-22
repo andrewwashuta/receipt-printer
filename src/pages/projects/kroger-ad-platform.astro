@@ -6,8 +6,8 @@ import { krogerAdPlatformMedia } from "../media/kroger-ad-platform";
 
 const navItems = [
   { id: 'overview', label: 'Overview' },
-  { id: 'friction', label: 'Friction' },
   { id: 'intake-reimagined', label: 'Intake Reimagined' },
+  { id: 'friction', label: 'Friction' },
   { id: 'audience', label: 'Audience' }
 ];
 
@@ -63,8 +63,8 @@ mediaType="image"
 showCaption={true}
 hero={true}
 >
-        Entry point for the Kroger Ad Platform, built in collaboration with <a href="https://richgustke.design" target="_blank" rel="noopener noreferrer">Rich Gustke</a>—the starting point for the offsite experience that I've been building.
-        We've shifted the navigation to leverage the new Meridian side navigation, allowing for key content to use more screen real estate
+        Entry point for the Kroger Ad Platform, designed in collaboration with <a href="https://richgustke.design" target="_blank" rel="noopener noreferrer">Rich Gustke</a>—the starting point for the offsite experience that I've been building.
+        We've shifted the navigation to the sidebar, allowing for key content to use more screen real estate. There will be more dashboards in the future
 </ProjectMedia>
   <section id="overview">
     <div class="section-header">
@@ -76,8 +76,9 @@ hero={true}
         improving sales</strong> and achieving <strong>5.1x higher average sales</strong><FootnoteRef id="sales-improvement" />, Kroger Ad Platform provides brands with access to Kroger's vast audience data and targeting capabilities.
     </p>
     <p>
-        For the past 5 months, my team of incredible engineers and I have been working hard to deliver a self-serve ad platform for Kroger's offsite advertising by Q4. But what exactly is offsite advertising?
-        </p>
+        For the past 5 months, my team of incredible engineers and I have been working hard to deliver a self-serve ad platform for Kroger's offsite advertising by Q4. In the words of one of my engineers,
+        "Andrew is the only design guy I've worked with who will throw me a coding playground link for <a href="/projects/Meridian">Meridian</a> and actually debug and solve my front-end questions. He is in the trenches with engineers to solve issues for Offsite.” But what exactly is offsite advertising?
+    </p>
 <ProjectMedia
 src={krogerAdPlatformMedia.adExample.image}
 alt="An example showing two ads, one surfaced in the Kroger mobile app, another surfaced via Instagram"
@@ -103,78 +104,30 @@ hero={false}
         The current offsite experience is a Microsoft Form, heavily prone to human error
 </ProjectMedia>
 <p>
-    So, why are we building this? Well, the answer is simple—today's offsite experience is a Microsoft Form. We've received tons of feedback from our customers, 
+    So, why are we building this? Well, the answer is simple—today's offsite experience is a Microsoft Form; yes, you heard that right. We've received tons of feedback from our customers, 
     partners and internal stakeholders that it's too manual, prone to human error, and requires a lot of back and forth. If you make an error while filling it out, what follows
     is an email chain with often futile attempts to remedy the issue. 84.51° media buyers have to manually build audiences in the platform according to specs laid 
-    out in the form, context switching consistently, another opportunity for error; it's just not sustainable.
+    out in the form, context switching constantly, another opportunity for error; it's just not sustainable.
 </p>
   </section>
-  <section id="friction">
-    <div class="section-header">
-      <h2 class="section-heading"><span>Friction</span></h2>
-      <small class="label">Current onsite pain points</small>
-    </div>
-    <p>
-        Within the Kroger Ad Platform, there are two distinct experiences: onsite and offsite campaigns.
-    </p>
-    <p>Onsite<FootnoteRef id="onsite-explainer" /> campaigns came first in the platform, centered around complex campaign building and measurement workflows. 
-        Campaigns are structured through ad groups and require ongoing control and measurement. 
-    </p>
-    <p>
-        Offsite activations, take a slightly different approach. These are streamlined, one-off activations that transfer Kroger audiences to external 
-        platforms for media buyers to leverage. 
-    </p>
-    <p>While offsite activations are structurally simpler, there are shared similarities with the onsite experience, namely creating an activation loosely
-        resembles the ad group creation flow. It creates opportunities to reuse familiar patterns, while also providing a feedback loop for learning 
-        continuously from users across both experiences.
-    </p>
-    <ProjectMedia
-    src={krogerAdPlatformMedia.onsiteIntake.image}
-alt="The current onsite ad group creation experience, form fields in a content overlay"
-mediaType="image"
-showCaption={true}
-hero={false}
->
-        Onsite ad group creation experience in the Kroger Ad Platform, featuring a heavily segmented workflow in a Meridian content overlay
-</ProjectMedia>
-    <p>
-        There's a couple of key issues with the above experience, highlighted in blue. (a) Empty fields trigger validation errors immediately <code>onblur</code>, before the user has a chance to enter data. This is
-        jarring, especially as a person is tabbing through fields, making them feel like they've done something wrong before submission. (b) This flow is extremely complex, with six to seven steps, and up to three
-        layers deep in some cases. “Jumping around all over the place is very inefficient and not practical,” one advertiser said. (c) The locations of the actions are not intuitive and cause the eye to bounce around
-        the page; important actions are fixed to the bottom of the page, out of line of sight.
-    </p>
-    <p>
-        There are some users potentially filling out 20+ ad groups a day spread across multiple campaigns; clarity, continuity and context are immensely important.
-    </p>
-    <ProjectMedia
-    src={krogerAdPlatformMedia.contentOverlay.image}
-alt="The content overlay in the Kroger Ad Platform"
-mediaType="image"
-showCaption={true}
-hero={false}
->
-    <span>
-        Showcasing the depth of the content overlay, with the parent level of ad group creation (left), and a sub-flow (right) for selecting products. That sub-flow equates to three layers deep: the main level, ad group creation, and product selection
-    </span>
-</ProjectMedia>
-    <p>
-        Advertisers complained about jumping around too many pages, with too many clicks and repetitive steps. They also had trouble establishing their location. The content overlay has functionality to facilitate 
-        several layers deep of sub-flows, but switching contexts is really, really hard. In the above example, when the user drills into the product selection step to add products, they're brought
-        to what appears to be a new page, when really it's just another layer in the content overlay. Often times, there would be abandonment because of this fatigue.
-    </p>
-    <div class="metrics-grid">
-        <div class="metric">
-          <div class="metric-value">44%</div>
-          <div class="label">mentioned frustration with the inefficient workflow</div>
-        </div>
-      </div>
-  </section>
-
   <section id="intake-reimagined">
     <div class="section-header">
       <h2 class="section-heading"><span>Intake Reimagined</span></h2>
       <small class="label">Offsite</small>
     </div>
+    <p>
+      Within the Kroger Ad Platform, there are two distinct experiences: onsite and offsite campaign management.
+  </p>
+  <p>Onsite<FootnoteRef id="onsite-explainer" /> campaigns came first in the platform, centered around complex campaign building and measurement workflows. 
+      Campaigns are structured through ad groups and require ongoing control and measurement. 
+  </p>
+  <p>
+      Offsite activations take a slightly different approach. These are streamlined, one-off activations that transfer Kroger audiences to external 
+      platforms for media buyers to leverage. 
+  </p>
+  <p>While offsite activations are marginally simpler, there are shared similarities with the onsite experience. It creates opportunities to reuse familiar patterns, while also providing a feedback loop for learning 
+      continuously from users across both experiences.
+  </p>
     <ProjectMedia
     src={krogerAdPlatformMedia.offsiteIntake.video}
     alt="The new offsite intake experience, in a single, scrollable page"
@@ -184,11 +137,11 @@ hero={false}
     gradientStartColor="#EFF7FD"
     gradientEndColor="#D2EAFA"
   >
-    The brand new offsite intake experience, featuring a streamlined, intuitive flow—it's a breeze to use
+    The brand new offsite intake experience, featuring a streamlined, intuitive flow—it's a breeze to use; accessible and keyboard-navigable
 </ProjectMedia>
     <p>
-       In our latest production build for the offsite intake experience, we've directly addressed the pain points advertisers expressed. The new flow centers around intuitive design principles: a single, scrollable page 
-        that maintains context, while sub-steps are surfaced through focused modals. Also, you might notice me tabbing through fields; it's fast, accessible (thanks to Meridian components), and a lot more efficient—just imagine
+       In our latest production build for the offsite intake experience, we've directly addressed the <a href="#friction">pain points</a> advertisers expressed. The new flow centers around a single, scrollable page 
+        that maintains context, with sub-steps being surfaced through focused modals. Also, you might notice me tabbing through fields; it's fast, accessible (thanks to <a href="/projects/meridian">Meridian</a> components), and a lot more efficient—just imagine
         if those panels were separate pages.
     </p>
     <p>
@@ -225,7 +178,79 @@ hero={false}
         Product selection is a great example of this. Instead of being brought to a new page (as it is in the current onsite flow), the user can retain the same context while selecting products. 
         It's a lot more efficient, and a lot more intuitive.
       </p>
+      <ProjectMedia
+      src={krogerAdPlatformMedia.continuousScroll.image}
+      alt="A screenshot of the continuous scroll experience"
+      mediaType="image"
+      showCaption={false}
+      hero={false}
+    >
+</ProjectMedia>
+      <ProjectMedia
+      src={krogerAdPlatformMedia.panels.image}
+      alt="A screenshot of the panels experience"
+      mediaType="image"
+      showCaption={true}
+      hero={false}
+    >Panels have become a helpful standard in Kroger Ad Platform. They help neatly contain content, and are entirely collapsible and flexible
+    </ProjectMedia>
+      <p>
+        Imagine each of the above panels living on a separate page; it equates to a lot of context switching, and a lot of fatigue and frustration.
+        Not to mention, it's inherently slower and inefficient. With the new offsite continuous scroll experience, your content is immediately 
+        available, and you can jump between steps with ease; auto-save keeps your progress along the way.
+      </p>
   </section>
+
+  <section id="friction">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Friction</span></h2>
+      <small class="label">Current onsite pain points</small>
+    </div>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.onsiteIntake.image}
+alt="The current onsite ad group creation experience, form fields in a content overlay"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+        Onsite ad group creation experience in the Kroger Ad Platform, featuring a heavily segmented workflow in a Meridian content overlay
+</ProjectMedia>
+    <p>
+        There's a couple of key issues with the above experience, highlighted in blue. (a) Empty fields trigger validation errors immediately <code>onblur</code>, before the user has a chance to enter data. This is
+        jarring, especially as a person is tabbing through fields, making them feel like they've done something wrong before submission. (b) This flow is extremely complex, with six to seven steps, and up to three
+        layers deep in some cases. "Jumping around all over the place is very inefficient and not practical," one advertiser said. (c) The locations of the actions are not intuitive and cause the eye to bounce around
+        the page; important actions are fixed to the bottom of the page, out of line of sight.
+    </p>
+    <p>
+        There are some users potentially filling out 20+ ad groups a day spread across multiple campaigns; clarity, continuity and context are immensely important.
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.contentOverlay.image}
+alt="The content overlay in the Kroger Ad Platform"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+    <span>
+        Showcasing the depth of the content overlay, with the parent level of ad group creation (left), and a sub-flow (right) for selecting products. That sub-flow equates to three layers deep: the main level, ad group creation, and product selection
+    </span>
+</ProjectMedia>
+    <p>
+        Advertisers complained about jumping around too many pages, with too many clicks and repetitive steps. They also had trouble establishing their location. The content overlay has functionality to facilitate 
+        several layers deep of sub-flows, but switching context is challenging. In the above example, when the user drills into the product selection step to add products, they're brought
+        to what appears to be a new page, when really it's just another layer in the content overlay. Often times, there would be abandonment because of this fatigue.
+    </p>
+    <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-value">44%</div>
+          <div class="label">mentioned frustration with the inefficient workflow</div>
+        </div>
+      </div>
+      <p>
+        We solved these challenges (and more) and alleviated frustration with the <a href="#intake-reimagined">reimagined experience</a> in the section above.
+      </p>
+  </section>
+
   <section id="audience">
     <div class="section-header">
         <h2 class="section-heading"><span>Audience</span></h2>
