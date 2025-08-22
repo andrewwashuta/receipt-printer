@@ -9,6 +9,8 @@ import offsiteAudience from '../../assets/projects/kroger-ad-platform/videos/off
 import onsiteAudience from '../../assets/projects/kroger-ad-platform/videos/onsite-audience.mp4';
 import offsiteCreateSegment from '../../assets/projects/kroger-ad-platform/images/offsite-create-segment.png';
 import onsiteCreateSegment from '../../assets/projects/kroger-ad-platform/images/onsite-create-segment.png';
+import continuousScroll from '../../assets/projects/kroger-ad-platform/images/continuous-scroll.png';
+import panels from '../../assets/projects/kroger-ad-platform/images/panels.png';
 
 export const krogerAdPlatformMedia = {
  hero: {
@@ -43,5 +45,11 @@ export const krogerAdPlatformMedia = {
   },
   onsiteCreateSegment: {
     image: onsiteCreateSegment,
+  },
+  continuousScroll: {
+    image: continuousScroll,
+  },
+  panels: {
+    image: panels,
   },
 } as const; 
