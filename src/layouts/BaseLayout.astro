@@ -7,15 +7,14 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title?: string;
   description?: string;
-  image?: string;
   type?: string;
 }
 
-const { title, description, image, type = 'website' } = Astro.props;
+const { title, description, type = 'website' } = Astro.props;
 const siteName = "Andrew Washuta";
 const pageTitle = title ? `${title} | ${siteName}` : siteName;
 const pageDescription = description || "New Mexico-based product and visual designer crafting empathy-driven digital experiences. Building ad platforms for Kroger and 84.51°, and crypto protocols at Universal.";
-const pageImage = image || "/og.png";
+const pageImage = "/og.png";
 const siteUrl = "https://andrew.cv";
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
 ---
@@ -38,26 +37,25 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:alt" content={pageTitle} />
+    <meta property="og:image:secure_url" content={`${siteUrl}${pageImage}`} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="en_US" />
     
     <!-- iOS-specific meta tags to force image display -->
-    <meta name="twitter:image" content={`${siteUrl}${pageImage}`} />
-    <meta name="twitter:image:alt" content={pageTitle} />
-    
-    <!-- Add these for better iOS compatibility -->
     <meta name="format-detection" content="telephone=no" />
     <meta name="apple-mobile-web-app-title" content={siteName} />
     
-    <!-- For better iOS Messages preview -->
-    <meta property="og:image:secure_url" content={`${siteUrl}${pageImage}`} />
-
+    <!-- iOS Messages specific meta tags -->
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     
     <!-- Twitter Card tags -->
+    <meta name="twitter:domain" content="andrew.cv" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={`${siteUrl}${pageImage}`} />
+    <meta name="twitter:image:alt" content={pageTitle} />
     
     <!-- Additional meta tags -->
     <meta name="author" content={siteName} />
