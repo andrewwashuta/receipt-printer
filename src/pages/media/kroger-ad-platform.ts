@@ -13,6 +13,9 @@ import continuousScroll from '../../assets/projects/kroger-ad-platform/images/co
 import panels from '../../assets/projects/kroger-ad-platform/images/panels.png';
 import audienceHealth from '../../assets/projects/kroger-ad-platform/videos/audience-health.mp4';
 import krojiMarketing from '../../assets/projects/kroger-ad-platform/videos/kroji-marketing.mp4';
+import activationSummaryOriginal from '../../assets/projects/kroger-ad-platform/images/summary-og.png';
+import activationSummaryNew from '../../assets/projects/kroger-ad-platform/images/summary-refined.png';
+import detailPanel from '../../assets/projects/kroger-ad-platform/images/detail-panel.png';
 
 export const krogerAdPlatformMedia = {
  hero: {
@@ -59,5 +62,14 @@ export const krogerAdPlatformMedia = {
   },
   krojiMarketing: {
     video: krojiMarketing,
+  },
+  activationSummaryOriginal: {
+    image: activationSummaryOriginal,
+  },
+  activationSummaryNew: {
+    image: activationSummaryNew,
+  },
+  detailPanel: {
+    image: detailPanel,
   },
 } as const; 

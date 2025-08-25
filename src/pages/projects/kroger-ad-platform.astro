@@ -8,7 +8,8 @@ const navItems = [
   { id: 'overview', label: 'Overview' },
   { id: 'intake-reimagined', label: 'Intake Reimagined' },
   { id: 'friction', label: 'Friction' },
-  { id: 'audience', label: 'Audience' },
+  { id: 'audience', label: 'Building Audiences' },
+  { id: 'activation-summary', label: 'Activation Summary' },
   { id: 'cross-marketing', label: 'Cross Marketing' }
 ];
 
@@ -46,6 +47,10 @@ const footnotes = [
   {
     id: "gritty",
     text: "I say gritty, because the navigation is actually incorrect in my prototype. It's a concept, after all."
+  },
+  {
+    id: "inline-edit",
+    text: "This second inline edit approach is not shown in the above image."
   }
 ];
 ---
@@ -169,7 +174,7 @@ hero={false}
       </div>
       <ProjectMedia
       src={krogerAdPlatformMedia.offsiteModal.video}
-      alt="The new offsite intake experience, in a single, scrollable page"
+      alt="The new product selection experience, surfaced in a modal"
       mediaType="video"
       showCaption={true}
       hero={false}
@@ -201,8 +206,8 @@ hero={false}
     >Panels have become a helpful standard in Kroger Ad Platform. They help neatly contain content, and are entirely configurable and flexible, with properties for expanding and collapsing, and more
     </ProjectMedia>
       <p>
-        Now, imagine each of the above panels living on a separate page; it equates to a lot of context switching, causing a significant amount of fatigue and frustration.
-        Not to mention, it's inherently slower and inefficient. With the new continuous scroll experience, as we've deemed it, your content is immediately 
+        Now, imagine if each of the above panels were living on a separate page; it equates to a lot of context switching, causing a significant amount of fatigue and frustration.
+      With the new continuous scroll experience, your content is immediately 
         available, and you can jump between sections and steps with ease; auto-save keeps your progress along the way.
       </p>
   </section>
@@ -214,7 +219,7 @@ hero={false}
     </div>
     <p>
       The transformation above represents months of iteration based on advertiser feedback. 
-      To appreciate why each design decision matters, let's dive into the experience and friction points that were frustrating advertisers on a daily basis:
+      To appreciate why each design decision matters, let's dive into the friction points that were frustrating advertisers on a daily basis:
     </p>
     <ProjectMedia
     src={krogerAdPlatformMedia.onsiteIntake.image}
@@ -227,14 +232,15 @@ hero={false}
         Meridian team, we worked closely with the Kroger Ad Platform team to build this experience composably—and got a ton of feedback in the process from our partners
 </ProjectMedia>
     <p>
-        There's a couple of key issues with the above experience, highlighted in blue.
+        Through sessions with users, we learned of a couple of key issues with the above experience, highlighted in blue.
     </p>
-    <p> (a) Empty fields trigger validation errors immediately <code>onblur</code>, before the user has a chance to enter data. This is
+    <p> (a) Empty fields trigger validation errors immediately <code>onblur</code>, before the user even has a chance to enter data. This is
         jarring, especially as a person is tabbing through fields, making them feel like they've done something wrong before submission. 
     </p>
     <p>
         (b) This flow is extremely complex, with six to seven steps, and up to three
         layers deep in some cases. “Jumping around all over the place is very inefficient and not practical,” one advertiser said. 
+        Once you've hit the third layer of depth, it's hard to recall where you were in the prior process.
     </p>
     <p>
         (c) The locations of the actions are not intuitive and cause the eye to bounce around
@@ -242,7 +248,7 @@ hero={false}
         <strong>Continue</strong> progresses you to the next step, but ultimately changes if you're on the last step. It's a lot of cognitive load.
     </p>
     <p>
-        There are some users potentially filling out 20+ ad groups a day spread across multiple campaigns; clarity, continuity and context are immensely important.
+        There are some users potentially filling out 20+ ad groups (or activations) a day spread across multiple campaigns; clarity, continuity and context are immensely important.
     </p>
     <ProjectMedia
     src={krogerAdPlatformMedia.contentOverlay.image}
@@ -257,7 +263,7 @@ hero={false}
 </ProjectMedia>
     <p>
         Advertisers complained about jumping around too many pages, with too many clicks and repetitive steps. They also had trouble establishing their location. The content overlay has functionality to facilitate 
-        several layers deep of sub-flows, but switching context is challenging. In the above example, when the user drills into the product selection step to add products, they're brought
+        several layers deep of sub-flows, but switching context is challenging. In the above example, the left screen is the content overlay while creating an ad group. When the user drills into the product selection step to add products, they're brought
         to what appears to be a new page, when really it's just another layer in the content overlay. Often times, there would be abandonment because of this fatigue.
     </p>
     <div class="metrics-grid">
@@ -273,7 +279,7 @@ hero={false}
 
   <section id="audience">
     <div class="section-header">
-        <h2 class="section-heading"><span>Audience</span></h2>
+        <h2 class="section-heading"><span>Building Audiences</span></h2>
       </div>
     <p>
         Audience building<FootnoteRef id="audience-segment" /> is a key component of the offsite experience. It's the foundation of our activations; at the end of the day, buyers just want the audience and targeting data
@@ -366,6 +372,82 @@ hero={false}
 </p>
   </section>
 
+  <section id="activation-summary">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Activation Summary</span></h2>
+    </div>
+<p>
+  Once someone has built (including the audiences above) and submitted an activation, they're brought to the activation summary page. They can see a summary of the submitted activation, 
+  and if changes are requested by a reviewer, they are able to make edits and resubmit. Throughout the review process, the activation summary is heavily frequented by reviewers, less often by submitters.
+</p>
+    <p>
+      Our first thought as designers is not always the right one. We have to balance our own assumptions with the needs of the user. In the case of the activation summary,
+       we learned through quick guerrilla sessions with internal buyers that we needed to go back to the drawing board and rethink our approach.
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.activationSummaryOriginal.image}
+    alt="Activation summary concept with metadata stored in a sidebar alongside the main content area"
+    mediaType="image"
+    showCaption={true}
+    hero={false}
+    >
+    The original activation summary concept, with metadata stored in a sidebar alongside the main content area
+    </ProjectMedia>
+    <p>
+      We were moving quickly in the early stages of building the offsite experience and had an idea to move the details section into a side panel for quick overview and editing. 
+      Despite being able to much more easily scan the metadata, we found that it took up a lot of valuable horizontal space, only to have a lot of dead space beneath it. 
+      We also heard direct feedback from stakeholders around the sheer volume of metadata we'd be scaling into. For example, is this a full summary of the activation? 
+      Is it a couple of key highlights, and if so, how do you determine which ones are surfaced in the panel?
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.detailPanel.image}
+    alt="The details panel, showcasing a ready only view, an editable view, and an alternative modal option"
+    mediaType="image"
+    showCaption={true}
+    hero={false}
+    >
+    Details panel—three ways. A read only view, an inline edit, and an alternative modal option
+  </ProjectMedia>
+    <p> 
+      Beyond space constraints, the sidebar design created confusion around when and how users could edit information. 
+      Depending on the status of the activation and the role accessing it, certain pieces of metadata are editable while in review. 
+      This created three potential editing approaches, each with its own set of complications.
+    </p>
+    <p> 
+      The inline editing approach mixed editable fields with read-only text, creating inconsistency that was difficult to quickly scan. 
+      The alternative was an inline edit that featured all fields<FootnoteRef id="inline-edit" />—most editable, some disabled, and some read-only—but, 
+      having a mix of states caused confusion. Plus, with more fields, the height of the panel increased drastically.
+    </p>
+    <p>
+      The modal approach seemed promising, but raised fundamental questions: should it include all fields from the original intake form, or just a subset? And if only some fields, 
+      how do we determine which ones are most critical for the workflow? How are they intentionally surfaced in a way that reflects their original grouping and position in the intake flow?
+      Finally, buyers we spoke with made it clear the modal felt disjointed, considering only editable fields would be brought from the details panel. Obviously, there is metadata that is
+      system-generated and not editable, like Activation ID, but it was still jarring to see that shift when a user enters the Edit Details modal.
+    </p>
+    <p>
+      This commingling of interaction states across all approaches created significant cognitive load, 
+      forcing users to decipher what was editable, when, and why—detracting from their primary goal of simply reviewing and refining activation details.
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.activationSummaryNew.image}
+    alt="The refined activation summary concept, with metadata stored in a sidebar alongside the main content area"
+    mediaType="image"
+    showCaption={true}
+    hero={false}
+    >
+    Today's activation summary, not as pretty, but a lot more functional and scalable
+    </ProjectMedia>
+    <p>
+      Ultimately, with everything we learned, we opted to go with a more traditional approach, with the metadata stored in the upper part of the main content area. 
+      It matched the pattern that we had crafted in the onsite experience and made it more visible and accessible for reviewers. 
+      While this solution may not be as visually elegant as our original sidebar concept, it prioritized usability and scalability over aesthetics—a crucial lesson in designing for complex workflows.
+    </p>
+    <p>
+      I still firmly believe there's a place for a details panel, but future iterations will need to be grounded in deeper research and clearer IA principles, when it comes to editing. 
+      The current solution provides a solid foundation while leaving room for enhancement, such as the collapsible panel functionality we've implemented elsewhere on the summary page.
+    </p>
+  </section>
+
   <section id="cross-marketing">
     <div class="section-header">
       <h2 class="section-heading"><span>Cross Marketing</span></h2>
@@ -382,14 +464,15 @@ hero={false}
     showCaption={true}
     hero={false}
     >
-    A fun, gritty concept we're working on<FootnoteRef id="gritty" />, leveraging Kroji's representing Kroger shoppers, to drive offsite media upsell
+    A fun, gritty concept we're working on<FootnoteRef id="gritty" />, leveraging Kroji cards representing Kroger shoppers, to drive offsite media access
     </ProjectMedia>
     <p>
       I spoke earlier about the difference beteween onsite and offsite media in <a href="#intake-reimagined">Intake Reimagined</a>.
       Currently, there's little overlap between buyers who are operating in both. In the same breath, our audience data
       is a powerful asset to drive offsite media success. So, when a user has access to <strong>only</strong> Kroger's onsite
-      media platform, and attempts to access the offsite experience, they're presented with the hook above; a motion exploration
-      leveraging Krojis, a core part of Kroger's brand.
+      media platform, and attempts to access the offsite experience, they're presented with the banner above; a motion exploration
+      leveraging Kroji cards, a core part of Kroger's brand.
     </p>
   </section>
+
 </ProjectLayout> 
