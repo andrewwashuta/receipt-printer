@@ -7,6 +7,7 @@ import { krogerAdPlatformMedia } from "../media/kroger-ad-platform";
 const navItems = [
   { id: 'overview', label: 'Overview' },
   { id: 'intake-reimagined', label: 'Intake Reimagined' },
+  { id: 'agentic', label: 'Kira: Agentic AI' },
   { id: 'friction', label: 'Friction' },
   { id: 'audience', label: 'Building Audiences' },
   { id: 'activation-summary', label: 'Activation Summary' },
@@ -69,8 +70,8 @@ mediaType="image"
 showCaption={true}
 hero={true}
 >
-        Entry point for the Kroger Ad Platform, designed in collaboration with <a href="https://richgustke.design" target="_blank" rel="noopener noreferrer">Rich Gustke</a>—the starting point for the offsite experience that I've been building.
-        We've shifted the navigation globally to the sidebar, allowing for key content to use more screen real estate
+        Entry point for the Kroger Ad Platform, the beginning of our offsite advertising experience that I've been building alongside an incredible team.
+        Featuring a conversation with our agentic AI, <a href="#agentic">Kira</a>.
 </ProjectMedia>
   <section id="overview">
     <div class="section-header">
@@ -210,6 +211,123 @@ hero={false}
       With the new continuous scroll experience, your content is immediately 
         available, and you can jump between sections and steps with ease; auto-save keeps your progress along the way.
       </p>
+      <p>
+        Before I jump into the <a href="#friction">why</a> behind our reimagined experience, let's take a look at where we're headed.
+  </section>
+
+  <section id="agentic">
+    <div class="section-header">
+      <h2 class="section-heading"><span>Kira: Agentic AI</span></h2>
+      <small class="label">Concept</small>
+    </div>
+    <p>Building activations is a mildly complex process, and a lot of times there is potential for replication across multiple builds. 
+      In the interest of saving time for people, I've been experimenting with the idea of agentic AI, aptly named Kira, that can help build activations, 
+      or at least give our customers a starting point to work off of. 
+    </p>
+    <ProjectMedia
+    src={krogerAdPlatformMedia.kiraHero.image}
+    alt="A snippet of the expanded conversation working with Kira, an agentic AI for Kroger Ad Platform"
+    mediaType="image"
+    showCaption={true}
+    hero={false}
+    >
+    A snippet of the expanded chat experience with Kira, an agentic AI for Kroger Ad Platform. Kira helps prebuild activations and provide insights, making
+    the build process faster and more efficient for people
+  </ProjectMedia>
+<p>Limitless minds, as 84.51°'s values speak to, is a big part of what drives my exploration. It's really important to me to help push the boundaries of what's 
+  possible, and often times it's a lot easier to show than it is to tell. I've paired closely with my team to help tell the story of Kira.
+</p>
+<p>
+It's important to understand context in the chat experience with Kira. You can initiate a conversation from anywhere in the platform,
+and Kira carries over previous conversations and relevant account information to help. 
+</p>
+<ProjectMedia
+src={krogerAdPlatformMedia.kiraContext.image}
+alt="Showcasing the entry point into KAP with an expanded popover containing a conversation with Kira"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+No matter what page you're on, you can initiate a conversation with Kira, who carries over relevant information
+</ProjectMedia>
+<p>
+  Kira's capabilities are far-reaching, but Kira thoughtfully scales into complexity. While the conversation begins in a much slimmer format in a small chat popover,
+  as Kira builds artifacts, you'll notice the experience allows for expansion to accommodate more complexity.
+</p>
+<ProjectMedia
+src={krogerAdPlatformMedia.kiraFlow.image}
+alt="Three chat popovers detailing different steps of the conversation with Kira"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+An example of what a conversation with Kira might look like, with the option to expand the chat panel to accommodate the generated activation
+</ProjectMedia>
+<p>Once Kira generates an activation from your natural language request, you're able to expand into a full workspace modal. 
+  This expansion transforms the simple chat into a lightweight review environment where users can examine the details of what Kira built.
+</p>
+<ProjectMedia
+src={krogerAdPlatformMedia.kiraTabs.video}
+alt="A walkthrough of the Kira tabs experience"
+mediaType="video"
+showCaption={true}
+hero={false}
+>
+The expanded workspace modal, featuring the summary tab and the process tab. The user can quickly switch between the two, to better understand why Kira pre-built the activation that way
+</ProjectMedia>
+<p>
+  The modal uses a dual-panel approach—the left side presents the complete activation summary with health scoring, platform configuration, 
+  audience details, and product selection, while the right maintains the conversational interface for continued refinement. 
+  Users can switch between viewing the activation details and exploring Kira's decision-making process through tabbed navigation.
+</p>
+<p>
+  The health scoring system within the summary (and in the <a href="#audience">audience builder</a>, as you'll see below) 
+  provides immediate validation that the activation meets platform requirements and follows best practices. 
+  Kira's suggestions appear contextually, offering optimizations like budget adjustments for seasonal campaigns or audience expansion opportunities, 
+  and users can quickly jump into the edit flow with their pre-built activation.
+</p>
+<ProjectMedia
+src={krogerAdPlatformMedia.kiraProcess.image}
+alt="A screenshot of the Kira process tab in the expanded workspace modal, revealing step-by-step reasoning behind key decisions Kira made during the build process"
+mediaType="image"
+showCaption={true}
+hero={false}
+>
+Kira's Process tab, revealing the step-by-step reasoning behind key decisions Kira made during the build process
+</ProjectMedia>
+<p>This transparency shows users exactly how platform configuration was determined, why specific audience segments were created or selected, 
+  and how budget allocation was optimized to help meet broader campaign goals.</p>
+<p>
+  The process documentation follows the logical workflow, beginning with platform setup and contact assignment, moving through budget and flight optimization, 
+  then product selection based on targeting criteria, audience building with segment justification, and finally validation against platform requirements. 
+  Each step includes timing indicators and specific rationale, helping users understand not just what Kira built, but why those choices make strategic sense.
+</p>
+<p>
+Overall, revealing processes like these helps build trust in Kira's capabilities while serving an educational function, helping users learn how they can apply these principles to future activations.
+</p>
+<ProjectMedia
+src={krogerAdPlatformMedia.kiraExperience.video}
+alt="A walkthrough of the Kira conversational experience"
+mediaType="video"
+showCaption={true}
+hero={false}
+gradientStartColor="#DEF5FC"
+gradientEndColor="#CDE6FA"
+>
+The conceptual experience for conversing with Kira
+</ProjectMedia>
+<p>
+  Kira represents an early exploration into how conversational AI might transform activation or campaign workflows in the Kroger Ad Platform. 
+  While still in the conceptual phase, the patterns and interactions developed here could inform future integrations with emerging AI capabilities across 84.51°'s portfolio. 
+  </p>
+  <p>
+  The next phase will involve early discovery research to validate whether the progressive complexity approach truly reduces cognitive load, 
+  and technical feasibility discussions with our engineers to understand what level of automation is actually achievable within our existing constraints. 
+  </p>
+  <p>
+  At it's core, we want Kira to be genuinely useful—an AI that enhances rather than replaces strategic thinking in our workflows and helps users
+  build better activations, faster.
+</p>
   </section>
 
   <section id="friction">

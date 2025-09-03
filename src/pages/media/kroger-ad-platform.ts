@@ -16,6 +16,12 @@ import krojiMarketing from '../../assets/projects/kroger-ad-platform/videos/kroj
 import activationSummaryOriginal from '../../assets/projects/kroger-ad-platform/images/summary-og.png';
 import activationSummaryNew from '../../assets/projects/kroger-ad-platform/images/summary-refined.png';
 import detailPanel from '../../assets/projects/kroger-ad-platform/images/detail-panel.png';
+import kiraHero from '../../assets/projects/kroger-ad-platform/images/kira-hero.png';
+import kiraExperience from '../../assets/projects/kroger-ad-platform/videos/kira-experience.mp4';
+import kiraContext from '../../assets/projects/kroger-ad-platform/images/kira-context.png';
+import kiraFlow from '../../assets/projects/kroger-ad-platform/images/kira-flow.png';
+import kiraProcess from '../../assets/projects/kroger-ad-platform/images/kira-process.png';
+import kiraTabs from '../../assets/projects/kroger-ad-platform/videos/kira-tabs.mp4';
 
 export const krogerAdPlatformMedia = {
  hero: {
@@ -71,5 +77,23 @@ export const krogerAdPlatformMedia = {
   },
   detailPanel: {
     image: detailPanel,
+  },
+  kiraHero: {
+    image: kiraHero,
+  },
+  kiraExperience: {
+    video: kiraExperience,
+  },
+  kiraContext: {
+    image: kiraContext,
+  },
+  kiraFlow: {
+    image: kiraFlow,
+  },
+  kiraProcess: {
+    image: kiraProcess,
+  },
+  kiraTabs: {
+    video: kiraTabs,
   },
 } as const; 
