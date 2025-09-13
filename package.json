@@ -10,9 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/vercel": "^8.2.6",
+    "@astrojs/vercel": "^8.2.7",
     "@vercel/analytics": "^1.5.0",
-    "astro": "^5.13.2"
+    "astro": "^5.13.7"
   },
   "devDependencies": {
     "sass": "^1.81.0",
