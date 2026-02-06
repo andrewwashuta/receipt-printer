@@ -341,9 +341,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   .receipt-line {
-    font-family: 'VT323', monospace;
-    font-size: 18px;
-    line-height: 1.5;
+    font-family: 'Geist Pixel', 'VT323', ui-monospace, monospace;
+    font-size: 16px;
+    line-height: 1.6;
     color: #1a1a1a;
     white-space: pre;
     margin: 0;
@@ -374,8 +374,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   .receipt-line.big {
-    font-size: 26px;
-    letter-spacing: 3px;
+    font-size: 22px;
+    letter-spacing: 2px;
   }
 
   .receipt-line.bold {
@@ -540,8 +540,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     background: #333;
     border: 1px solid #555;
     color: #f5f0e8;
-    font-family: 'VT323', monospace;
-    font-size: 20px;
+    font-family: 'Geist Pixel', 'VT323', ui-monospace, monospace;
+    font-size: 18px;
     width: 44px;
     height: 44px;
     display: flex;
@@ -574,8 +574,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     background: #333;
     border: 1px solid #555;
     color: #f5f0e8;
-    font-family: 'VT323', monospace;
-    font-size: 16px;
+    font-family: 'Geist Pixel', 'VT323', ui-monospace, monospace;
+    font-size: 14px;
     padding: 8px 16px;
     cursor: pointer;
     transition: background 0.2s, opacity 0.3s, border-color 0.2s;
@@ -647,22 +647,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .receipt-line {
-      font-size: 16px;
-    }
-
-    .receipt-line.big {
-      font-size: 22px;
-      letter-spacing: 2px;
-    }
-  }
-
-  @media (max-width: 360px) {
-    .receipt-line {
       font-size: 14px;
     }
 
     .receipt-line.big {
       font-size: 18px;
+      letter-spacing: 1px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .receipt-line {
+      font-size: 12px;
+    }
+
+    .receipt-line.big {
+      font-size: 16px;
     }
   }
 </style>
@@ -890,7 +890,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         ctx.fillStyle = '#f5f0e8';
         ctx.fillRect(0, 0, 160, 160);
         ctx.fillStyle = '#1a1a1a';
-        ctx.font = '14px VT323';
+        ctx.font = '14px monospace';
         ctx.textAlign = 'center';
         ctx.fillText('[PORTRAIT]', 80, 80);
       };
