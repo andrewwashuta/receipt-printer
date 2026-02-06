@@ -1,45 +1,904 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import SideNav from "../components/SideNav.astro";
-import Intro from "../pages/index/intro.astro";
-import Now from "../pages/index/now.astro";
-import Experience from "../pages/index/experience.astro";
-import Projects from "../pages/index/projects.astro";
-import Header from "../pages/index/header.astro";
-import Education from "../pages/index/education.astro";
-import Contact from "../pages/index/contact.astro";
+import ReceiptLayout from "../layouts/ReceiptLayout.astro";
+import Avatar from '../assets/index/images/andrewwashuta.png';
+
+// Build-time date/time for receipt header
+const now = new Date();
+const dateStr = now.toISOString().split('T')[0];
+const timeStr = now.toTimeString().split(' ')[0];
+
+// Order number: days since an estimated birthdate
+const birthDate = new Date(1992, 5, 15); // June 15, 1992
+const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24));
 ---
 
-<BaseLayout 
-  description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Building ad platforms for Kroger and 84.51°, and crypto protocols at Universal."
+<ReceiptLayout
+  description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
 >
-    <SideNav variant="sidebar" />
-    <main>
-        <Header />
-        <SideNav variant="mobile" />
-        <Intro />
-        <Projects />
-        <Now />
-        <Experience />
-        <Education />
-        <Contact />
-    </main>
-</BaseLayout>
+  <!-- Sound Toggle -->
+  <button class="sound-toggle" id="soundToggle" aria-label="Toggle printer sounds" title="Toggle printer sounds">
+    <span class="sound-icon" id="soundIcon">🔇</span>
+  </button>
+
+  <!-- Skip Animation -->
+  <button class="skip-btn" id="skipBtn" aria-label="Skip printing animation">
+    SKIP ▶▶
+  </button>
+
+  <div class="receipt-wrapper">
+    <div class="receipt" id="receipt">
+
+      <!-- ============================================ -->
+      <!-- TOP EDGE (torn from previous receipt)        -->
+      <!-- ============================================ -->
+      <div class="receipt-top-tear" data-print></div>
+
+      <!-- ============================================ -->
+      <!-- STORE HEADER                                  -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line center" data-print>================================</pre>
+        <pre class="receipt-line center big" data-print>    ANDREW WASHUTA</pre>
+        <pre class="receipt-line center" data-print>    PRODUCT DESIGNER</pre>
+        <pre class="receipt-line center" data-print>================================</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TRANSACTION META                              -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line" data-print>DATE: {dateStr}    {timeStr}</pre>
+        <pre class="receipt-line" data-print>ORDER #: {daysAlive}</pre>
+        <pre class="receipt-line" data-print>CASHIER: THE INTERNET</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- ABOUT                                         -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>ABOUT</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>Hey there, I'm Andrew — husband, dad, trail runner, Parks lover, designer. Based in New Mexico.</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>Currently shipping ad platforms and leading design systems at 84.51° by day, while building a wrapped asset protocol at Universal by night.</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>I believe in empathy-driven design built through collaboration with teams that care deeply about the people using their products.</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>LOCATION: Albuquerque, NM</pre>
+        <pre class="receipt-line" data-print>ELEVATION: 5,312 ft</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- SKILLS                                        -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>SKILLS</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>  1x  Product Design</pre>
+        <pre class="receipt-line" data-print>  1x  Design Systems</pre>
+        <pre class="receipt-line" data-print>  1x  Visual Design</pre>
+        <pre class="receipt-line" data-print>  1x  Brand Design</pre>
+        <pre class="receipt-line" data-print>  1x  User Research</pre>
+        <pre class="receipt-line" data-print>  1x  Prototyping</pre>
+        <pre class="receipt-line" data-print>  1x  Front-end Dev</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- PORTRAIT (Dithered)                           -->
+      <!-- ============================================ -->
+      <div class="receipt-section portrait-section" data-print-section>
+        <div class="portrait-container" data-print data-src={Avatar.src}>
+          <canvas id="portraitCanvas"></canvas>
+          <noscript>
+            <img src={Avatar.src} alt="Andrew Washuta" width="280" />
+          </noscript>
+        </div>
+        <pre class="receipt-line center faded" data-print>[ THERMAL PORTRAIT ]</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- EXPERIENCE                                    -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>EXPERIENCE</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line bold" data-print>84.51°</pre>
+        <pre class="receipt-line" data-print>  Lead Product Designer</pre>
+        <pre class="receipt-line row" data-print><span>  Ad Platforms</span><span>2020-NOW</span></pre>
+        <pre class="receipt-line row" data-print><span>  Design Systems</span><span>2020-NOW</span></pre>
+        <pre class="receipt-line row" data-print><span>  Insights</span><span>2017-2020</span></pre>
+        <pre class="receipt-line" data-print>  Senior UI Designer</pre>
+        <pre class="receipt-line row" data-print><span>  Insights</span><span>2017</span></pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line bold" data-print>Universal</pre>
+        <pre class="receipt-line row" data-print><span>  Design Lead</span><span>2022-NOW</span></pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line bold" data-print>Clubessential</pre>
+        <pre class="receipt-line row" data-print><span>  Web Designer</span><span>2016-2017</span></pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line bold" data-print>UnitedHealthcare</pre>
+        <pre class="receipt-line row" data-print><span>  Brand Designer</span><span>2014-2016</span></pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- PROJECTS                                      -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>PROJECTS</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>  <a href="/projects/kroger-ad-platform">Kroger Ad Platform: Offsite</a></pre>
+        <pre class="receipt-line faded" data-print>  Kroger Precision Marketing</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>  <a href="/projects/meridian">Meridian Design System</a></pre>
+        <pre class="receipt-line faded" data-print>  84.51°</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>  <a href="/projects/stratum">Stratum: Analytics Platform</a></pre>
+        <pre class="receipt-line faded" data-print>  84.51°</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>  <a href="https://universal.xyz" target="_blank">Universal Platform</a></pre>
+        <pre class="receipt-line faded" data-print>  Universal</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>  <a href="/projects/personal">Miscellany</a></pre>
+        <pre class="receipt-line faded" data-print>  Passion projects & explorations</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- NOW                                           -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>CURRENTLY</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>  &gt; Cherishing every moment with my wife, Seneca, and son, Thor</pre>
+        <pre class="receipt-line wrap" data-print>  &gt; Living as a "cyborg" healing a broken hip socket</pre>
+        <pre class="receipt-line wrap" data-print>  &gt; Dreaming up recipes with unique ingredients</pre>
+        <pre class="receipt-line wrap" data-print>  &gt; Collecting vintage National Park brochures</pre>
+        <pre class="receipt-line wrap" data-print>  &gt; Falling back in love with code</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- EDUCATION                                     -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>EDUCATION</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line bold" data-print>Clarkson University</pre>
+        <pre class="receipt-line" data-print>  B.S. Digital Arts & Sciences</pre>
+        <pre class="receipt-line" data-print>  Minor: Business Administration</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line center" data-print>================================</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- SUBTOTAL / CONTACT                            -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>CONTACT</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line" data-print>EMAIL:     <a href="mailto:hello@andrew.cv">hello@andrew.cv</a></pre>
+        <pre class="receipt-line" data-print>LINKEDIN:  <a href="https://linkedin.com/in/awashuta" target="_blank">/in/awashuta</a></pre>
+        <pre class="receipt-line" data-print>X:         <a href="https://x.com/awashuta" target="_blank">@awashuta</a></pre>
+        <pre class="receipt-line" data-print>INSTAGRAM: <a href="https://instagram.com/andrewwashuta" target="_blank">@andrewwashuta</a></pre>
+        <pre class="receipt-line" data-print>REFRAKT:   <a href="https://refrakt.app/andrew" target="_blank">refrakt.app/andrew</a></pre>
+        <pre class="receipt-line" data-print>WEB:       <a href="https://andrew.cv">andrew.cv</a></pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line center" data-print>================================</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- FOOTER / THANK YOU                            -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line center" data-print>THANK YOU FOR VISITING!</pre>
+        <pre class="receipt-line center faded" data-print>Have a great day.</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line center faded" data-print>Items sold final.</pre>
+        <pre class="receipt-line center faded" data-print>No returns on experience.</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line center" data-print>Made with love in New Mexico</pre>
+        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line center" data-print>- - - - - - - - - - - - - - -</pre>
+        <pre class="receipt-line center" data-print>        ✂ tear here ✂</pre>
+      </div>
+
+      <!-- Bottom torn edge -->
+      <div class="receipt-bottom-tear" data-print></div>
+
+    </div>
+  </div>
+</ReceiptLayout>
 
 <style>
-    .profile-image {
-        border-radius: 50%;
-        object-fit: cover;
+  /* ============================================ */
+  /* RECEIPT WRAPPER & CONTAINER                   */
+  /* ============================================ */
+
+  .receipt-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .receipt {
+    width: 380px;
+    max-width: 100%;
+    background: #f5f0e8;
+    padding: 28px 24px;
+    position: relative;
+    transform: rotate(-1.2deg);
+    box-shadow:
+      0 1px 4px rgba(0,0,0,0.2),
+      0 4px 16px rgba(0,0,0,0.15),
+      0 12px 48px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  /* Paper texture overlay - subtle horizontal feed lines */
+  .receipt::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.012) 2px,
+        rgba(0,0,0,0.012) 3px
+      );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Noise texture for paper grain */
+  .receipt::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* Top torn edge - from previous receipt */
+  .receipt-top-tear {
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: #f5f0e8;
+    clip-path: polygon(
+      0% 100%, 2% 40%, 4% 100%, 6% 50%, 8% 100%, 10% 30%, 
+      12% 100%, 14% 60%, 16% 100%, 18% 40%, 20% 100%, 22% 50%,
+      24% 100%, 26% 30%, 28% 100%, 30% 60%, 32% 100%, 34% 40%,
+      36% 100%, 38% 50%, 40% 100%, 42% 30%, 44% 100%, 46% 60%,
+      48% 100%, 50% 40%, 52% 100%, 54% 50%, 56% 100%, 58% 30%,
+      60% 100%, 62% 60%, 64% 100%, 66% 40%, 68% 100%, 70% 50%,
+      72% 100%, 74% 30%, 76% 100%, 78% 60%, 80% 100%, 82% 40%,
+      84% 100%, 86% 50%, 88% 100%, 90% 30%, 92% 100%, 94% 60%,
+      96% 100%, 98% 40%, 100% 100%
+    );
+    z-index: 3;
+  }
+
+  /* Bottom torn edge */
+  .receipt-bottom-tear {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: #f5f0e8;
+    clip-path: polygon(
+      0% 0%, 3% 70%, 5% 0%, 8% 60%, 11% 0%, 13% 80%, 
+      16% 0%, 19% 50%, 21% 0%, 24% 70%, 27% 0%, 29% 60%,
+      32% 0%, 35% 80%, 37% 0%, 40% 50%, 43% 0%, 45% 70%,
+      48% 0%, 51% 60%, 53% 0%, 56% 80%, 59% 0%, 61% 50%,
+      64% 0%, 67% 70%, 69% 0%, 72% 60%, 75% 0%, 77% 80%,
+      80% 0%, 83% 50%, 85% 0%, 88% 70%, 91% 0%, 93% 60%,
+      96% 0%, 98% 80%, 100% 0%
+    );
+    z-index: 3;
+  }
+
+  /* ============================================ */
+  /* RECEIPT LINES                                 */
+  /* ============================================ */
+
+  .receipt-section {
+    position: relative;
+    z-index: 3;
+  }
+
+  .receipt-line {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #1a1a1a;
+    white-space: pre;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    display: block;
+    opacity: 0;
+    transform: translateY(1px);
+    transition: opacity 0.05s ease, transform 0.05s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .receipt-line.printed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .receipt-line.wrap {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-width: 100%;
+  }
+
+  .receipt-line.center {
+    text-align: center;
+  }
+
+  .receipt-line.big {
+    font-size: 26px;
+    letter-spacing: 3px;
+  }
+
+  .receipt-line.bold {
+    color: #000;
+    font-weight: normal;
+    letter-spacing: 1px;
+  }
+
+  .receipt-line.faded {
+    color: #777;
+  }
+
+  /* Row layout for aligned columns */
+  .receipt-line.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .receipt-line.row.printed {
+    display: flex;
+  }
+
+  .receipt-line.row span {
+    white-space: nowrap;
+  }
+
+  /* Links in receipt */
+  .receipt-line :global(a) {
+    color: #1a1a1a;
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    transition: color 0.15s;
+  }
+
+  .receipt-line :global(a:hover) {
+    color: #555;
+  }
+
+  /* ============================================ */
+  /* PORTRAIT                                      */
+  /* ============================================ */
+
+  .portrait-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .portrait-container.printed {
+    opacity: 1;
+  }
+
+  #portraitCanvas {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* ============================================ */
+  /* PRINT CURSOR EFFECT                           */
+  /* ============================================ */
+
+  .receipt-line.printing::after {
+    content: "█";
+    animation: blink 0.4s step-end infinite;
+    color: #1a1a1a;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ============================================ */
+  /* SOUND TOGGLE                                  */
+  /* ============================================ */
+
+  .sound-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: #333;
+    border: 1px solid #555;
+    color: #f5f0e8;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    border-radius: 4px;
+  }
+
+  .sound-toggle:hover {
+    background: #444;
+    border-color: #777;
+  }
+
+  .sound-toggle.active {
+    background: #4a3;
+    border-color: #6c5;
+  }
+
+  /* ============================================ */
+  /* SKIP BUTTON                                   */
+  /* ============================================ */
+
+  .skip-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    background: #333;
+    border: 1px solid #555;
+    color: #f5f0e8;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.3s, border-color 0.2s;
+    border-radius: 4px;
+  }
+
+  .skip-btn:hover {
+    background: #444;
+    border-color: #777;
+  }
+
+  .skip-btn.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ============================================ */
+  /* RESPONSIVE                                    */
+  /* ============================================ */
+
+  @media (max-width: 440px) {
+    .receipt {
+      transform: rotate(0deg);
+      padding: 20px 16px;
+      width: 100%;
+      box-shadow:
+        0 1px 4px rgba(0,0,0,0.2),
+        0 4px 16px rgba(0,0,0,0.15);
     }
 
-    .name-container {
-      display: flex;
-      align-items: baseline;
-      gap: var(--size-xs);
+    .receipt-line {
+      font-size: 16px;
     }
 
-    .name-char {
-      font-size: var(--font-size-sm);
-      color: var(--color-ink-subtle);
+    .receipt-line.big {
+      font-size: 22px;
+      letter-spacing: 2px;
     }
+  }
+
+  @media (max-width: 360px) {
+    .receipt-line {
+      font-size: 14px;
+    }
+
+    .receipt-line.big {
+      font-size: 18px;
+    }
+  }
 </style>
+
+<script>
+  // ============================================
+  // RECEIPT PRINTER - CLIENT-SIDE LOGIC
+  // ============================================
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // ========================================
+    // 1. SOUND ENGINE (Web Audio API)
+    // ========================================
+    class ReceiptSounds {
+      private ctx: AudioContext | null = null;
+      private enabled: boolean = false;
+      private motorSource: AudioBufferSourceNode | null = null;
+      private motorGain: GainNode | null = null;
+
+      init() {
+        this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
+      get isEnabled() {
+        return this.enabled;
+      }
+
+      toggle() {
+        if (!this.ctx) this.init();
+        this.enabled = !this.enabled;
+        if (!this.enabled) this.stopMotor();
+        return this.enabled;
+      }
+
+      // Short tick sound for each printed line
+      tick() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+
+        // Create a short noise burst
+        const bufferSize = Math.floor(this.ctx.sampleRate * 0.02);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+        }
+
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 2000 + Math.random() * 1000;
+        filter.Q.value = 2;
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        source.start(now);
+        source.stop(now + 0.02);
+      }
+
+      // Continuous motor/feed sound
+      startMotor() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+
+        // Create looping noise buffer
+        const duration = 2;
+        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          // Mix of noise and subtle periodic component
+          data[i] = (Math.random() * 2 - 1) * 0.5 + 
+                    Math.sin(i / this.ctx.sampleRate * Math.PI * 2 * 120) * 0.3;
+        }
+
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 300;
+        filter.Q.value = 1;
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.025, now + 0.2);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        source.start(now);
+
+        this.motorSource = source;
+        this.motorGain = gain;
+      }
+
+      stopMotor() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        if (this.motorGain) {
+          this.motorGain.gain.linearRampToValueAtTime(0, now + 0.3);
+        }
+        if (this.motorSource) {
+          try { this.motorSource.stop(now + 0.4); } catch(e) {}
+          this.motorSource = null;
+        }
+        this.motorGain = null;
+      }
+
+      // Paper tear sound at the end
+      tearSound() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+
+        const duration = 0.3;
+        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          const t = i / bufferSize;
+          // Noise burst that sweeps down in frequency
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2) * (0.5 + Math.sin(t * 50) * 0.3);
+        }
+
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 1000;
+        filter.Q.value = 0.5;
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        source.start(now);
+        source.stop(now + duration);
+      }
+    }
+
+    const sounds = new ReceiptSounds();
+
+    // ========================================
+    // 2. SOUND TOGGLE BUTTON
+    // ========================================
+    const soundToggle = document.getElementById('soundToggle')!;
+    const soundIcon = document.getElementById('soundIcon')!;
+
+    soundToggle.addEventListener('click', () => {
+      const enabled = sounds.toggle();
+      soundIcon.textContent = enabled ? '🔊' : '🔇';
+      soundToggle.classList.toggle('active', enabled);
+    });
+
+    // ========================================
+    // 3. FLOYD-STEINBERG DITHERING
+    // ========================================
+    function ditherImage(canvas: HTMLCanvasElement, imageSrc: string) {
+      const ctx = canvas.getContext('2d')!;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = imageSrc;
+
+      img.onload = () => {
+        // Target width for dithering (low-res for receipt look)
+        const ditherWidth = 160;
+        const ditherHeight = Math.round((img.height / img.width) * ditherWidth);
+
+        canvas.width = ditherWidth;
+        canvas.height = ditherHeight;
+
+        // Draw source image scaled down
+        ctx.drawImage(img, 0, 0, ditherWidth, ditherHeight);
+
+        // Get image data
+        const imageData = ctx.getImageData(0, 0, ditherWidth, ditherHeight);
+        const data = imageData.data;
+
+        // Convert to grayscale first
+        for (let i = 0; i < data.length; i += 4) {
+          const gray = data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114;
+          data[i] = data[i+1] = data[i+2] = gray;
+        }
+
+        // Floyd-Steinberg dithering
+        for (let y = 0; y < ditherHeight; y++) {
+          for (let x = 0; x < ditherWidth; x++) {
+            const idx = (y * ditherWidth + x) * 4;
+            const oldVal = data[idx];
+            const newVal = oldVal > 128 ? 255 : 0;
+            const error = oldVal - newVal;
+
+            data[idx] = data[idx+1] = data[idx+2] = newVal;
+
+            // Distribute error to neighbors
+            if (x + 1 < ditherWidth) {
+              const i = (y * ditherWidth + x + 1) * 4;
+              data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 7/16);
+            }
+            if (y + 1 < ditherHeight) {
+              if (x - 1 >= 0) {
+                const i = ((y+1) * ditherWidth + x - 1) * 4;
+                data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 3/16);
+              }
+              {
+                const i = ((y+1) * ditherWidth + x) * 4;
+                data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 5/16);
+              }
+              if (x + 1 < ditherWidth) {
+                const i = ((y+1) * ditherWidth + x + 1) * 4;
+                data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 1/16);
+              }
+            }
+          }
+        }
+
+        // Put dithered data back
+        ctx.putImageData(imageData, 0, 0);
+      };
+
+      img.onerror = () => {
+        // Fallback: just show a placeholder
+        canvas.width = 160;
+        canvas.height = 160;
+        ctx.fillStyle = '#f5f0e8';
+        ctx.fillRect(0, 0, 160, 160);
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = '14px VT323';
+        ctx.textAlign = 'center';
+        ctx.fillText('[PORTRAIT]', 80, 80);
+      };
+    }
+
+    function clamp(val: number): number {
+      return Math.min(255, Math.max(0, val));
+    }
+
+    // Initialize portrait dithering
+    const portraitContainer = document.querySelector('.portrait-container') as HTMLElement;
+    const canvas = document.getElementById('portraitCanvas') as HTMLCanvasElement;
+    if (portraitContainer && canvas) {
+      const src = portraitContainer.dataset.src;
+      if (src) {
+        ditherImage(canvas, src);
+      }
+    }
+
+    // ========================================
+    // 4. PRINTING ANIMATION
+    // ========================================
+    const allPrintables = document.querySelectorAll('[data-print]') as NodeListOf<HTMLElement>;
+    const skipBtn = document.getElementById('skipBtn')!;
+    let printIndex = 0;
+    let isPrinting = false;
+    let skipRequested = false;
+    let printTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    function printNextLine() {
+      if (printIndex >= allPrintables.length) {
+        // All done
+        finishPrinting();
+        return;
+      }
+
+      if (skipRequested) {
+        // Skip: reveal all remaining lines instantly
+        for (let i = printIndex; i < allPrintables.length; i++) {
+          allPrintables[i].classList.add('printed');
+          allPrintables[i].classList.remove('printing');
+        }
+        finishPrinting();
+        return;
+      }
+
+      const line = allPrintables[printIndex];
+      
+      // Remove cursor from previous line
+      if (printIndex > 0) {
+        allPrintables[printIndex - 1].classList.remove('printing');
+      }
+
+      // Print this line
+      line.classList.add('printed');
+      line.classList.add('printing');
+      sounds.tick();
+
+      printIndex++;
+
+      // Vary delay for different line types
+      let delay = 35;
+      const text = line.textContent || '';
+      
+      if (text.includes('====') || text.includes('----')) {
+        delay = 50; // Slightly slower for dividers
+      } else if (text.trim() === '') {
+        delay = 15; // Fast for empty lines
+      } else if (line.classList.contains('big')) {
+        delay = 60; // Slower for header
+      } else if (line.classList.contains('portrait-container')) {
+        delay = 300; // Pause for portrait
+      }
+
+      printTimeout = setTimeout(printNextLine, delay);
+    }
+
+    function finishPrinting() {
+      isPrinting = false;
+      sounds.stopMotor();
+      sounds.tearSound();
+      
+      // Remove any remaining cursor
+      allPrintables.forEach(el => el.classList.remove('printing'));
+
+      // Hide skip button
+      skipBtn.classList.add('hidden');
+    }
+
+    function startPrinting() {
+      if (isPrinting) return;
+      isPrinting = true;
+      sounds.startMotor();
+      
+      // Small initial delay before printing starts
+      printTimeout = setTimeout(printNextLine, 400);
+    }
+
+    // Skip button
+    skipBtn.addEventListener('click', () => {
+      skipRequested = true;
+      if (printTimeout) clearTimeout(printTimeout);
+      // Reveal all
+      allPrintables.forEach(el => {
+        el.classList.add('printed');
+        el.classList.remove('printing');
+      });
+      finishPrinting();
+    });
+
+    // ========================================
+    // 5. RANDOM ROTATION (subtle authenticity)
+    // ========================================
+    const receipt = document.getElementById('receipt');
+    if (receipt) {
+      const rotation = -0.8 + Math.random() * 1.6; // -0.8 to +0.8 degrees
+      receipt.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    // ========================================
+    // 6. KICK OFF THE PRINTING
+    // ========================================
+    startPrinting();
+
+  });
+</script>

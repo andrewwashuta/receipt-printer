@@ -1,0 +1,95 @@
+---
+import Analytics from '@vercel/analytics/astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const siteName = "Andrew Washuta";
+const pageTitle = title ? `${title} | ${siteName}` : siteName;
+const pageDescription = description || "New Mexico-based product and visual designer. Receipt #12289.";
+const pageImage = "/og.png";
+const siteUrl = "https://andrew.cv";
+const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={pageDescription} />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- OpenGraph tags -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={currentUrl} />
+    <meta property="og:image" content={`${siteUrl}${pageImage}`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={pageTitle} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={`${siteUrl}${pageImage}`} />
+    
+    <!-- Additional meta tags -->
+    <meta name="author" content={siteName} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={currentUrl} />
+    
+    <!-- Google Fonts: VT323 (bitmap/receipt font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <slot />
+    <Analytics />
+  </body>
+</html>
+
+<style is:global>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html, body {
+    min-height: 100vh;
+  }
+
+  body {
+    background: #1a1a1a;
+    background-image: 
+      radial-gradient(ellipse at 50% 0%, #2a2a2a 0%, #1a1a1a 70%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px 100px;
+    font-family: 'VT323', monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+  }
+
+  ::selection {
+    background-color: #333;
+    color: #f5f0e8;
+  }
+</style>
