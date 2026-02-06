@@ -52,6 +52,10 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     
+    <!-- Preload audio for receipt printer sounds -->
+    <link rel="preload" href="/sounds/printer.mp3" as="fetch" crossorigin>
+    <link rel="preload" href="/sounds/paper-tear.mp3" as="fetch" crossorigin>
+    
     <title>{pageTitle}</title>
   </head>
   <body>

@@ -6,9 +6,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 <ReceiptLayout
   description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
 >
-  <!-- Sound Toggle -->
-  <button class="sound-toggle" id="soundToggle" aria-label="Toggle printer sounds" title="Toggle printer sounds">
-    <span class="sound-icon" id="soundIcon">🔇</span>
+  <!-- Sound Toggle (on by default) -->
+  <button class="sound-toggle active" id="soundToggle" aria-label="Toggle printer sounds" title="Toggle printer sounds">
+    <span class="sound-icon" id="soundIcon">🔊</span>
   </button>
 
   <!-- Skip Animation -->
@@ -630,145 +630,88 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   document.addEventListener('DOMContentLoaded', () => {
 
     // ========================================
-    // 1. SOUND ENGINE (Web Audio API)
+    // 1. SOUND ENGINE (Real audio files)
     // ========================================
     class ReceiptSounds {
-      private ctx: AudioContext | null = null;
-      private enabled: boolean = false;
-      private motorSource: AudioBufferSourceNode | null = null;
-      private motorGain: GainNode | null = null;
+      private printerAudio: HTMLAudioElement;
+      private tearAudio: HTMLAudioElement;
+      private _enabled: boolean = true; // ON by default
+      private _printing: boolean = false;
 
-      init() {
-        this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      constructor() {
+        // Main printer sound - loops during printing
+        this.printerAudio = new Audio('/sounds/printer.mp3');
+        this.printerAudio.loop = true;
+        this.printerAudio.volume = 0.6;
+        this.printerAudio.preload = 'auto';
+
+        // Paper tear sound - plays at end
+        this.tearAudio = new Audio('/sounds/paper-tear.mp3');
+        this.tearAudio.volume = 0.5;
+        this.tearAudio.preload = 'auto';
+
+        // Browsers block autoplay without user interaction.
+        // Register a one-time unlock handler on any user gesture
+        // so the audio can start playing.
+        const unlock = () => {
+          if (this._enabled && this._printing) {
+            this.printerAudio.play().catch(() => {});
+          }
+          document.removeEventListener('click', unlock);
+          document.removeEventListener('touchstart', unlock);
+          document.removeEventListener('keydown', unlock);
+        };
+        document.addEventListener('click', unlock);
+        document.addEventListener('touchstart', unlock);
+        document.addEventListener('keydown', unlock);
       }
 
-      get isEnabled() {
-        return this.enabled;
-      }
+      get isEnabled() { return this._enabled; }
 
       toggle() {
-        if (!this.ctx) this.init();
-        this.enabled = !this.enabled;
-        if (!this.enabled) this.stopMotor();
-        return this.enabled;
-      }
-
-      // Short tick sound for each printed line
-      tick() {
-        if (!this.enabled || !this.ctx) return;
-        const now = this.ctx.currentTime;
-
-        // Create a short noise burst
-        const bufferSize = Math.floor(this.ctx.sampleRate * 0.02);
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+        this._enabled = !this._enabled;
+        if (!this._enabled) {
+          this.printerAudio.pause();
+        } else if (this._printing) {
+          this.printerAudio.play().catch(() => {});
         }
-
-        const source = this.ctx.createBufferSource();
-        source.buffer = buffer;
-
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 2000 + Math.random() * 1000;
-        filter.Q.value = 2;
-
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.04, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        source.start(now);
-        source.stop(now + 0.02);
+        return this._enabled;
       }
 
-      // Continuous motor/feed sound
       startMotor() {
-        if (!this.enabled || !this.ctx) return;
-        const now = this.ctx.currentTime;
-
-        // Create looping noise buffer
-        const duration = 2;
-        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          // Mix of noise and subtle periodic component
-          data[i] = (Math.random() * 2 - 1) * 0.5 + 
-                    Math.sin(i / this.ctx.sampleRate * Math.PI * 2 * 120) * 0.3;
-        }
-
-        const source = this.ctx.createBufferSource();
-        source.buffer = buffer;
-        source.loop = true;
-
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 300;
-        filter.Q.value = 1;
-
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.025, now + 0.2);
-
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        source.start(now);
-
-        this.motorSource = source;
-        this.motorGain = gain;
+        this._printing = true;
+        if (!this._enabled) return;
+        this.printerAudio.currentTime = 0;
+        // Try to play - may be blocked until user interaction
+        this.printerAudio.play().catch(() => {
+          // Will be unlocked by the interaction handler above
+        });
       }
 
       stopMotor() {
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        if (this.motorGain) {
-          this.motorGain.gain.linearRampToValueAtTime(0, now + 0.3);
-        }
-        if (this.motorSource) {
-          try { this.motorSource.stop(now + 0.4); } catch(e) {}
-          this.motorSource = null;
-        }
-        this.motorGain = null;
+        this._printing = false;
+        // Fade out by reducing volume, then pause
+        const fadeOut = () => {
+          if (this.printerAudio.volume > 0.05) {
+            this.printerAudio.volume = Math.max(0, this.printerAudio.volume - 0.05);
+            requestAnimationFrame(fadeOut);
+          } else {
+            this.printerAudio.pause();
+            this.printerAudio.volume = 0.6; // Reset for next play
+            this.printerAudio.currentTime = 0;
+          }
+        };
+        fadeOut();
       }
 
-      // Paper tear sound at the end
       tearSound() {
-        if (!this.enabled || !this.ctx) return;
-        const now = this.ctx.currentTime;
-
-        const duration = 0.3;
-        const bufferSize = Math.floor(this.ctx.sampleRate * duration);
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          const t = i / bufferSize;
-          // Noise burst that sweeps down in frequency
-          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2) * (0.5 + Math.sin(t * 50) * 0.3);
-        }
-
-        const source = this.ctx.createBufferSource();
-        source.buffer = buffer;
-
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'highpass';
-        filter.frequency.value = 1000;
-        filter.Q.value = 0.5;
-
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.06, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        source.start(now);
-        source.stop(now + duration);
+        if (!this._enabled) return;
+        this.tearAudio.currentTime = 0;
+        this.tearAudio.play().catch(() => {});
       }
+
+      // No-op: the continuous printer audio provides the sound
+      tick() {}
     }
 
     const sounds = new ReceiptSounds();
