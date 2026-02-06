@@ -78,7 +78,14 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
   body {
     background: #1a1a1a;
     background-image: 
-      radial-gradient(ellipse at 50% 0%, #2a2a2a 0%, #1a1a1a 70%);
+      radial-gradient(ellipse at 50% 0%, #252525 0%, #1a1a1a 60%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(255,255,255,0.005) 1px,
+        rgba(255,255,255,0.005) 2px
+      );
     display: flex;
     flex-direction: column;
     align-items: center;

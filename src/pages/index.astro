@@ -1,15 +1,6 @@
 ---
 import ReceiptLayout from "../layouts/ReceiptLayout.astro";
 import Avatar from '../assets/index/images/andrewwashuta.png';
-
-// Build-time date/time for receipt header
-const now = new Date();
-const dateStr = now.toISOString().split('T')[0];
-const timeStr = now.toTimeString().split(' ')[0];
-
-// Order number: days since an estimated birthdate
-const birthDate = new Date(1992, 5, 15); // June 15, 1992
-const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24));
 ---
 
 <ReceiptLayout
@@ -44,11 +35,11 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       </div>
 
       <!-- ============================================ -->
-      <!-- TRANSACTION META                              -->
+      <!-- TRANSACTION META (dynamic via JS)             -->
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
-        <pre class="receipt-line" data-print>DATE: {dateStr}    {timeStr}</pre>
-        <pre class="receipt-line" data-print>ORDER #: {daysAlive}</pre>
+        <pre class="receipt-line" data-print>DATE: <span id="receiptDate">loading...</span></pre>
+        <pre class="receipt-line" data-print>ORDER #: <span id="receiptOrder">-----</span></pre>
         <pre class="receipt-line" data-print>CASHIER: THE INTERNET</pre>
         <pre class="receipt-line" data-print>--------------------------------</pre>
       </div>
@@ -58,15 +49,15 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>ABOUT</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line wrap" data-print>Hey there, I'm Andrew — husband, dad, trail runner, Parks lover, designer. Based in New Mexico.</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line wrap" data-print>Currently shipping ad platforms and leading design systems at 84.51° by day, while building a wrapped asset protocol at Universal by night.</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line wrap" data-print>I believe in empathy-driven design built through collaboration with teams that care deeply about the people using their products.</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line" data-print>LOCATION: Albuquerque, NM</pre>
-        <pre class="receipt-line" data-print>ELEVATION: 5,312 ft</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row" data-print><span>LOCATION:</span><span>Albuquerque, NM</span></pre>
+        <pre class="receipt-line row" data-print><span>ELEVATION:</span><span>5,312 ft</span></pre>
         <pre class="receipt-line" data-print>--------------------------------</pre>
       </div>
 
@@ -75,14 +66,16 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>SKILLS</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line" data-print>  1x  Product Design</pre>
-        <pre class="receipt-line" data-print>  1x  Design Systems</pre>
-        <pre class="receipt-line" data-print>  1x  Visual Design</pre>
-        <pre class="receipt-line" data-print>  1x  Brand Design</pre>
-        <pre class="receipt-line" data-print>  1x  User Research</pre>
-        <pre class="receipt-line" data-print>  1x  Prototyping</pre>
-        <pre class="receipt-line" data-print>  1x  Front-end Dev</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row" data-print><span>  1x  Product Design</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Design Systems</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Visual Design</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Brand Design</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  User Research</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Prototyping</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Front-end Dev</span><span>****</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row bold" data-print><span>  SUBTOTAL (7 items)</span><span>PRICELESS</span></pre>
         <pre class="receipt-line" data-print>--------------------------------</pre>
       </div>
 
@@ -105,23 +98,23 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>EXPERIENCE</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line bold" data-print>84.51°</pre>
-        <pre class="receipt-line" data-print>  Lead Product Designer</pre>
-        <pre class="receipt-line row" data-print><span>  Ad Platforms</span><span>2020-NOW</span></pre>
-        <pre class="receipt-line row" data-print><span>  Design Systems</span><span>2020-NOW</span></pre>
-        <pre class="receipt-line row" data-print><span>  Insights</span><span>2017-2020</span></pre>
-        <pre class="receipt-line" data-print>  Senior UI Designer</pre>
-        <pre class="receipt-line row" data-print><span>  Insights</span><span>2017</span></pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line bold" data-print>Universal</pre>
-        <pre class="receipt-line row" data-print><span>  Design Lead</span><span>2022-NOW</span></pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line bold" data-print>Clubessential</pre>
-        <pre class="receipt-line row" data-print><span>  Web Designer</span><span>2016-2017</span></pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line bold" data-print>UnitedHealthcare</pre>
-        <pre class="receipt-line row" data-print><span>  Brand Designer</span><span>2014-2016</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  84.51°</pre>
+        <pre class="receipt-line faded" data-print>  Lead Product Designer</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Ad Platforms</span><span>2020-NOW</span></pre>
+        <pre class="receipt-line dotleader" data-print><span>  Design Systems</span><span>2020-NOW</span></pre>
+        <pre class="receipt-line dotleader" data-print><span>  Insights</span><span>2017-2020</span></pre>
+        <pre class="receipt-line faded" data-print>  Senior UI Designer</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Insights</span><span>2017</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  Universal</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Design Lead</span><span>2022-NOW</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  Clubessential</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Web Designer</span><span>2016-2017</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  UnitedHealthcare</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Brand Designer</span><span>2014-2016</span></pre>
         <pre class="receipt-line" data-print>--------------------------------</pre>
       </div>
 
@@ -130,21 +123,21 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>PROJECTS</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line" data-print>  <a href="/projects/kroger-ad-platform">Kroger Ad Platform: Offsite</a></pre>
-        <pre class="receipt-line faded" data-print>  Kroger Precision Marketing</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line faded" data-print>    Kroger Precision Marketing</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line" data-print>  <a href="/projects/meridian">Meridian Design System</a></pre>
-        <pre class="receipt-line faded" data-print>  84.51°</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line faded" data-print>    84.51°</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line" data-print>  <a href="/projects/stratum">Stratum: Analytics Platform</a></pre>
-        <pre class="receipt-line faded" data-print>  84.51°</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line faded" data-print>    84.51°</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line" data-print>  <a href="https://universal.xyz" target="_blank">Universal Platform</a></pre>
-        <pre class="receipt-line faded" data-print>  Universal</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line faded" data-print>    Universal</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line" data-print>  <a href="/projects/personal">Miscellany</a></pre>
-        <pre class="receipt-line faded" data-print>  Passion projects & explorations</pre>
+        <pre class="receipt-line faded" data-print>    Passion projects & explorations</pre>
         <pre class="receipt-line" data-print>--------------------------------</pre>
       </div>
 
@@ -153,12 +146,12 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>CURRENTLY</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line wrap" data-print>  &gt; Cherishing every moment with my wife, Seneca, and son, Thor</pre>
-        <pre class="receipt-line wrap" data-print>  &gt; Living as a "cyborg" healing a broken hip socket</pre>
-        <pre class="receipt-line wrap" data-print>  &gt; Dreaming up recipes with unique ingredients</pre>
-        <pre class="receipt-line wrap" data-print>  &gt; Collecting vintage National Park brochures</pre>
-        <pre class="receipt-line wrap" data-print>  &gt; Falling back in love with code</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>  * Cherishing every moment with my wife, Seneca, and son, Thor</pre>
+        <pre class="receipt-line wrap" data-print>  * Living as a "cyborg" healing a broken hip socket</pre>
+        <pre class="receipt-line wrap" data-print>  * Dreaming up recipes with unique ingredients</pre>
+        <pre class="receipt-line wrap" data-print>  * Collecting vintage National Park brochures</pre>
+        <pre class="receipt-line wrap" data-print>  * Falling back in love with code</pre>
         <pre class="receipt-line" data-print>--------------------------------</pre>
       </div>
 
@@ -167,11 +160,11 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>EDUCATION</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line bold" data-print>Clarkson University</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  Clarkson University</pre>
         <pre class="receipt-line" data-print>  B.S. Digital Arts & Sciences</pre>
         <pre class="receipt-line" data-print>  Minor: Business Administration</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center" data-print>================================</pre>
       </div>
 
@@ -180,32 +173,42 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>CONTACT</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line" data-print>EMAIL:     <a href="mailto:hello@andrew.cv">hello@andrew.cv</a></pre>
-        <pre class="receipt-line" data-print>LINKEDIN:  <a href="https://linkedin.com/in/awashuta" target="_blank">/in/awashuta</a></pre>
-        <pre class="receipt-line" data-print>X:         <a href="https://x.com/awashuta" target="_blank">@awashuta</a></pre>
-        <pre class="receipt-line" data-print>INSTAGRAM: <a href="https://instagram.com/andrewwashuta" target="_blank">@andrewwashuta</a></pre>
-        <pre class="receipt-line" data-print>REFRAKT:   <a href="https://refrakt.app/andrew" target="_blank">refrakt.app/andrew</a></pre>
-        <pre class="receipt-line" data-print>WEB:       <a href="https://andrew.cv">andrew.cv</a></pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row" data-print><span>EMAIL</span><span><a href="mailto:hello@andrew.cv">hello@andrew.cv</a></span></pre>
+        <pre class="receipt-line row" data-print><span>LINKEDIN</span><span><a href="https://linkedin.com/in/awashuta" target="_blank">/in/awashuta</a></span></pre>
+        <pre class="receipt-line row" data-print><span>X</span><span><a href="https://x.com/awashuta" target="_blank">@awashuta</a></span></pre>
+        <pre class="receipt-line row" data-print><span>INSTAGRAM</span><span><a href="https://instagram.com/andrewwashuta" target="_blank">@andrewwashuta</a></span></pre>
+        <pre class="receipt-line row" data-print><span>REFRAKT</span><span><a href="https://refrakt.app/andrew" target="_blank">refrakt.app/andrew</a></span></pre>
+        <pre class="receipt-line row" data-print><span>WEB</span><span><a href="https://andrew.cv">andrew.cv</a></span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center" data-print>================================</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- BARCODE                                       -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <div class="barcode-container" data-print>
+          <canvas id="barcodeCanvas" width="200" height="50"></canvas>
+        </div>
+        <pre class="receipt-line center faded" data-print id="barcodeNumber">0000 0000 0000</pre>
       </div>
 
       <!-- ============================================ -->
       <!-- FOOTER / THANK YOU                            -->
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line center" data-print>THANK YOU FOR VISITING!</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center bold" data-print>THANK YOU FOR VISITING!</pre>
         <pre class="receipt-line center faded" data-print>Have a great day.</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line center faded" data-print>Items sold final.</pre>
-        <pre class="receipt-line center faded" data-print>No returns on experience.</pre>
-        <pre class="receipt-line" data-print> </pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center faded small" data-print>Items sold final.</pre>
+        <pre class="receipt-line center faded small" data-print>No returns on experience.</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center" data-print>Made with love in New Mexico</pre>
-        <pre class="receipt-line" data-print> </pre>
-        <pre class="receipt-line center" data-print>- - - - - - - - - - - - - - -</pre>
-        <pre class="receipt-line center" data-print>        ✂ tear here ✂</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center faded" data-print>- - - - - - - - - - - - - - -</pre>
+        <pre class="receipt-line center faded" data-print>         ✂ tear here ✂</pre>
       </div>
 
       <!-- Bottom torn edge -->
@@ -231,7 +234,15 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
     width: 380px;
     max-width: 100%;
     background: #f5f0e8;
-    padding: 28px 24px;
+    background-image: 
+      linear-gradient(
+        180deg,
+        rgba(0,0,0,0.02) 0%,
+        transparent 3%,
+        transparent 97%,
+        rgba(0,0,0,0.03) 100%
+      );
+    padding: 32px 24px;
     position: relative;
     transform: rotate(-1.2deg);
     box-shadow:
@@ -367,7 +378,15 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
   }
 
   .receipt-line.faded {
-    color: #777;
+    color: #888;
+  }
+
+  .receipt-line.small {
+    font-size: 14px;
+  }
+
+  .receipt-line.spacer {
+    line-height: 0.8;
   }
 
   /* Row layout for aligned columns */
@@ -385,18 +404,67 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
     white-space: nowrap;
   }
 
+  /* Dot-leader rows (experience items) */
+  .receipt-line.dotleader {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .receipt-line.dotleader.printed {
+    display: flex;
+  }
+
+  .receipt-line.dotleader span:first-child {
+    white-space: nowrap;
+  }
+
+  .receipt-line.dotleader span:last-child {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Subtle print artifact - random slight offset on some lines */
+  .receipt-line.artifact {
+    transform: translateX(0.5px);
+  }
+
   /* Links in receipt */
   .receipt-line :global(a) {
     color: #1a1a1a;
     text-decoration: underline;
     text-decoration-style: dashed;
-    text-underline-offset: 2px;
+    text-underline-offset: 3px;
     text-decoration-thickness: 1px;
-    transition: color 0.15s;
+    text-decoration-color: #999;
+    transition: color 0.15s, text-decoration-color 0.15s;
   }
 
   .receipt-line :global(a:hover) {
     color: #555;
+    text-decoration-color: #555;
+  }
+
+  /* Barcode */
+  .barcode-container {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .barcode-container.printed {
+    opacity: 1;
+  }
+
+  #barcodeCanvas {
+    width: 200px;
+    height: 50px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
   }
 
   /* ============================================ */
@@ -703,6 +771,30 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
     });
 
     // ========================================
+    // 2b. DYNAMIC DATE & ORDER NUMBER
+    // ========================================
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    
+    const receiptDateEl = document.getElementById('receiptDate');
+    if (receiptDateEl) receiptDateEl.textContent = `${dateStr}  ${timeStr}`;
+
+    // Order number: days since June 15, 1992
+    const birthDate = new Date(1992, 5, 15);
+    const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24));
+    const receiptOrderEl = document.getElementById('receiptOrder');
+    if (receiptOrderEl) receiptOrderEl.textContent = daysAlive.toString();
+
+    // Barcode number
+    const barcodeNumberEl = document.getElementById('barcodeNumber');
+    if (barcodeNumberEl) {
+      const orderStr = daysAlive.toString().padStart(12, '0');
+      barcodeNumberEl.textContent = `${orderStr.slice(0,4)} ${orderStr.slice(4,8)} ${orderStr.slice(8,12)}`;
+    }
+
+    // ========================================
     // 3. FLOYD-STEINBERG DITHERING
     // ========================================
     function ditherImage(canvas: HTMLCanvasElement, imageSrc: string) {
@@ -796,6 +888,87 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
     }
 
     // ========================================
+    // 3b. BARCODE GENERATION
+    // ========================================
+    function generateBarcode(canvas: HTMLCanvasElement, value: number) {
+      const ctx = canvas.getContext('2d')!;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Clear with paper color
+      ctx.fillStyle = '#f5f0e8';
+      ctx.fillRect(0, 0, w, h);
+
+      // Generate pseudo-barcode pattern from value
+      const seed = value.toString();
+      let x = 10;
+      const barHeight = h - 10;
+      const startY = 5;
+
+      ctx.fillStyle = '#1a1a1a';
+
+      // Start guard pattern
+      for (let g = 0; g < 3; g++) {
+        ctx.fillRect(x, startY, 1, barHeight);
+        x += 2;
+      }
+      x += 2;
+
+      // Generate bars from order number digits
+      const digits = seed.padStart(12, '0');
+      for (let d = 0; d < digits.length; d++) {
+        const digit = parseInt(digits[d]);
+        // Create varying bar patterns based on digit
+        const patterns = [
+          [3,2,1,1], [2,2,2,1], [2,1,2,2], [1,4,1,1], [1,1,3,2],
+          [1,2,3,1], [1,1,1,4], [1,3,1,2], [1,2,1,3], [3,1,1,2]
+        ];
+        const pattern = patterns[digit];
+        for (let p = 0; p < pattern.length; p++) {
+          if (p % 2 === 0) {
+            ctx.fillRect(x, startY, pattern[p], barHeight);
+          }
+          x += pattern[p];
+        }
+        x += 1;
+
+        // Middle guard
+        if (d === 5) {
+          x += 2;
+          for (let g = 0; g < 3; g++) {
+            ctx.fillRect(x, startY, 1, barHeight);
+            x += 2;
+          }
+          x += 2;
+        }
+      }
+
+      // End guard pattern
+      x += 2;
+      for (let g = 0; g < 3; g++) {
+        ctx.fillRect(x, startY, 1, barHeight);
+        x += 2;
+      }
+    }
+
+    const barcodeCanvas = document.getElementById('barcodeCanvas') as HTMLCanvasElement;
+    if (barcodeCanvas) {
+      generateBarcode(barcodeCanvas, daysAlive);
+    }
+
+    // ========================================
+    // 3c. RANDOM PRINT ARTIFACTS
+    // ========================================
+    // Add subtle horizontal misalignment to ~15% of lines for authenticity
+    const allLines = document.querySelectorAll('.receipt-line') as NodeListOf<HTMLElement>;
+    allLines.forEach((line) => {
+      if (Math.random() < 0.12) {
+        const offset = (Math.random() - 0.5) * 1.2; // -0.6 to +0.6 px
+        line.style.transform = `translateX(${offset}px)`;
+      }
+    });
+
+    // ========================================
     // 4. PRINTING ANIMATION
     // ========================================
     const allPrintables = document.querySelectorAll('[data-print]') as NodeListOf<HTMLElement>;
@@ -836,18 +1009,20 @@ const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 
 
       printIndex++;
 
-      // Vary delay for different line types
-      let delay = 35;
+      // Vary delay for different line types for authentic feel
+      let delay = 40;
       const text = line.textContent || '';
       
       if (text.includes('====') || text.includes('----')) {
-        delay = 50; // Slightly slower for dividers
-      } else if (text.trim() === '') {
-        delay = 15; // Fast for empty lines
+        delay = 55; // Slightly slower for dividers
+      } else if (line.classList.contains('spacer') || text.trim() === '') {
+        delay = 12; // Fast for spacer/empty lines
       } else if (line.classList.contains('big')) {
-        delay = 60; // Slower for header
-      } else if (line.classList.contains('portrait-container')) {
-        delay = 300; // Pause for portrait
+        delay = 70; // Slower for header
+      } else if (line.classList.contains('portrait-container') || line.classList.contains('barcode-container')) {
+        delay = 350; // Pause for images
+      } else if (line.classList.contains('bold')) {
+        delay = 50; // Slightly slower for bold section headers
       }
 
       printTimeout = setTimeout(printNextLine, delay);
