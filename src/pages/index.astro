@@ -633,6 +633,69 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   /* ============================================ */
+  /* CUT HANDLE (desktop draggable dot)            */
+  /* ============================================ */
+
+  .cut-handle {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    cursor: grab;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .cut-handle::after {
+    content: '';
+    width: 14px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+    transition: background 0.2s;
+  }
+
+  .cut-handle:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .cut-handle:hover::after {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .cut-handle.dragging {
+    cursor: grabbing;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .cut-handle.dragging::after {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Hide on touch devices and small screens */
+  @media (pointer: coarse) {
+    .cut-handle { display: none; }
+  }
+  @media (max-width: 768px) {
+    .cut-handle { display: none; }
+  }
+
+  /* ============================================ */
   /* RESPONSIVE                                    */
   /* ============================================ */
 
@@ -1254,7 +1317,80 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return true;
       }
 
-      // ---- Global gesture detection ----
+      // ---- Desktop cut handle (draggable dot) ----
+
+      const cutHandle = document.createElement('div');
+      cutHandle.className = 'cut-handle';
+      cutHandle.title = 'Drag to cut';
+      document.body.appendChild(cutHandle);
+
+      let handleDragging = false;
+      let handleStartX = 0;
+
+      cutHandle.addEventListener('mousedown', (e: MouseEvent) => {
+        if (isPrinting) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        handleDragging = true;
+        handleStartX = e.clientX;
+
+        // Remove hover transform so pixel position is accurate
+        cutHandle.classList.add('dragging');
+        cutHandle.style.transition = 'none';
+        cutHandle.style.transform = 'none';
+        cutHandle.style.left = `${e.clientX - 18}px`;
+        cutHandle.style.top = `${e.clientY - 18}px`;
+
+        // Show cut line at handle Y
+        pageCutLine.style.top = `${e.clientY}px`;
+        pageCutLine.style.display = 'block';
+        pageCutLine.style.width = '0';
+      });
+
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        if (!handleDragging) return;
+
+        // Move dot to follow mouse
+        cutHandle.style.left = `${e.clientX - 18}px`;
+        cutHandle.style.top = `${e.clientY - 18}px`;
+
+        // Update cut line progress
+        const dx = Math.abs(e.clientX - handleStartX);
+        const progress = Math.min(1, dx / (window.innerWidth * 0.3));
+        pageCutLine.style.width = `${progress * 100}%`;
+
+        if (progress >= 1) {
+          const tearY = e.clientY;
+          const success = executeTear(tearY);
+          resetHandle();
+          // If tear didn't land on a piece, just reset
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (handleDragging) resetHandle();
+      });
+
+      function resetHandle() {
+        handleDragging = false;
+        cutHandle.classList.remove('dragging');
+
+        pageCutLine.style.width = '0';
+        pageCutLine.style.display = 'none';
+
+        // Spring back to rest position
+        cutHandle.style.transition = 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, box-shadow 0.2s';
+        cutHandle.style.left = '20px';
+        cutHandle.style.top = '50%';
+        cutHandle.style.transform = 'translateY(-50%)';
+
+        setTimeout(() => {
+          cutHandle.style.transition = '';
+        }, 450);
+      }
+
+      // ---- Global gesture detection (swipe anywhere, mainly for touch) ----
 
       let tearStartX = 0;
       let tearStartY = 0;
@@ -1307,9 +1443,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         tearIsHorizontal = false;
       }
 
-      // Mouse
+      // Mouse (ignore clicks on buttons and the cut handle)
       document.addEventListener('mousedown', (e: MouseEvent) => {
         if ((e.target as HTMLElement).closest('button')) return;
+        if ((e.target as HTMLElement).closest('.cut-handle')) return;
         startTear(e.clientX, e.clientY);
       });
       document.addEventListener('mousemove', (e: MouseEvent) => {
@@ -1319,7 +1456,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (isTearing) endTear();
       });
 
-      // Touch
+      // Touch (swipe gesture stays the same for mobile)
       document.addEventListener('touchstart', (e: TouchEvent) => {
         if ((e.target as HTMLElement).closest('button')) return;
         if ((e.target as HTMLElement).closest('a')) return;
