@@ -208,9 +208,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line center" data-print>Made with love in New Mexico</pre>
         <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center faded small" data-print><a href="/colophon">andrew.cv/colophon</a></pre>
-        <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line center faded" data-print>- - - - - - - - - - - - - - -</pre>
-        <pre class="receipt-line center faded" data-print>         ✂ tear here ✂</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TEAR ZONE (interactive - swipe to cut)       -->
+      <!-- ============================================ -->
+      <div class="tear-zone" id="tearZone">
+        <pre class="receipt-line center faded tear-text" data-print>- - - - - - - - - - - - - - -</pre>
+        <pre class="receipt-line center faded tear-text" data-print>         ✂ tear here ✂</pre>
+        <div class="tear-cut-line" id="tearCutLine"></div>
       </div>
 
       <!-- Bottom torn edge -->
@@ -588,6 +594,73 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   /* ============================================ */
+  /* TEAR ZONE                                     */
+  /* ============================================ */
+
+  .tear-zone {
+    position: relative;
+    z-index: 5;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    padding: 4px 0;
+  }
+
+  .tear-zone .tear-text {
+    transition: color 0.2s;
+  }
+
+  .tear-zone:not(.torn):hover {
+    cursor: grab;
+  }
+
+  .tear-zone:not(.torn):hover .tear-text {
+    color: #555 !important;
+  }
+
+  .tear-zone.tearing {
+    cursor: grabbing;
+  }
+
+  .tear-zone.torn {
+    pointer-events: none;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+  }
+
+  .tear-cut-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(0,0,0,0.2) 15%,
+      rgba(0,0,0,0.5) 50%,
+      rgba(0,0,0,0.2) 85%,
+      transparent 100%
+    );
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 10;
+    border-radius: 2px;
+    transition: width 0.05s ease-out;
+  }
+
+  /* Pieces after tear */
+  .receipt.torn-top {
+    overflow: visible !important;
+  }
+
+  .receipt-clone {
+    overflow: visible !important;
+  }
+
+  /* ============================================ */
   /* RESPONSIVE                                    */
   /* ============================================ */
 
@@ -637,24 +710,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private tearAudio: HTMLAudioElement;
       private _enabled: boolean = true; // ON by default
       private _printing: boolean = false;
+      private _fadeTimer: ReturnType<typeof setInterval> | null = null;
 
       constructor() {
-        // Main printer sound - loops during printing
+        // Main printer sound - does NOT loop by default
         this.printerAudio = new Audio('/sounds/printer.mp3');
-        this.printerAudio.loop = true;
+        this.printerAudio.loop = false;
         this.printerAudio.volume = 0.6;
         this.printerAudio.preload = 'auto';
 
-        // Paper tear sound - plays at end
+        // Paper tear sound - plays once at end
         this.tearAudio = new Audio('/sounds/paper-tear.mp3');
+        this.tearAudio.loop = false;
         this.tearAudio.volume = 0.5;
         this.tearAudio.preload = 'auto';
 
         // Browsers block autoplay without user interaction.
-        // Register a one-time unlock handler on any user gesture
-        // so the audio can start playing.
+        // Register a one-time unlock handler on any user gesture.
         const unlock = () => {
           if (this._enabled && this._printing) {
+            this.printerAudio.loop = true;
             this.printerAudio.play().catch(() => {});
           }
           document.removeEventListener('click', unlock);
@@ -671,8 +746,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggle() {
         this._enabled = !this._enabled;
         if (!this._enabled) {
+          this.printerAudio.loop = false;
           this.printerAudio.pause();
         } else if (this._printing) {
+          this.printerAudio.loop = true;
           this.printerAudio.play().catch(() => {});
         }
         return this._enabled;
@@ -681,27 +758,44 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       startMotor() {
         this._printing = true;
         if (!this._enabled) return;
+        this.printerAudio.loop = true;
         this.printerAudio.currentTime = 0;
-        // Try to play - may be blocked until user interaction
-        this.printerAudio.play().catch(() => {
-          // Will be unlocked by the interaction handler above
-        });
+        this.printerAudio.play().catch(() => {});
       }
 
       stopMotor() {
         this._printing = false;
-        // Fade out by reducing volume, then pause
-        const fadeOut = () => {
-          if (this.printerAudio.volume > 0.05) {
-            this.printerAudio.volume = Math.max(0, this.printerAudio.volume - 0.05);
-            requestAnimationFrame(fadeOut);
-          } else {
+        // Immediately stop looping so sound ends at current play point
+        this.printerAudio.loop = false;
+
+        // Clear any existing fade
+        if (this._fadeTimer) clearInterval(this._fadeTimer);
+
+        // Fade out using setInterval (works even in background tabs)
+        const startVol = this.printerAudio.volume;
+        let step = 0;
+        const totalSteps = 8;
+        this._fadeTimer = setInterval(() => {
+          step++;
+          this.printerAudio.volume = Math.max(0, startVol * (1 - step / totalSteps));
+          if (step >= totalSteps) {
+            if (this._fadeTimer) clearInterval(this._fadeTimer);
+            this._fadeTimer = null;
             this.printerAudio.pause();
-            this.printerAudio.volume = 0.6; // Reset for next play
             this.printerAudio.currentTime = 0;
+            this.printerAudio.volume = 0.6;
           }
-        };
-        fadeOut();
+        }, 30);
+
+        // Hard stop safety net - force pause after 400ms no matter what
+        setTimeout(() => {
+          if (!this._printing) {
+            this.printerAudio.pause();
+            this.printerAudio.currentTime = 0;
+            this.printerAudio.volume = 0.6;
+            this.printerAudio.loop = false;
+          }
+        }, 400);
       }
 
       tearSound() {
@@ -710,8 +804,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         this.tearAudio.play().catch(() => {});
       }
 
-      // No-op: the continuous printer audio provides the sound
-      tick() {}
+      tick() {} // no-op: continuous audio provides the sound
     }
 
     const sounds = new ReceiptSounds();
@@ -1029,7 +1122,154 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     // ========================================
-    // 6. KICK OFF THE PRINTING
+    // 6. TEAR INTERACTION (swipe to cut)
+    // ========================================
+    const tearZone = document.getElementById('tearZone');
+    const tearCutLine = document.getElementById('tearCutLine');
+
+    if (tearZone && tearCutLine && receipt) {
+      let tearStartX = 0;
+      let isTearing = false;
+      let isTorn = false;
+
+      function startTear(clientX: number) {
+        if (isTorn || isPrinting) return; // Can't tear while still printing
+        tearStartX = clientX;
+        isTearing = true;
+        tearZone.classList.add('tearing');
+      }
+
+      function moveTear(clientX: number, clientY: number) {
+        if (!isTearing || isTorn) return;
+
+        const dx = Math.abs(clientX - tearStartX);
+        const tearWidth = tearZone.getBoundingClientRect().width;
+        const progress = Math.min(1, dx / (tearWidth * 0.5));
+
+        // Update visual cut line
+        tearCutLine.style.width = `${progress * 100}%`;
+
+        if (progress >= 1) {
+          executeTear();
+        }
+      }
+
+      function endTear() {
+        if (!isTorn) {
+          tearCutLine.style.width = '0';
+          tearZone.classList.remove('tearing');
+        }
+        isTearing = false;
+      }
+
+      function executeTear() {
+        isTorn = true;
+        isTearing = false;
+
+        // Play tear sound
+        sounds.tearSound();
+
+        // Calculate tear position
+        const receiptRect = receipt!.getBoundingClientRect();
+        const tearRect = tearZone!.getBoundingClientRect();
+        const tearYInReceipt = tearRect.top + tearRect.height / 2 - receiptRect.top;
+        const totalHeight = receiptRect.height;
+        const topPct = (tearYInReceipt / totalHeight) * 100;
+        const bottomPct = 100 - topPct;
+
+        // Create bottom piece (clone) at exact visual position
+        const clone = receipt!.cloneNode(true) as HTMLElement;
+        clone.removeAttribute('id');
+        clone.classList.add('receipt-clone');
+        Object.assign(clone.style, {
+          position: 'fixed',
+          top: `${receiptRect.top}px`,
+          left: `${receiptRect.left}px`,
+          width: `${receiptRect.width}px`,
+          height: `${receiptRect.height}px`,
+          margin: '0',
+          transform: 'none',
+          clipPath: `inset(${topPct}% 0 0 0)`,
+          boxShadow: 'none',
+          filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.15)) drop-shadow(0 6px 16px rgba(0,0,0,0.1))',
+          zIndex: '50',
+          pointerEvents: 'none',
+          transformOrigin: `center ${topPct}%`,
+        });
+        document.body.appendChild(clone);
+
+        // Clip the original receipt (top piece)
+        receipt!.style.clipPath = `inset(0 0 ${bottomPct}% 0)`;
+        receipt!.style.boxShadow = 'none';
+        receipt!.style.filter = 'drop-shadow(0 2px 6px rgba(0,0,0,0.15)) drop-shadow(0 6px 16px rgba(0,0,0,0.1))';
+        receipt!.classList.add('torn-top');
+
+        // Hide tear zone
+        tearZone!.classList.add('torn');
+
+        // Physics simulation for falling bottom piece
+        let vy = 0;                                    // vertical velocity
+        let vr = (Math.random() - 0.3) * 0.6;         // rotational velocity
+        let py = 0;                                    // vertical position
+        let rot = 0;                                   // rotation angle
+        const gravity = 0.65;
+
+        function physicsTick() {
+          vy += gravity;
+          py += vy;
+          rot += vr;
+          vr *= 0.995; // slight rotational damping
+
+          const opacity = Math.max(0, 1 - py / 500);
+          clone.style.transform = `translateY(${py}px) rotate(${rot}deg)`;
+          clone.style.opacity = String(opacity);
+
+          if (py < 700 && opacity > 0.01) {
+            requestAnimationFrame(physicsTick);
+          } else {
+            clone.remove();
+          }
+        }
+
+        requestAnimationFrame(physicsTick);
+
+        // Subtle settle animation for top piece (spring-like bounce)
+        const curRotMatch = receipt!.style.transform?.match(/rotate\(([^)]+)deg\)/);
+        const curRot = curRotMatch ? parseFloat(curRotMatch[1]) : 0;
+
+        receipt!.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        receipt!.style.transform = `rotate(${curRot + (Math.random() - 0.5) * 1.5}deg) translateY(-4px)`;
+
+        setTimeout(() => {
+          receipt!.style.transition = 'transform 0.7s ease-out';
+          receipt!.style.transform = `rotate(${curRot + (Math.random() - 0.5) * 0.6}deg)`;
+        }, 350);
+      }
+
+      // Mouse events
+      tearZone.addEventListener('mousedown', (e: MouseEvent) => {
+        e.preventDefault();
+        startTear(e.clientX);
+      });
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        if (isTearing) moveTear(e.clientX, e.clientY);
+      });
+      document.addEventListener('mouseup', () => endTear());
+
+      // Touch events
+      tearZone.addEventListener('touchstart', (e: TouchEvent) => {
+        startTear(e.touches[0].clientX);
+      }, { passive: true });
+      document.addEventListener('touchmove', (e: TouchEvent) => {
+        if (isTearing) {
+          moveTear(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+      document.addEventListener('touchend', () => endTear());
+    }
+
+    // ========================================
+    // 7. KICK OFF THE PRINTING
     // ========================================
     startPrinting();
 
