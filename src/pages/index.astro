@@ -207,6 +207,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center" data-print>Made with love in New Mexico</pre>
         <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center faded small" data-print><a href="/colophon">andrew.cv/colophon</a></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center faded" data-print>- - - - - - - - - - - - - - -</pre>
         <pre class="receipt-line center faded" data-print>         ✂ tear here ✂</pre>
       </div>
@@ -407,8 +409,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   /* Dot-leader rows (experience items) */
   .receipt-line.dotleader {
     display: flex;
-    justify-content: space-between;
-    gap: 4px;
+    gap: 0;
     overflow: hidden;
   }
 
@@ -418,11 +419,25 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   .receipt-line.dotleader span:first-child {
     white-space: nowrap;
+    flex-shrink: 0;
+    order: 1;
   }
 
   .receipt-line.dotleader span:last-child {
     white-space: nowrap;
     flex-shrink: 0;
+    order: 3;
+  }
+
+  /* Dotted line fills the gap between spans */
+  .receipt-line.dotleader::before {
+    content: "";
+    order: 2;
+    flex: 1;
+    border-bottom: 1px dotted #bbb;
+    margin: 0 4px;
+    margin-bottom: 5px;
+    min-width: 8px;
   }
 
   /* Subtle print artifact - random slight offset on some lines */
@@ -497,7 +512,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   /* PRINT CURSOR EFFECT                           */
   /* ============================================ */
 
-  .receipt-line.printing::after {
+  .receipt-line.printing:not(.row):not(.dotleader):not(.spacer)::after {
     content: "█";
     animation: blink 0.4s step-end infinite;
     color: #1a1a1a;
