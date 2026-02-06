@@ -47,7 +47,10 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={currentUrl} />
     
-    <!-- Geist Pixel font (by Vercel) - preload primary variant -->
+    <!-- VT323 for body text, Geist Pixel for headers/accents -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="preload" href="/fonts/GeistPixel-Square.woff2" as="font" type="font/woff2" crossorigin>
     
     <!-- Preload audio for receipt printer sounds -->
@@ -112,10 +115,17 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   html, body {
     min-height: 100vh;
+    overscroll-behavior-x: none;
+  }
+
+  :root {
+    --font-receipt: 'VT323', ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
+    --font-pixel: 'Geist Pixel', 'VT323', ui-monospace, monospace;
   }
 
   body {
@@ -133,7 +143,7 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     flex-direction: column;
     align-items: center;
     padding: 60px 20px 100px;
-    font-family: 'Geist Pixel', 'VT323', ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
+    font-family: var(--font-receipt);
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: unset;
   }

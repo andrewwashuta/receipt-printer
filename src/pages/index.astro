@@ -28,10 +28,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       <!-- STORE HEADER                                  -->
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
-        <pre class="receipt-line center" data-print>================================</pre>
+        <pre class="receipt-line center divider" data-print>================================</pre>
         <pre class="receipt-line center big" data-print>    ANDREW WASHUTA</pre>
         <pre class="receipt-line center" data-print>    PRODUCT DESIGNER</pre>
-        <pre class="receipt-line center" data-print>================================</pre>
+        <pre class="receipt-line center divider" data-print>================================</pre>
       </div>
 
       <!-- ============================================ -->
@@ -119,29 +119,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       </div>
 
       <!-- ============================================ -->
-      <!-- PROJECTS                                      -->
-      <!-- ============================================ -->
-      <div class="receipt-section" data-print-section>
-        <pre class="receipt-line bold" data-print>PROJECTS</pre>
-        <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line" data-print>  <a href="/projects/kroger-ad-platform">Kroger Ad Platform: Offsite</a></pre>
-        <pre class="receipt-line faded" data-print>    Kroger Precision Marketing</pre>
-        <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line" data-print>  <a href="/projects/meridian">Meridian Design System</a></pre>
-        <pre class="receipt-line faded" data-print>    84.51°</pre>
-        <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line" data-print>  <a href="/projects/stratum">Stratum: Analytics Platform</a></pre>
-        <pre class="receipt-line faded" data-print>    84.51°</pre>
-        <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line" data-print>  <a href="https://universal.xyz" target="_blank">Universal Platform</a></pre>
-        <pre class="receipt-line faded" data-print>    Universal</pre>
-        <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line" data-print>  <a href="/projects/personal">Miscellany</a></pre>
-        <pre class="receipt-line faded" data-print>    Passion projects & explorations</pre>
-        <pre class="receipt-line" data-print>--------------------------------</pre>
-      </div>
-
-      <!-- ============================================ -->
       <!-- NOW                                           -->
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
@@ -165,7 +142,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line" data-print>  B.S. Digital Arts & Sciences</pre>
         <pre class="receipt-line" data-print>  Minor: Business Administration</pre>
         <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line center" data-print>================================</pre>
+        <pre class="receipt-line center divider" data-print>================================</pre>
       </div>
 
       <!-- ============================================ -->
@@ -181,7 +158,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line row" data-print><span>REFRAKT</span><span><a href="https://refrakt.app/andrew" target="_blank">refrakt.app/andrew</a></span></pre>
         <pre class="receipt-line row" data-print><span>WEB</span><span><a href="https://andrew.cv">andrew.cv</a></span></pre>
         <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line center" data-print>================================</pre>
+        <pre class="receipt-line center divider" data-print>================================</pre>
       </div>
 
       <!-- ============================================ -->
@@ -206,8 +183,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line center faded small" data-print>No returns on experience.</pre>
         <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center" data-print>Made with love in New Mexico</pre>
-        <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line center faded small" data-print><a href="/colophon">andrew.cv/colophon</a></pre>
       </div>
 
       <!-- ============================================ -->
@@ -341,9 +316,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   .receipt-line {
-    font-family: 'Geist Pixel', 'VT323', ui-monospace, monospace;
-    font-size: 16px;
-    line-height: 1.6;
+    font-family: var(--font-receipt);
+    font-size: 18px;
+    line-height: 1.5;
     color: #1a1a1a;
     white-space: pre;
     margin: 0;
@@ -374,14 +349,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   .receipt-line.big {
+    font-family: var(--font-pixel);
     font-size: 22px;
     letter-spacing: 2px;
   }
 
   .receipt-line.bold {
+    font-family: var(--font-pixel);
     color: #000;
     font-weight: normal;
     letter-spacing: 1px;
+    font-size: 16px;
+  }
+
+  .receipt-line.divider {
+    font-family: var(--font-pixel);
+    font-size: 16px;
+    color: #444;
   }
 
   .receipt-line.faded {
@@ -540,7 +524,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     background: #333;
     border: 1px solid #555;
     color: #f5f0e8;
-    font-family: 'Geist Pixel', 'VT323', ui-monospace, monospace;
+    font-family: var(--font-pixel);
     font-size: 18px;
     width: 44px;
     height: 44px;
@@ -574,7 +558,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     background: #333;
     border: 1px solid #555;
     color: #f5f0e8;
-    font-family: 'Geist Pixel', 'VT323', ui-monospace, monospace;
+    font-family: var(--font-pixel);
     font-size: 14px;
     padding: 8px 16px;
     cursor: pointer;
@@ -710,22 +694,30 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .receipt-line {
-      font-size: 14px;
+      font-size: 16px;
     }
 
     .receipt-line.big {
-      font-size: 18px;
+      font-size: 20px;
       letter-spacing: 1px;
+    }
+
+    .receipt-line.bold {
+      font-size: 14px;
+    }
+
+    .receipt-line.divider {
+      font-size: 14px;
     }
   }
 
   @media (max-width: 360px) {
     .receipt-line {
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .receipt-line.big {
-      font-size: 16px;
+      font-size: 18px;
     }
   }
 </style>
