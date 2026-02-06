@@ -211,12 +211,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       </div>
 
       <!-- ============================================ -->
-      <!-- TEAR ZONE (interactive - swipe to cut)       -->
+      <!-- TEAR ZONE (visual hint - swipe anywhere!)    -->
       <!-- ============================================ -->
       <div class="tear-zone" id="tearZone">
-        <pre class="receipt-line center faded tear-text" data-print>- - - - - - - - - - - - - - -</pre>
-        <pre class="receipt-line center faded tear-text" data-print>         ✂ tear here ✂</pre>
-        <div class="tear-cut-line" id="tearCutLine"></div>
+        <pre class="receipt-line center faded" data-print>- - - - - - - - - - - - - - -</pre>
+        <pre class="receipt-line center faded" data-print>         ✂ tear here ✂</pre>
       </div>
 
       <!-- Bottom torn edge -->
@@ -594,32 +593,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   /* ============================================ */
-  /* TEAR ZONE                                     */
+  /* TEAR ZONE (visual hint)                       */
   /* ============================================ */
 
   .tear-zone {
     position: relative;
     z-index: 5;
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
     padding: 4px 0;
-  }
-
-  .tear-zone .tear-text {
-    transition: color 0.2s;
-  }
-
-  .tear-zone:not(.torn):hover {
-    cursor: grab;
-  }
-
-  .tear-zone:not(.torn):hover .tear-text {
-    color: #555 !important;
-  }
-
-  .tear-zone.tearing {
-    cursor: grabbing;
   }
 
   .tear-zone.torn {
@@ -631,24 +611,29 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     margin: 0;
   }
 
-  .tear-cut-line {
-    position: absolute;
-    top: 50%;
+  /* Full-page cut line (fixed across viewport) */
+  .page-cut-line {
+    position: fixed;
     left: 0;
-    height: 3px;
+    top: 0;
     width: 0;
+    height: 3px;
     background: linear-gradient(90deg,
       transparent 0%,
-      rgba(0,0,0,0.2) 15%,
-      rgba(0,0,0,0.5) 50%,
-      rgba(0,0,0,0.2) 85%,
+      rgba(200,180,160,0.15) 10%,
+      rgba(200,180,160,0.35) 30%,
+      rgba(220,200,180,0.5) 50%,
+      rgba(200,180,160,0.35) 70%,
+      rgba(200,180,160,0.15) 90%,
       transparent 100%
     );
-    transform: translateY(-50%);
     pointer-events: none;
-    z-index: 10;
-    border-radius: 2px;
-    transition: width 0.05s ease-out;
+    z-index: 200;
+    display: none;
+    transform: translateY(-50%);
+    border-radius: 1px;
+    box-shadow: 0 0 6px 1px rgba(200,180,160,0.15);
+    transition: width 0.04s ease-out;
   }
 
   /* Pieces after tear */
@@ -1122,57 +1107,103 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     // ========================================
-    // 6. TEAR INTERACTION (swipe to cut)
+    // 6. TEAR INTERACTION (swipe ANYWHERE to cut)
     // ========================================
-    const tearZone = document.getElementById('tearZone');
-    const tearCutLine = document.getElementById('tearCutLine');
+    // The user can swipe horizontally anywhere on the page.
+    // If the swipe's Y coordinate intersects the receipt,
+    // the receipt tears at that point with physics.
 
-    if (tearZone && tearCutLine && receipt) {
+    const tearZone = document.getElementById('tearZone');
+
+    if (receipt) {
       let tearStartX = 0;
+      let tearStartY = 0;
       let isTearing = false;
       let isTorn = false;
+      let tearDecided = false;       // has the gesture been classified?
+      let tearIsHorizontal = false;  // is this a horizontal swipe?
 
-      function startTear(clientX: number) {
-        if (isTorn || isPrinting) return; // Can't tear while still printing
+      // Create a full-viewport cut line element
+      const pageCutLine = document.createElement('div');
+      pageCutLine.className = 'page-cut-line';
+      document.body.appendChild(pageCutLine);
+
+      function startTear(clientX: number, clientY: number) {
+        if (isTorn || isPrinting) return;
         tearStartX = clientX;
+        tearStartY = clientY;
         isTearing = true;
-        tearZone.classList.add('tearing');
+        tearDecided = false;
+        tearIsHorizontal = false;
       }
 
       function moveTear(clientX: number, clientY: number) {
         if (!isTearing || isTorn) return;
 
         const dx = Math.abs(clientX - tearStartX);
-        const tearWidth = tearZone.getBoundingClientRect().width;
-        const progress = Math.min(1, dx / (tearWidth * 0.5));
+        const dy = Math.abs(clientY - tearStartY);
 
-        // Update visual cut line
-        tearCutLine.style.width = `${progress * 100}%`;
+        // Decision zone: after 12px of movement, classify the gesture
+        if (!tearDecided && (dx > 12 || dy > 12)) {
+          tearDecided = true;
+          // Horizontal must clearly dominate vertical to be a tear
+          tearIsHorizontal = dx > dy * 1.8;
+
+          if (tearIsHorizontal) {
+            // Position cut line at swipe Y
+            pageCutLine.style.top = `${tearStartY}px`;
+            pageCutLine.style.display = 'block';
+            pageCutLine.style.width = '0';
+            document.body.style.cursor = 'grabbing';
+          }
+        }
+
+        if (!tearDecided || !tearIsHorizontal) return;
+
+        // Calculate progress - need to swipe ~35% of viewport width
+        const progress = Math.min(1, dx / (window.innerWidth * 0.35));
+        pageCutLine.style.width = `${progress * 100}%`;
 
         if (progress >= 1) {
-          executeTear();
+          executeTear(tearStartY);
         }
       }
 
       function endTear() {
         if (!isTorn) {
-          tearCutLine.style.width = '0';
-          tearZone.classList.remove('tearing');
+          pageCutLine.style.width = '0';
+          pageCutLine.style.display = 'none';
+          document.body.style.cursor = '';
         }
         isTearing = false;
+        tearDecided = false;
+        tearIsHorizontal = false;
       }
 
-      function executeTear() {
+      function executeTear(swipeY: number) {
+        // Map swipe Y to receipt coordinates
+        const receiptRect = receipt!.getBoundingClientRect();
+        const tearYInReceipt = swipeY - receiptRect.top;
+
+        // Only tear if Y intersects the receipt (with 30px margin from edges)
+        if (tearYInReceipt < 30 || tearYInReceipt > receiptRect.height - 30) {
+          endTear();
+          return;
+        }
+
         isTorn = true;
         isTearing = false;
 
         // Play tear sound
         sounds.tearSound();
 
-        // Calculate tear position
-        const receiptRect = receipt!.getBoundingClientRect();
-        const tearRect = tearZone!.getBoundingClientRect();
-        const tearYInReceipt = tearRect.top + tearRect.height / 2 - receiptRect.top;
+        // Hide cut line after a beat
+        setTimeout(() => {
+          pageCutLine.style.display = 'none';
+          document.body.style.cursor = '';
+        }, 100);
+
+        // Calculate clip percentages
         const totalHeight = receiptRect.height;
         const topPct = (tearYInReceipt / totalHeight) * 100;
         const bottomPct = 100 - topPct;
@@ -1204,21 +1235,21 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         receipt!.style.filter = 'drop-shadow(0 2px 6px rgba(0,0,0,0.15)) drop-shadow(0 6px 16px rgba(0,0,0,0.1))';
         receipt!.classList.add('torn-top');
 
-        // Hide tear zone
-        tearZone!.classList.add('torn');
+        // Hide the tear-zone hint text if it was in the bottom piece
+        if (tearZone) tearZone.classList.add('torn');
 
         // Physics simulation for falling bottom piece
-        let vy = 0;                                    // vertical velocity
-        let vr = (Math.random() - 0.3) * 0.6;         // rotational velocity
-        let py = 0;                                    // vertical position
-        let rot = 0;                                   // rotation angle
+        let vy = 0;
+        let vr = (Math.random() - 0.3) * 0.6;
+        let py = 0;
+        let rot = 0;
         const gravity = 0.65;
 
         function physicsTick() {
           vy += gravity;
           py += vy;
           rot += vr;
-          vr *= 0.995; // slight rotational damping
+          vr *= 0.995;
 
           const opacity = Math.max(0, 1 - py / 500);
           clone.style.transform = `translateY(${py}px) rotate(${rot}deg)`;
@@ -1233,7 +1264,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         requestAnimationFrame(physicsTick);
 
-        // Subtle settle animation for top piece (spring-like bounce)
+        // Subtle settle for top piece
         const curRotMatch = receipt!.style.transform?.match(/rotate\(([^)]+)deg\)/);
         const curRot = curRotMatch ? parseFloat(curRotMatch[1]) : 0;
 
@@ -1246,26 +1277,35 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }, 350);
       }
 
-      // Mouse events
-      tearZone.addEventListener('mousedown', (e: MouseEvent) => {
-        e.preventDefault();
-        startTear(e.clientX);
+      // ---- Global gesture listeners (mouse + touch) ----
+
+      // Mouse: start on mousedown anywhere
+      document.addEventListener('mousedown', (e: MouseEvent) => {
+        // Ignore clicks on buttons (sound toggle, skip)
+        if ((e.target as HTMLElement).closest('button')) return;
+        startTear(e.clientX, e.clientY);
       });
       document.addEventListener('mousemove', (e: MouseEvent) => {
         if (isTearing) moveTear(e.clientX, e.clientY);
       });
-      document.addEventListener('mouseup', () => endTear());
+      document.addEventListener('mouseup', () => {
+        if (isTearing) endTear();
+      });
 
-      // Touch events
-      tearZone.addEventListener('touchstart', (e: TouchEvent) => {
-        startTear(e.touches[0].clientX);
+      // Touch: start on touchstart anywhere
+      document.addEventListener('touchstart', (e: TouchEvent) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        if ((e.target as HTMLElement).closest('a')) return;
+        startTear(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: true });
       document.addEventListener('touchmove', (e: TouchEvent) => {
-        if (isTearing) {
+        if (isTearing && e.touches.length > 0) {
           moveTear(e.touches[0].clientX, e.touches[0].clientY);
         }
       }, { passive: true });
-      document.addEventListener('touchend', () => endTear());
+      document.addEventListener('touchend', () => {
+        if (isTearing) endTear();
+      });
     }
 
     // ========================================
