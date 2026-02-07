@@ -162,6 +162,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       </div>
 
       <!-- ============================================ -->
+      <!-- PORTRAIT 2 (Dithered - bottom copy)          -->
+      <!-- ============================================ -->
+      <div class="receipt-section portrait-section" data-print-section>
+        <div class="portrait-container" data-print data-src={Avatar.src}>
+          <canvas id="portraitCanvas2"></canvas>
+          <noscript>
+            <img src={Avatar.src} alt="Andrew Washuta" width="280" />
+          </noscript>
+        </div>
+        <pre class="receipt-line center faded" data-print>[ THERMAL PORTRAIT ]</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
       <!-- BARCODE                                       -->
       <!-- ============================================ -->
       <div class="receipt-section" data-print-section>
@@ -350,21 +364,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   .receipt-line.big {
     font-family: var(--font-pixel);
-    font-size: 22px;
+    font-size: 20px;
+    font-weight: 500;
     letter-spacing: 2px;
   }
 
   .receipt-line.bold {
     font-family: var(--font-pixel);
     color: #000;
-    font-weight: normal;
+    font-weight: 500;
     letter-spacing: 1px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .receipt-line.divider {
     font-family: var(--font-pixel);
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 500;
     color: #444;
   }
 
@@ -505,6 +521,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     content: "█";
     animation: blink 0.4s step-end infinite;
     color: #1a1a1a;
+    mix-blend-mode: difference;
   }
 
   @keyframes blink {
@@ -698,16 +715,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .receipt-line.big {
-      font-size: 20px;
+      font-size: 18px;
+      font-weight: 500;
       letter-spacing: 1px;
     }
 
     .receipt-line.bold {
-      font-size: 14px;
+      font-size: 12px;
+      font-weight: 500;
     }
 
     .receipt-line.divider {
-      font-size: 14px;
+      font-size: 12px;
+      font-weight: 500;
     }
   }
 
@@ -717,7 +737,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .receipt-line.big {
-      font-size: 18px;
+      font-size: 16px;
+      font-weight: 500;
     }
   }
 </style>
@@ -955,13 +976,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       return Math.min(255, Math.max(0, val));
     }
 
-    // Initialize portrait dithering
+    // Initialize portrait dithering (both top and bottom copies)
     const portraitContainer = document.querySelector('.portrait-container') as HTMLElement;
     const canvas = document.getElementById('portraitCanvas') as HTMLCanvasElement;
     if (portraitContainer && canvas) {
       const src = portraitContainer.dataset.src;
       if (src) {
         ditherImage(canvas, src);
+      }
+    }
+
+    const portraitCanvas2 = document.getElementById('portraitCanvas2') as HTMLCanvasElement;
+    if (portraitCanvas2) {
+      const container2 = portraitCanvas2.closest('.portrait-container') as HTMLElement;
+      const src2 = container2?.dataset.src;
+      if (src2) {
+        ditherImage(portraitCanvas2, src2);
       }
     }
 
@@ -1158,34 +1188,81 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     if (receipt) {
       const TEAR_GAP = 22; // px of separation per tear
 
-      // Each piece tracks its clip bounds and offset
+      // Each piece tracks its clip bounds, offset, and torn edges
+      type JaggedEdge = number[]; // y-offset values in px, evenly spaced across width
+
       type TearPiece = {
         el: HTMLElement;
         top: number;      // 0-100% content start
         bottom: number;   // 0-100% content end
         offsetY: number;  // accumulated px offset
         rotation: number; // accumulated rotation offset (degrees)
+        topEdge: JaggedEdge | null;    // jagged tear data (null = straight)
+        bottomEdge: JaggedEdge | null; // jagged tear data (null = straight)
       };
 
       let pieces: TearPiece[] = [];
       let tearSystemReady = false;
       let baseRotation = 0;
+      let receiptH = 0;
+
+      // Generate irregular jagged edge simulating perforated paper tear
+      function generateJaggedEdge(): JaggedEdge {
+        const numPoints = 80;
+        const edge: number[] = [];
+        for (let i = 0; i <= numPoints; i++) {
+          const t = i / numPoints;
+          // Organic waviness from overlapping sine waves
+          const wave = Math.sin(t * Math.PI * 6) * 1.2
+                     + Math.sin(t * Math.PI * 13 + 1.7) * 0.8;
+          // Random teeth: 2-4px irregular triangular variations
+          const tooth = (Math.random() - 0.5) * 5;
+          edge.push(wave + tooth);
+        }
+        return edge;
+      }
+
+      // Convert jagged edge data to polygon point strings
+      function jaggedPoints(edge: JaggedEdge, basePct: number, reverse: boolean): string {
+        const pts = edge.map((yPx, i) => {
+          const x = (i / (edge.length - 1)) * 100;
+          const y = basePct + (yPx / receiptH) * 100;
+          return `${x.toFixed(2)}% ${y.toFixed(2)}%`;
+        });
+        if (reverse) pts.reverse();
+        return pts.join(', ');
+      }
 
       // Full-viewport cut line
       const pageCutLine = document.createElement('div');
       pageCutLine.className = 'page-cut-line';
       document.body.appendChild(pageCutLine);
 
-      // Build clip-path string for a piece. Use negative inset for
-      // edge pieces so the decorative torn paper edges stay visible.
+      // Build clip-path polygon for a piece, with jagged edges at tear points
       function clipFor(p: TearPiece): string {
-        const top = p.top === 0 ? '-10px' : `${p.top}%`;
-        const bot = p.bottom === 100 ? '-10px' : `${100 - p.bottom}%`;
-        return `inset(${top} 0 ${bot} 0)`;
+        // Top edge (left to right)
+        let topStr: string;
+        if (p.topEdge) {
+          topStr = jaggedPoints(p.topEdge, p.top, false);
+        } else {
+          const t = p.top === 0 ? -2 : p.top;
+          topStr = `0% ${t}%, 100% ${t}%`;
+        }
+
+        // Bottom edge (right to left)
+        let botStr: string;
+        if (p.bottomEdge) {
+          botStr = jaggedPoints(p.bottomEdge, p.bottom, true);
+        } else {
+          const b = p.bottom === 100 ? 102 : p.bottom;
+          botStr = `100% ${b}%, 0% ${b}%`;
+        }
+
+        return `polygon(${topStr}, ${botStr})`;
       }
 
       function transformFor(p: TearPiece): string {
-        return `rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
+        return `translateX(-50%) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
       }
 
       // Lazily set up the piece system on the first tear
@@ -1196,14 +1273,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const wrapper = receipt!.parentElement!;
         wrapper.style.position = 'relative';
 
-        // Capture the current rotation
+        // Capture the current rotation and height
         const m = receipt!.style.transform?.match(/rotate\(([^)]+)deg\)/);
         baseRotation = m ? parseFloat(m[1]) : 0;
+        receiptH = receipt!.offsetHeight;
 
         // Create the initial full-receipt piece
-        const el = makePieceEl(0, 100, 0, 0);
+        const el = makePieceEl(0, 100, 0, 0, null, null);
         wrapper.appendChild(el);
-        pieces.push({ el, top: 0, bottom: 100, offsetY: 0, rotation: 0 });
+        pieces.push({ el, top: 0, bottom: 100, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null });
 
         // Hide the original (it stays in flow for layout height)
         receipt!.style.visibility = 'hidden';
@@ -1211,21 +1289,21 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         receipt!.style.filter = 'none';
       }
 
-      function makePieceEl(top: number, bottom: number, offsetY: number, rot: number): HTMLElement {
+      function makePieceEl(top: number, bottom: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): HTMLElement {
         const clone = receipt!.cloneNode(true) as HTMLElement;
         clone.removeAttribute('id');
         clone.classList.add('receipt-piece');
-        const p = { top, bottom, offsetY, rotation: rot } as TearPiece;
+        const p = { top, bottom, offsetY, rotation: rot, topEdge, bottomEdge } as TearPiece;
         Object.assign(clone.style, {
           position: 'absolute',
           top: '0',
-          left: receipt!.offsetLeft + 'px',
+          left: '50%',
           width: receipt!.offsetWidth + 'px',
           margin: '0',
           visibility: 'visible',
           clipPath: clipFor(p),
           boxShadow: 'none',
-          filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.15)) drop-shadow(0 6px 16px rgba(0,0,0,0.1))',
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))',
           transform: transformFor(p),
           transformOrigin: 'center center',
           pointerEvents: 'none',
@@ -1272,15 +1350,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         sounds.tearSound();
 
         const origBottom = target.bottom;
+        const origBottomEdge = target.bottomEdge;
 
-        // Shrink target to top portion
+        // Generate shared jagged edge for this tear (both pieces share it)
+        const jaggedEdge = generateJaggedEdge();
+
+        // Shrink target to top portion with new jagged bottom
         target.bottom = tearPct;
+        target.bottomEdge = jaggedEdge;
         target.rotation += (Math.random() - 0.5) * 0.6;
         animatePiece(target);
 
-        // Create new piece for bottom portion
+        // Create new piece for bottom portion (jagged top, inherits old bottom edge)
         const wrapper = receipt!.parentElement!;
-        const newEl = makePieceEl(tearPct, origBottom, target.offsetY, target.rotation);
+        const newEl = makePieceEl(tearPct, origBottom, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
         wrapper.appendChild(newEl);
 
         const newPiece: TearPiece = {
@@ -1289,6 +1372,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           bottom: origBottom,
           offsetY: target.offsetY,
           rotation: target.rotation,
+          topEdge: jaggedEdge,
+          bottomEdge: origBottomEdge,
         };
         pieces.splice(targetIdx + 1, 0, newPiece);
 
