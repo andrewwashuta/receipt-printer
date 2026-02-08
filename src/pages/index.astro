@@ -1305,7 +1305,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     function finishPrinting() {
       isPrinting = false;
       sounds.stopMotor();
-      sounds.tearSound();
 
       // Remove any remaining cursor
       allPrintables.forEach(el => el.classList.remove('printing'));
