@@ -6,14 +6,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 <ReceiptLayout
   description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
 >
-  <!-- Sound Toggle (on by default) -->
+  <!-- Sound Toggle (receipt-aesthetic) -->
   <button class="sound-toggle active" id="soundToggle" aria-label="Toggle printer sounds" title="Toggle printer sounds">
-    <span class="sound-icon" id="soundIcon">🔊</span>
-  </button>
-
-  <!-- Skip Animation -->
-  <button class="skip-btn" id="skipBtn" aria-label="Skip printing animation">
-    SKIP ▶▶
+    <span class="sound-label" id="soundLabel">[ AUDIO: ON ]</span>
   </button>
 
   <div class="receipt-wrapper">
@@ -99,13 +94,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>EXPERIENCE</pre>
         <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line bold" data-print>  84.51°</pre>
+        <pre class="receipt-line bold" data-print>  84.51°, A Kroger Company</pre>
         <pre class="receipt-line faded" data-print>  Lead Product Designer</pre>
-        <pre class="receipt-line dotleader" data-print><span>  Ad Platforms</span><span>2020-NOW</span></pre>
-        <pre class="receipt-line dotleader" data-print><span>  Design Systems</span><span>2020-NOW</span></pre>
-        <pre class="receipt-line dotleader" data-print><span>  Insights</span><span>2017-2020</span></pre>
-        <pre class="receipt-line faded" data-print>  Senior UI Designer</pre>
-        <pre class="receipt-line dotleader" data-print><span>  Insights</span><span>2017</span></pre>
+        <pre class="receipt-line dotleader" data-print><span>  Ad Platforms</span><span>2025-NOW</span></pre>
+        <pre class="receipt-line dotleader" data-print><span>  Design Systems</span><span>2021-2025</span></pre>
+        <pre class="receipt-line dotleader" data-print><span>  Insights</span><span>2017-2021</span></pre>
         <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line bold" data-print>  Universal</pre>
         <pre class="receipt-line dotleader" data-print><span>  Design Lead</span><span>2022-NOW</span></pre>
@@ -223,14 +216,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   .receipt {
     width: 380px;
     max-width: 100%;
-    background: #f5f0e8;
-    background-image: 
+    background: #ede7d9;
+    background-image:
       linear-gradient(
         180deg,
-        rgba(0,0,0,0.02) 0%,
+        rgba(160,120,60,0.04) 0%,
         transparent 3%,
-        transparent 97%,
-        rgba(0,0,0,0.03) 100%
+        transparent 50%,
+        rgba(160,120,60,0.02) 80%,
+        rgba(0,0,0,0.04) 100%
       );
     padding: 32px 24px;
     position: relative;
@@ -240,6 +234,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       0 4px 16px rgba(0,0,0,0.15),
       0 12px 48px rgba(0,0,0,0.1);
     overflow: hidden;
+    filter: sepia(0.08) saturate(0.95);
   }
 
   /* Paper texture overlay - subtle horizontal feed lines */
@@ -264,11 +259,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     content: "";
     position: absolute;
     inset: 0;
-    opacity: 0.35;
+    opacity: 0.45;
     pointer-events: none;
     z-index: 1;
     mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
     background-size: 200px 200px;
   }
 
@@ -279,7 +274,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     left: 0;
     right: 0;
     height: 8px;
-    background: #f5f0e8;
+    background: #ede7d9;
     clip-path: polygon(
       0% 100%, 2% 40%, 4% 100%, 6% 50%, 8% 100%, 10% 30%, 
       12% 100%, 14% 60%, 16% 100%, 18% 40%, 20% 100%, 22% 50%,
@@ -301,7 +296,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     left: 0;
     right: 0;
     height: 10px;
-    background: #f5f0e8;
+    background: #ede7d9;
     clip-path: polygon(
       0% 0%, 3% 70%, 5% 0%, 8% 60%, 11% 0%, 13% 80%, 
       16% 0%, 19% 50%, 21% 0%, 24% 70%, 27% 0%, 29% 60%,
@@ -535,59 +530,29 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     top: 20px;
     right: 20px;
     z-index: 100;
-    background: #333;
-    border: 1px solid #555;
-    color: #f5f0e8;
-    font-family: var(--font-pixel);
-    font-size: 18px;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: rgba(30, 28, 24, 0.85);
+    border: 1px solid rgba(245, 240, 232, 0.12);
+    color: rgba(245, 240, 232, 0.5);
+    font-family: var(--font-receipt);
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    border-radius: 4px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    border-radius: 0;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   .sound-toggle:hover {
-    background: #444;
-    border-color: #777;
+    color: rgba(245, 240, 232, 0.7);
+    border-color: rgba(245, 240, 232, 0.2);
   }
 
   .sound-toggle.active {
-    background: #4a3;
-    border-color: #6c5;
-  }
-
-  /* ============================================ */
-  /* SKIP BUTTON                                   */
-  /* ============================================ */
-
-  .skip-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 100;
-    background: #333;
-    border: 1px solid #555;
-    color: #f5f0e8;
-    font-family: var(--font-pixel);
-    font-size: 14px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: background 0.2s, opacity 0.3s, border-color 0.2s;
-    border-radius: 4px;
-  }
-
-  .skip-btn:hover {
-    background: #444;
-    border-color: #777;
-  }
-
-  .skip-btn.hidden {
-    opacity: 0;
-    pointer-events: none;
+    color: rgba(245, 240, 232, 0.65);
+    border-color: rgba(245, 240, 232, 0.18);
   }
 
   /* ============================================ */
@@ -779,50 +744,56 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   document.addEventListener('DOMContentLoaded', () => {
 
     // ========================================
-    // 1. SOUND ENGINE (Real audio files)
+    // 1. SOUND ENGINE
+    //    Sequence: startup → printing loop → tear sounds
+    //    Uses Web Audio API for zero-latency tear playback
     // ========================================
     class ReceiptSounds {
-      private printerAudio: HTMLAudioElement;
-      private tearAudio: HTMLAudioElement;
-      private _enabled: boolean = true; // ON by default
+      private startupAudio: HTMLAudioElement;
+      private printingAudio: HTMLAudioElement;
+      private _enabled: boolean = true;
       private _printing: boolean = false;
       private _fadeTimer: ReturnType<typeof setInterval> | null = null;
       private audioCtx: AudioContext | null = null;
-      private tearBuffer: AudioBuffer | null = null;
+      private tearBuffers: AudioBuffer[] = [];
+      private _unlocked: boolean = false;
 
       constructor() {
-        // Main printer sound - does NOT loop by default
-        this.printerAudio = new Audio('/sounds/printer.mp3');
-        this.printerAudio.loop = false;
-        this.printerAudio.volume = 0.6;
-        this.printerAudio.preload = 'auto';
+        // Startup sound (one-shot on page load)
+        this.startupAudio = new Audio('/sounds/printer-startup.mp3');
+        this.startupAudio.loop = false;
+        this.startupAudio.volume = 0.55;
+        this.startupAudio.preload = 'auto';
 
-        // HTML5 Audio fallback for tear sound
-        this.tearAudio = new Audio('/sounds/paper-tear.mp3');
-        this.tearAudio.loop = false;
-        this.tearAudio.volume = 0.5;
-        this.tearAudio.preload = 'auto';
+        // Printing loop (continuous during animation)
+        this.printingAudio = new Audio('/sounds/printing.mp3');
+        this.printingAudio.loop = false;
+        this.printingAudio.volume = 0.5;
+        this.printingAudio.preload = 'auto';
 
-        // Pre-decode tear sound via Web Audio API for zero-latency playback
+        // Pre-decode all 4 tear sounds via Web Audio API for instant playback
         try {
           this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-          fetch('/sounds/paper-tear.mp3')
-            .then(r => r.arrayBuffer())
-            .then(buf => this.audioCtx!.decodeAudioData(buf))
-            .then(decoded => { this.tearBuffer = decoded; })
-            .catch(() => {});
+          const tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
+          tearFiles.forEach((file, idx) => {
+            fetch(file)
+              .then(r => r.arrayBuffer())
+              .then(buf => this.audioCtx!.decodeAudioData(buf))
+              .then(decoded => { this.tearBuffers[idx] = decoded; })
+              .catch(() => {});
+          });
         } catch(e) {}
 
-        // Browsers block autoplay without user interaction.
-        // Register a one-time unlock handler on any user gesture.
+        // Unlock audio on first user gesture (browser autoplay policy)
         const unlock = () => {
-          // Resume Web Audio context
+          if (this._unlocked) return;
+          this._unlocked = true;
           if (this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().catch(() => {});
           }
           if (this._enabled && this._printing) {
-            this.printerAudio.loop = true;
-            this.printerAudio.play().catch(() => {});
+            this.printingAudio.loop = true;
+            this.printingAudio.play().catch(() => {});
           }
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
@@ -838,64 +809,75 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggle() {
         this._enabled = !this._enabled;
         if (!this._enabled) {
-          this.printerAudio.loop = false;
-          this.printerAudio.pause();
+          this.startupAudio.pause();
+          this.printingAudio.loop = false;
+          this.printingAudio.pause();
         } else if (this._printing) {
-          this.printerAudio.loop = true;
-          this.printerAudio.play().catch(() => {});
+          this.printingAudio.loop = true;
+          this.printingAudio.play().catch(() => {});
         }
         return this._enabled;
       }
 
+      // Play startup sound, then begin printing loop when startup ends
       startMotor() {
         this._printing = true;
         if (!this._enabled) return;
-        this.printerAudio.loop = true;
-        this.printerAudio.currentTime = 0;
-        this.printerAudio.play().catch(() => {});
+
+        this.startupAudio.currentTime = 0;
+        this.startupAudio.play().catch(() => {});
+
+        // When startup sound ends, begin continuous printing loop
+        this.startupAudio.onended = () => {
+          if (!this._printing || !this._enabled) return;
+          this.printingAudio.loop = true;
+          this.printingAudio.currentTime = 0;
+          this.printingAudio.play().catch(() => {});
+        };
       }
 
       stopMotor() {
         this._printing = false;
-        // Immediately stop looping so sound ends at current play point
-        this.printerAudio.loop = false;
+        this.startupAudio.onended = null;
+        this.printingAudio.loop = false;
 
-        // Clear any existing fade
         if (this._fadeTimer) clearInterval(this._fadeTimer);
 
-        // Fade out using setInterval (works even in background tabs)
-        const startVol = this.printerAudio.volume;
+        const startVol = this.printingAudio.volume;
         let step = 0;
         const totalSteps = 8;
         this._fadeTimer = setInterval(() => {
           step++;
-          this.printerAudio.volume = Math.max(0, startVol * (1 - step / totalSteps));
+          this.printingAudio.volume = Math.max(0, startVol * (1 - step / totalSteps));
           if (step >= totalSteps) {
             if (this._fadeTimer) clearInterval(this._fadeTimer);
             this._fadeTimer = null;
-            this.printerAudio.pause();
-            this.printerAudio.currentTime = 0;
-            this.printerAudio.volume = 0.6;
+            this.printingAudio.pause();
+            this.printingAudio.currentTime = 0;
+            this.printingAudio.volume = 0.5;
           }
         }, 30);
 
-        // Hard stop safety net - force pause after 400ms no matter what
+        // Hard stop safety net
         setTimeout(() => {
           if (!this._printing) {
-            this.printerAudio.pause();
-            this.printerAudio.currentTime = 0;
-            this.printerAudio.volume = 0.6;
-            this.printerAudio.loop = false;
+            this.startupAudio.pause();
+            this.printingAudio.pause();
+            this.printingAudio.currentTime = 0;
+            this.printingAudio.volume = 0.5;
+            this.printingAudio.loop = false;
           }
         }, 400);
       }
 
+      // Play a random tear sound (1 of 4) via Web Audio API
       tearSound() {
         if (!this._enabled) return;
-        // Use Web Audio API for instant playback (no latency)
-        if (this.tearBuffer && this.audioCtx && this.audioCtx.state === 'running') {
+        const available = this.tearBuffers.filter(Boolean);
+        if (available.length > 0 && this.audioCtx && this.audioCtx.state === 'running') {
+          const buffer = available[Math.floor(Math.random() * available.length)];
           const source = this.audioCtx.createBufferSource();
-          source.buffer = this.tearBuffer;
+          source.buffer = buffer;
           const gain = this.audioCtx.createGain();
           gain.gain.value = 0.5;
           source.connect(gain);
@@ -903,9 +885,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           source.start(0);
           return;
         }
-        // Fallback to HTML5 Audio
-        this.tearAudio.currentTime = 0;
-        this.tearAudio.play().catch(() => {});
       }
 
       tick() {} // no-op: continuous audio provides the sound
@@ -914,14 +893,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const sounds = new ReceiptSounds();
 
     // ========================================
-    // 2. SOUND TOGGLE BUTTON
+    // 2. SOUND TOGGLE BUTTON (receipt aesthetic)
     // ========================================
     const soundToggle = document.getElementById('soundToggle')!;
-    const soundIcon = document.getElementById('soundIcon')!;
+    const soundLabel = document.getElementById('soundLabel')!;
 
     soundToggle.addEventListener('click', () => {
       const enabled = sounds.toggle();
-      soundIcon.textContent = enabled ? '🔊' : '🔇';
+      soundLabel.textContent = enabled ? '[ AUDIO: ON ]' : '[ AUDIO: OFF ]';
       soundToggle.classList.toggle('active', enabled);
     });
 
@@ -1050,7 +1029,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         // Fallback: just show a placeholder
         canvas.width = 160;
         canvas.height = 160;
-        ctx.fillStyle = '#f5f0e8';
+        ctx.fillStyle = '#ede7d9';
         ctx.fillRect(0, 0, 160, 160);
         ctx.fillStyle = '#1a1a1a';
         ctx.font = '14px monospace';
@@ -1082,7 +1061,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       const h = canvas.height;
 
       // Clear with paper color
-      ctx.fillStyle = '#f5f0e8';
+      ctx.fillStyle = '#ede7d9';
       ctx.fillRect(0, 0, w, h);
 
       // Generate pseudo-barcode pattern from value
@@ -1158,31 +1137,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // 4. PRINTING ANIMATION
     // ========================================
     const allPrintables = document.querySelectorAll('[data-print]') as NodeListOf<HTMLElement>;
-    const skipBtn = document.getElementById('skipBtn')!;
     let printIndex = 0;
     let isPrinting = false;
-    let skipRequested = false;
     let printTimeout: ReturnType<typeof setTimeout> | null = null;
 
     function printNextLine() {
       if (printIndex >= allPrintables.length) {
-        // All done
-        finishPrinting();
-        return;
-      }
-
-      if (skipRequested) {
-        // Skip: reveal all remaining lines instantly
-        for (let i = printIndex; i < allPrintables.length; i++) {
-          allPrintables[i].classList.add('printed');
-          allPrintables[i].classList.remove('printing');
-        }
         finishPrinting();
         return;
       }
 
       const line = allPrintables[printIndex];
-      
+
       // Remove cursor from previous line
       if (printIndex > 0) {
         allPrintables[printIndex - 1].classList.remove('printing');
@@ -1198,17 +1164,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Vary delay for different line types for authentic feel
       let delay = 40;
       const text = line.textContent || '';
-      
+
       if (text.includes('====') || text.includes('----')) {
-        delay = 55; // Slightly slower for dividers
+        delay = 55;
       } else if (line.classList.contains('spacer') || text.trim() === '') {
-        delay = 12; // Fast for spacer/empty lines
+        delay = 12;
       } else if (line.classList.contains('big')) {
-        delay = 70; // Slower for header
+        delay = 70;
       } else if (line.classList.contains('portrait-container') || line.classList.contains('barcode-container')) {
-        delay = 350; // Pause for images
+        delay = 350;
       } else if (line.classList.contains('bold')) {
-        delay = 50; // Slightly slower for bold section headers
+        delay = 50;
       }
 
       printTimeout = setTimeout(printNextLine, delay);
@@ -1221,27 +1187,33 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let cutHintTimer: ReturnType<typeof setTimeout> | null = null;
 
     function showCutHint() {
-      if (localStorage.getItem('aw-has-cut')) return;
+      // Always show on first visit (cleared localStorage key)
+      if (sessionStorage.getItem('aw-hint-shown')) return;
+      sessionStorage.setItem('aw-hint-shown', '1');
 
       cutHintEl = document.createElement('div');
       cutHintEl.className = 'cut-hint';
       cutHintEl.textContent = '\u2702  SWIPE ACROSS TO TEAR  \u2702';
       document.body.appendChild(cutHintEl);
 
-      // Fade in after brief pause
-      setTimeout(() => cutHintEl?.classList.add('visible'), 600);
+      // Force reflow before adding class so transition fires
+      cutHintEl.getBoundingClientRect();
 
-      // Auto-dismiss after 6 seconds
+      // Fade in after brief pause
+      setTimeout(() => {
+        if (cutHintEl) cutHintEl.classList.add('visible');
+      }, 600);
+
+      // Auto-dismiss after 8 seconds
       cutHintTimer = setTimeout(() => {
         if (cutHintEl) {
           cutHintEl.classList.remove('visible');
           setTimeout(() => { cutHintEl?.remove(); cutHintEl = null; }, 600);
         }
-      }, 6000);
+      }, 8000);
     }
 
     function dismissCutHint() {
-      localStorage.setItem('aw-has-cut', '1');
       if (cutHintTimer) { clearTimeout(cutHintTimer); cutHintTimer = null; }
       if (cutHintEl) {
         cutHintEl.classList.remove('visible');
@@ -1257,33 +1229,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Remove any remaining cursor
       allPrintables.forEach(el => el.classList.remove('printing'));
 
-      // Hide skip button
-      skipBtn.classList.add('hidden');
-
-      // Show swipe affordance hint
-      showCutHint();
+      // Show swipe affordance hint after a short pause
+      setTimeout(showCutHint, 800);
     }
 
     function startPrinting() {
       if (isPrinting) return;
       isPrinting = true;
       sounds.startMotor();
-      
+
       // Small initial delay before printing starts
       printTimeout = setTimeout(printNextLine, 400);
     }
-
-    // Skip button
-    skipBtn.addEventListener('click', () => {
-      skipRequested = true;
-      if (printTimeout) clearTimeout(printTimeout);
-      // Reveal all
-      allPrintables.forEach(el => {
-        el.classList.add('printed');
-        el.classList.remove('printing');
-      });
-      finishPrinting();
-    });
 
     // ========================================
     // 5. RANDOM ROTATION (subtle authenticity)
@@ -1405,26 +1362,45 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         receipt!.style.filter = 'none';
       }
 
-      // Inline SVG noise for torn edge grain texture
-      const grainSvg = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")";
+      // Inline SVG noise for torn edge grain texture (gritty paper fiber look)
+      const grainSvg = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 300 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4 1.5' numOctaves='6' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E\")";
 
       function addEdgeGrain(parent: HTMLElement, yPct: number) {
+        // Main grain strip
         const grain = document.createElement('div');
         Object.assign(grain.style, {
           position: 'absolute',
-          left: '0',
-          right: '0',
+          left: '-2px',
+          right: '-2px',
           top: `${yPct}%`,
-          height: '8px',
+          height: '14px',
           transform: 'translateY(-50%)',
           backgroundImage: grainSvg,
-          backgroundSize: '200px 12px',
+          backgroundSize: '300px 20px',
           mixBlendMode: 'multiply',
-          opacity: '0.25',
+          opacity: '0.35',
           pointerEvents: 'none',
           zIndex: '99',
         });
         parent.appendChild(grain);
+
+        // Secondary lighter grain for fiber effect
+        const fiber = document.createElement('div');
+        Object.assign(fiber.style, {
+          position: 'absolute',
+          left: '-1px',
+          right: '-1px',
+          top: `${yPct}%`,
+          height: '6px',
+          transform: 'translateY(-50%)',
+          backgroundImage: grainSvg,
+          backgroundSize: '150px 20px',
+          mixBlendMode: 'soft-light',
+          opacity: '0.5',
+          pointerEvents: 'none',
+          zIndex: '100',
+        });
+        parent.appendChild(fiber);
       }
 
       function makePieceEl(top: number, bottom: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): HTMLElement {
