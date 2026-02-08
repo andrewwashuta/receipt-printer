@@ -66,11 +66,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line row" data-print><span>  1x  Design Systems</span><span>****</span></pre>
         <pre class="receipt-line row" data-print><span>  1x  Visual Design</span><span>****</span></pre>
         <pre class="receipt-line row" data-print><span>  1x  Brand Design</span><span>****</span></pre>
-        <pre class="receipt-line row" data-print><span>  1x  User Research</span><span>****</span></pre>
         <pre class="receipt-line row" data-print><span>  1x  Prototyping</span><span>****</span></pre>
         <pre class="receipt-line row" data-print><span>  1x  Front-end Dev</span><span>****</span></pre>
         <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line row bold" data-print><span>  SUBTOTAL (7 items)</span><span>PRICELESS</span></pre>
+        <pre class="receipt-line row bold" data-print><span>  SUBTOTAL (6 items)</span><span>PRICELESS</span></pre>
         <pre class="receipt-line" data-print>--------------------------------</pre>
       </div>
 
@@ -183,15 +182,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line center faded small" data-print>Items sold final.</pre>
         <pre class="receipt-line center faded small" data-print>No returns on experience.</pre>
         <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line center faded" data-print>&#x2702; TEAR ANYWHERE &#x2014; 2025 &#x2702;</pre>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- TEAR ZONE (visual hint - swipe anywhere!)    -->
-      <!-- ============================================ -->
-      <div class="tear-zone" id="tearZone">
         <pre class="receipt-line center faded" data-print>- - - - - - - - - - - - - - -</pre>
-        <pre class="receipt-line center faded" data-print>         ✂ tear here ✂</pre>
+        <pre class="receipt-line center faded" data-print>&#x2702; TEAR ANYWHERE &#x2014; 2026 &#x2702;</pre>
       </div>
 
       <!-- Bottom torn edge -->
@@ -746,13 +738,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // ========================================
     // 1. SOUND ENGINE
     //    Sequence: startup → printing loop → tear sounds
-    //    Uses Web Audio API for zero-latency tear playback
-    //    HTML5 Audio fallback for tear when WebAudio unavailable
+    //    Primary: HTML5 Audio (reliable cross-browser)
+    //    Enhanced: Web Audio API for zero-latency tear playback
     // ========================================
     class ReceiptSounds {
       private startupAudio: HTMLAudioElement;
       private printingAudio: HTMLAudioElement;
-      private tearFallbacks: HTMLAudioElement[] = [];
+      private tearPool: HTMLAudioElement[] = [];
       private _enabled: boolean = true;
       private _printing: boolean = false;
       private _fadeTimer: ReturnType<typeof setInterval> | null = null;
@@ -760,52 +752,64 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
       private _ready: Promise<void>;
       private _resolveReady!: () => void;
+      private _unlocked: boolean = false;
 
       constructor() {
-        // Create a promise that resolves when audio is preloaded
         this._ready = new Promise(resolve => { this._resolveReady = resolve; });
 
-        // Startup sound (one-shot on page load)
+        // --- HTML5 Audio (primary, cross-browser reliable) ---
         this.startupAudio = new Audio('/sounds/printer-startup.mp3');
-        this.startupAudio.loop = false;
-        this.startupAudio.volume = 0.55;
         this.startupAudio.preload = 'auto';
+        this.startupAudio.volume = 0.55;
 
-        // Printing loop (continuous during animation)
         this.printingAudio = new Audio('/sounds/printing.mp3');
-        this.printingAudio.loop = false;
-        this.printingAudio.volume = 0.5;
         this.printingAudio.preload = 'auto';
+        this.printingAudio.volume = 0.5;
 
-        // HTML5 Audio fallback pool for tear sounds (always works)
+        // Create 2 copies of each tear sound for overlapping playback
         const tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
         tearFiles.forEach(file => {
-          const a = new Audio(file);
-          a.preload = 'auto';
-          a.volume = 0.5;
-          this.tearFallbacks.push(a);
+          for (let copy = 0; copy < 2; copy++) {
+            const a = new Audio(file);
+            a.preload = 'auto';
+            a.volume = 0.5;
+            a.load(); // Force browser to start downloading now
+            this.tearPool.push(a);
+          }
         });
 
-        // Pre-decode tear sounds via Web Audio API for zero-latency playback
-        try {
-          this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-        } catch(e) {}
+        // Force-load main audio
+        this.startupAudio.load();
+        this.printingAudio.load();
 
-        this._preloadTearBuffers();
-        this._preloadHTMLAudio();
+        // Track preload readiness
+        this._trackReady();
 
-        // Unlock audio on first user gesture (browser autoplay policy)
+        // --- Web Audio API (enhanced, zero-latency tear) ---
+        this._initWebAudio();
+
+        // Unlock on first user interaction (autoplay policy)
         const unlock = () => {
+          if (this._unlocked) return;
+          this._unlocked = true;
+
+          // Resume Web Audio context
           if (this.audioCtx?.state === 'suspended') {
-            this.audioCtx.resume().then(() => {
-              // Re-attempt buffer decode after context is running
-              this._preloadTearBuffers();
-            }).catch(() => {});
+            this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
+
+          // Warm up HTML5 Audio by playing silence (some browsers need this)
+          this.tearPool.forEach(a => {
+            a.volume = 0;
+            a.play().then(() => { a.pause(); a.currentTime = 0; a.volume = 0.5; }).catch(() => {});
+          });
+
+          // If already printing, ensure sound is playing
           if (this._enabled && this._printing) {
             this.printingAudio.loop = true;
             this.printingAudio.play().catch(() => {});
           }
+
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
           document.removeEventListener('keydown', unlock);
@@ -815,11 +819,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         document.addEventListener('keydown', unlock);
       }
 
-      private _preloadTearBuffers() {
-        if (!this.audioCtx) return;
+      private _initWebAudio() {
+        try {
+          this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          this._decodeTearBuffers();
+        } catch(e) {}
+      }
+
+      private _decodeTearBuffers() {
+        if (!this.audioCtx || this.audioCtx.state !== 'running') return;
         const tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
         tearFiles.forEach((file, idx) => {
-          if (this.tearBuffers[idx]) return; // already decoded
+          if (this.tearBuffers[idx]) return;
           fetch(file)
             .then(r => r.arrayBuffer())
             .then(buf => this.audioCtx!.decodeAudioData(buf))
@@ -828,18 +839,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
       }
 
-      private _preloadHTMLAudio() {
-        // Wait for startup + printing audio to be playable, then resolve ready
+      private _trackReady() {
         let loaded = 0;
-        const check = () => { if (++loaded >= 2) this._resolveReady(); };
-        const timeout = setTimeout(() => this._resolveReady(), 3000); // 3s max wait
+        const total = 2;
+        const done = () => { if (++loaded >= total) this._resolveReady(); };
+        const timeout = setTimeout(() => this._resolveReady(), 3000);
 
-        this.startupAudio.addEventListener('canplaythrough', () => { check(); clearTimeout(timeout); }, { once: true });
-        this.printingAudio.addEventListener('canplaythrough', () => { check(); clearTimeout(timeout); }, { once: true });
-
-        // If already ready (cached)
-        if (this.startupAudio.readyState >= 4) check();
-        if (this.printingAudio.readyState >= 4) check();
+        const check = (audio: HTMLAudioElement) => {
+          if (audio.readyState >= 4) { done(); return; }
+          audio.addEventListener('canplaythrough', () => { done(); clearTimeout(timeout); }, { once: true });
+        };
+        check(this.startupAudio);
+        check(this.printingAudio);
       }
 
       get isEnabled() { return this._enabled; }
@@ -858,32 +869,32 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return this._enabled;
       }
 
-      // Play startup sound, then begin printing loop when startup ends.
-      // Returns a promise that resolves when printing loop begins.
       startMotor(): Promise<void> {
         this._printing = true;
         if (!this._enabled) return Promise.resolve();
 
         return new Promise<void>((resolve) => {
-          this.startupAudio.currentTime = 0;
-          this.startupAudio.play().catch(() => { resolve(); });
+          let resolved = false;
+          const finish = () => { if (!resolved) { resolved = true; resolve(); } };
 
-          // When startup sound ends, begin continuous printing loop
+          this.startupAudio.currentTime = 0;
+          this.startupAudio.play().catch(() => { finish(); });
+
           this.startupAudio.onended = () => {
-            if (!this._printing || !this._enabled) { resolve(); return; }
+            if (!this._printing || !this._enabled) { finish(); return; }
             this.printingAudio.loop = true;
             this.printingAudio.currentTime = 0;
-            this.printingAudio.play().then(() => resolve()).catch(() => resolve());
+            this.printingAudio.play().then(() => finish()).catch(() => finish());
           };
 
-          // Safety: if startup doesn't fire onended within 4s, start anyway
+          // Safety: don't wait more than 4s for startup to finish
           setTimeout(() => {
-            if (this._printing && this._enabled) {
+            if (this._printing && this._enabled && !this.printingAudio.loop) {
               this.printingAudio.loop = true;
               this.printingAudio.currentTime = 0;
               this.printingAudio.play().catch(() => {});
             }
-            resolve();
+            finish();
           }, 4000);
         });
       }
@@ -910,7 +921,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }
         }, 30);
 
-        // Hard stop safety net
         setTimeout(() => {
           if (!this._printing) {
             this.startupAudio.pause();
@@ -922,19 +932,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }, 400);
       }
 
-      // Play a random tear sound (1 of 4)
-      // Tries Web Audio API first (zero latency), falls back to HTML5 Audio
       tearSound() {
         if (!this._enabled) return;
 
-        // Attempt Web Audio API (instant playback)
-        if (this.audioCtx) {
-          // Resume context if suspended (user has already interacted by tearing)
-          if (this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume().catch(() => {});
-          }
+        // Try Web Audio API first (zero-latency, already decoded)
+        if (this.audioCtx && this.audioCtx.state === 'running') {
           const available = this.tearBuffers.filter((b): b is AudioBuffer => b !== null);
-          if (available.length > 0 && this.audioCtx.state === 'running') {
+          if (available.length > 0) {
             const buffer = available[Math.floor(Math.random() * available.length)];
             const source = this.audioCtx.createBufferSource();
             source.buffer = buffer;
@@ -947,14 +951,30 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }
         }
 
-        // Fallback: HTML5 Audio (always available)
-        const idx = Math.floor(Math.random() * this.tearFallbacks.length);
-        const audio = this.tearFallbacks[idx];
+        // If Web Audio context is suspended, try resuming for next time
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
+        }
+
+        // HTML5 Audio: find a tear sound that isn't currently playing
+        const startIdx = Math.floor(Math.random() * this.tearPool.length);
+        for (let i = 0; i < this.tearPool.length; i++) {
+          const audio = this.tearPool[(startIdx + i) % this.tearPool.length];
+          if (audio.paused || audio.ended) {
+            audio.currentTime = 0;
+            audio.volume = 0.5;
+            audio.play().catch(() => {});
+            return;
+          }
+        }
+        // All busy — force the first one to restart
+        const audio = this.tearPool[startIdx];
         audio.currentTime = 0;
+        audio.volume = 0.5;
         audio.play().catch(() => {});
       }
 
-      tick() {} // no-op: continuous audio provides the sound
+      tick() {}
     }
 
     const sounds = new ReceiptSounds();
@@ -1520,10 +1540,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
       let tearCounter = 0;
 
-      function addEdgeGrain(parent: HTMLElement, yPct: number) {
+      function addEdgeGrain(parent: HTMLElement, yPct: number, side: 'top' | 'bottom') {
         tearCounter++;
         const tex1 = getTearTexture(tearCounter);
         const tex2 = getTearTexture(tearCounter + 100);
+
+        // Gradient mask: texture is fully opaque at the tear line and
+        // fades to transparent as it moves away into clean paper.
+        // 'top' side = torn edge is at the bottom of this piece → fade upward
+        // 'bottom' side = torn edge is at the top of this piece → fade downward
+        const maskTop = side === 'top'
+          ? 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 100%)'
+          : 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 100%)';
 
         // Layer 1: Main fiber texture — pronounced, multiply blend
         const grain = document.createElement('div');
@@ -1532,7 +1560,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           left: '-3px',
           right: '-3px',
           top: `${yPct}%`,
-          height: '18px',
+          height: '20px',
           transform: 'translateY(-50%)',
           backgroundImage: `url(${tex1})`,
           backgroundSize: '400px 24px',
@@ -1541,6 +1569,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           opacity: '0.6',
           pointerEvents: 'none',
           zIndex: '99',
+          WebkitMaskImage: maskTop,
+          maskImage: maskTop,
         });
         parent.appendChild(grain);
 
@@ -1551,7 +1581,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           left: '-2px',
           right: '-2px',
           top: `${yPct}%`,
-          height: '12px',
+          height: '14px',
           transform: 'translateY(-50%) translateX(3px)',
           backgroundImage: `url(${tex2})`,
           backgroundSize: '350px 24px',
@@ -1560,6 +1590,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           opacity: '0.4',
           pointerEvents: 'none',
           zIndex: '100',
+          WebkitMaskImage: maskTop,
+          maskImage: maskTop,
         });
         parent.appendChild(depth);
 
@@ -1603,8 +1635,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
 
         // Add paper-fiber grain texture at torn edges
-        if (topEdge) addEdgeGrain(clone, top);
-        if (bottomEdge) addEdgeGrain(clone, bottom);
+        // 'bottom' side = this piece's torn top edge (fibers fade downward into paper)
+        // 'top' side = this piece's torn bottom edge (fibers fade upward into paper)
+        if (topEdge) addEdgeGrain(clone, top, 'bottom');
+        if (bottomEdge) addEdgeGrain(clone, bottom, 'top');
 
         return clone;
       }
@@ -1655,6 +1689,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         target.bottom = tearPct;
         target.bottomEdge = jaggedEdge;
         target.rotation += (Math.random() - 0.5) * 0.6;
+
+        // Add grain texture to the top piece's newly torn bottom edge
+        addEdgeGrain(target.el, tearPct, 'top');
+
         animatePiece(target);
 
         // Create new piece for bottom portion (jagged top, inherits old bottom edge)
