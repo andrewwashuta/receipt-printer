@@ -798,12 +798,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          // Warm up HTML5 Audio by playing silence (some browsers need this)
-          this.tearPool.forEach(a => {
-            a.volume = 0;
-            a.play().then(() => { a.pause(); a.currentTime = 0; a.volume = 0.5; }).catch(() => {});
-          });
-
           // If already printing, ensure sound is playing
           if (this._enabled && this._printing) {
             this.printingAudio.loop = true;
