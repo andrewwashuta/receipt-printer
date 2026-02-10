@@ -1,45 +1,1976 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import SideNav from "../components/SideNav.astro";
-import Intro from "../pages/index/intro.astro";
-import Now from "../pages/index/now.astro";
-import Experience from "../pages/index/experience.astro";
-import Projects from "../pages/index/projects.astro";
-import Header from "../pages/index/header.astro";
-import Education from "../pages/index/education.astro";
-import Contact from "../pages/index/contact.astro";
+import ReceiptLayout from "../layouts/ReceiptLayout.astro";
+import Avatar from '../assets/index/images/andrewwashuta.png';
 ---
 
-<BaseLayout 
-  description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Building ad platforms for Kroger and 84.51°, and crypto protocols at Universal."
+<ReceiptLayout
+  description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
 >
-    <SideNav variant="sidebar" />
-    <main>
-        <Header />
-        <SideNav variant="mobile" />
-        <Intro />
-        <Projects />
-        <Now />
-        <Experience />
-        <Education />
-        <Contact />
-    </main>
-</BaseLayout>
+  <!-- Sound Toggle (receipt-aesthetic) -->
+  <button class="sound-toggle active" id="soundToggle" aria-label="Toggle printer sounds" title="Toggle printer sounds">
+    <span class="sound-label" id="soundLabel">[ AUDIO: ON ]</span>
+  </button>
+
+  <!-- Inverse cursor dot (desktop only) -->
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <div class="receipt-wrapper">
+    <div class="receipt" id="receipt">
+
+      <!-- ============================================ -->
+      <!-- TOP EDGE (torn from previous receipt)        -->
+      <!-- ============================================ -->
+      <div class="receipt-top-tear" data-print></div>
+
+      <!-- ============================================ -->
+      <!-- STORE HEADER                                  -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line center divider" data-print>================================</pre>
+        <pre class="receipt-line center big" data-print>    ANDREW WASHUTA</pre>
+        <pre class="receipt-line center" data-print>    PRODUCT DESIGNER</pre>
+        <pre class="receipt-line center divider" data-print>================================</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- TRANSACTION META (dynamic via JS)             -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line" data-print>DATE: <span id="receiptDate">loading...</span></pre>
+        <pre class="receipt-line" data-print>ORDER #: <span id="receiptOrder">-----</span></pre>
+        <pre class="receipt-line" data-print>CASHIER: THE INTERNET</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- ABOUT                                         -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>ABOUT</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>Hey there, I'm Andrew — husband, dad, trail runner, Parks lover, designer. Based in New Mexico.</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>Currently shipping ad platforms and leading design systems at 84.51° by day, while building a wrapped asset protocol at Universal by night.</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>I believe in empathy-driven design built through collaboration with teams that care deeply about the people using their products.</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row" data-print><span>LOCATION:</span><span>Albuquerque, NM</span></pre>
+        <pre class="receipt-line row" data-print><span>ELEVATION:</span><span>5,312 ft</span></pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- SKILLS                                        -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>SKILLS</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row" data-print><span>  1x  Product Design</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Design Systems</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Visual Design</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Brand Design</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Prototyping</span><span>****</span></pre>
+        <pre class="receipt-line row" data-print><span>  1x  Front-end Dev</span><span>****</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row bold" data-print><span>  SUBTOTAL (6 items)</span><span>PRICELESS</span></pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- PORTRAIT (Dithered)                           -->
+      <!-- ============================================ -->
+      <div class="receipt-section portrait-section" data-print-section>
+        <div class="portrait-container" data-print data-src={Avatar.src}>
+          <canvas id="portraitCanvas"></canvas>
+          <noscript>
+            <img src={Avatar.src} alt="Andrew Washuta" width="280" />
+          </noscript>
+        </div>
+        <pre class="receipt-line center faded" data-print>[ THERMAL PORTRAIT ]</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- EXPERIENCE                                    -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>EXPERIENCE</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  84.51°, A Kroger Company</pre>
+        <pre class="receipt-line faded" data-print>  Lead Product Designer</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Ad Platforms</span><span>2025-NOW</span></pre>
+        <pre class="receipt-line dotleader" data-print><span>  Design Systems</span><span>2021-2025</span></pre>
+        <pre class="receipt-line dotleader" data-print><span>  Insights</span><span>2017-2021</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  Universal</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Design Lead</span><span>2022-NOW</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  Clubessential</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Web Designer</span><span>2016-2017</span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  UnitedHealthcare</pre>
+        <pre class="receipt-line dotleader" data-print><span>  Brand Designer</span><span>2014-2016</span></pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- NOW                                           -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>CURRENTLY</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line wrap" data-print>  * Cherishing every moment with my wife, Seneca, and our kiddos, Thor and Raya</pre>
+        <pre class="receipt-line wrap" data-print>  * Living as a "cyborg" healing a broken hip socket</pre>
+        <pre class="receipt-line wrap" data-print>  * Dreaming up recipes with unique ingredients</pre>
+        <pre class="receipt-line wrap" data-print>  * Collecting vintage National Park brochures</pre>
+        <pre class="receipt-line wrap" data-print>  * Falling back in love with code</pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- EDUCATION                                     -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>EDUCATION</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line bold" data-print>  Clarkson University</pre>
+        <pre class="receipt-line" data-print>  B.S. Digital Arts & Sciences</pre>
+        <pre class="receipt-line" data-print>  Minor: Business Administration</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center divider" data-print>================================</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- SUBTOTAL / CONTACT                            -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line bold" data-print>CONTACT</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row" data-print><span>EMAIL</span><span><a href="mailto:hello@andrew.cv">hello@andrew.cv</a></span></pre>
+        <pre class="receipt-line row" data-print><span>LINKEDIN</span><span><a href="https://linkedin.com/in/awashuta" target="_blank">/in/awashuta</a></span></pre>
+        <pre class="receipt-line row" data-print><span>X</span><span><a href="https://x.com/awashuta" target="_blank">@awashuta</a></span></pre>
+        <pre class="receipt-line row" data-print><span>INSTAGRAM</span><span><a href="https://instagram.com/andrewwashuta" target="_blank">@andrewwashuta</a></span></pre>
+        <pre class="receipt-line row" data-print><span>REFRAKT</span><span><a href="https://refrakt.app/andrew" target="_blank">refrakt.app/andrew</a></span></pre>
+        <pre class="receipt-line row" data-print><span>WEB</span><span><a href="https://andrew.cv">andrew.cv</a></span></pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center divider" data-print>================================</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- BARCODE                                       -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <div class="barcode-container" data-print>
+          <canvas id="barcodeCanvas" width="200" height="50"></canvas>
+        </div>
+        <pre class="receipt-line center faded" data-print id="barcodeNumber">0000 0000 0000</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- VISITOR COUNTER                               -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line row" data-print><span>GUESTS SERVED:</span><span id="visitorCount">00000</span></pre>
+        <pre class="receipt-line" data-print>--------------------------------</pre>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- FOOTER / THANK YOU                            -->
+      <!-- ============================================ -->
+      <div class="receipt-section" data-print-section>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center bold" data-print>THANK YOU FOR VISITING!</pre>
+        <pre class="receipt-line center faded" data-print>Have a great day.</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center faded small" data-print>Items sold final.</pre>
+        <pre class="receipt-line center faded small" data-print>No returns on experience.</pre>
+        <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line center faded" data-print>- - - - - - - - - - - - - - -</pre>
+        <pre class="receipt-line center faded" data-print>&#x2702; TEAR ANYWHERE &#x2014; 2026 &#x2702;</pre>
+      </div>
+
+      <!-- Bottom torn edge -->
+      <div class="receipt-bottom-tear" data-print></div>
+
+    </div>
+  </div>
+</ReceiptLayout>
 
 <style>
-    .profile-image {
-        border-radius: 50%;
-        object-fit: cover;
+  /* ============================================ */
+  /* RECEIPT WRAPPER & CONTAINER                   */
+  /* ============================================ */
+
+  .receipt-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .receipt {
+    width: 380px;
+    max-width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    background: #ede7d9;
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(160,120,60,0.04) 0%,
+        transparent 3%,
+        transparent 50%,
+        rgba(160,120,60,0.02) 80%,
+        rgba(0,0,0,0.04) 100%
+      );
+    padding: 32px 24px;
+    position: relative;
+    transform: rotate(-1.2deg);
+    box-shadow:
+      0 1px 4px rgba(0,0,0,0.2),
+      0 4px 16px rgba(0,0,0,0.15),
+      0 12px 48px rgba(0,0,0,0.1);
+    overflow: hidden;
+    filter: sepia(0.08) saturate(0.95);
+  }
+
+  .receipt * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /* Paper texture overlay - subtle horizontal feed lines */
+  .receipt::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.012) 2px,
+        rgba(0,0,0,0.012) 3px
+      );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Noise texture for paper grain */
+  .receipt::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* Top torn edge - from previous receipt */
+  .receipt-top-tear {
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: #ede7d9;
+    clip-path: polygon(
+      0% 100%, 2% 40%, 4% 100%, 6% 50%, 8% 100%, 10% 30%, 
+      12% 100%, 14% 60%, 16% 100%, 18% 40%, 20% 100%, 22% 50%,
+      24% 100%, 26% 30%, 28% 100%, 30% 60%, 32% 100%, 34% 40%,
+      36% 100%, 38% 50%, 40% 100%, 42% 30%, 44% 100%, 46% 60%,
+      48% 100%, 50% 40%, 52% 100%, 54% 50%, 56% 100%, 58% 30%,
+      60% 100%, 62% 60%, 64% 100%, 66% 40%, 68% 100%, 70% 50%,
+      72% 100%, 74% 30%, 76% 100%, 78% 60%, 80% 100%, 82% 40%,
+      84% 100%, 86% 50%, 88% 100%, 90% 30%, 92% 100%, 94% 60%,
+      96% 100%, 98% 40%, 100% 100%
+    );
+    z-index: 3;
+  }
+
+  /* Bottom torn edge */
+  .receipt-bottom-tear {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: #ede7d9;
+    clip-path: polygon(
+      0% 0%, 3% 70%, 5% 0%, 8% 60%, 11% 0%, 13% 80%, 
+      16% 0%, 19% 50%, 21% 0%, 24% 70%, 27% 0%, 29% 60%,
+      32% 0%, 35% 80%, 37% 0%, 40% 50%, 43% 0%, 45% 70%,
+      48% 0%, 51% 60%, 53% 0%, 56% 80%, 59% 0%, 61% 50%,
+      64% 0%, 67% 70%, 69% 0%, 72% 60%, 75% 0%, 77% 80%,
+      80% 0%, 83% 50%, 85% 0%, 88% 70%, 91% 0%, 93% 60%,
+      96% 0%, 98% 80%, 100% 0%
+    );
+    z-index: 3;
+  }
+
+  /* ============================================ */
+  /* RECEIPT LINES                                 */
+  /* ============================================ */
+
+  .receipt-section {
+    position: relative;
+    z-index: 3;
+  }
+
+  .receipt-line {
+    font-family: var(--font-receipt);
+    font-size: 18px;
+    line-height: 1.5;
+    color: #1a1a1a;
+    white-space: pre;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    display: block;
+    opacity: 0;
+    transform: translateY(1px);
+    transition: opacity 0.05s ease, transform 0.05s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .receipt-line.printed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .receipt-line.wrap {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-width: 100%;
+  }
+
+  .receipt-line.center {
+    text-align: center;
+  }
+
+  .receipt-line.big {
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-shadow: 0.5px 0 0 currentColor;
+  }
+
+  .receipt-line.bold {
+    font-family: var(--font-pixel);
+    color: #000;
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 14px;
+    text-shadow: 0.3px 0 0 currentColor;
+  }
+
+  .receipt-line.divider {
+    font-family: var(--font-pixel);
+    font-size: 14px;
+    font-weight: 700;
+    color: #444;
+  }
+
+  .receipt-line.faded {
+    color: #888;
+  }
+
+  .receipt-line.small {
+    font-size: 14px;
+  }
+
+  .receipt-line.spacer {
+    line-height: 0.8;
+  }
+
+  /* Row layout for aligned columns */
+  .receipt-line.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .receipt-line.row.printed {
+    display: flex;
+  }
+
+  .receipt-line.row span {
+    white-space: nowrap;
+  }
+
+  /* Dot-leader rows (experience items) */
+  .receipt-line.dotleader {
+    display: flex;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  .receipt-line.dotleader.printed {
+    display: flex;
+  }
+
+  .receipt-line.dotleader span:first-child {
+    white-space: nowrap;
+    flex-shrink: 0;
+    order: 1;
+  }
+
+  .receipt-line.dotleader span:last-child {
+    white-space: nowrap;
+    flex-shrink: 0;
+    order: 3;
+  }
+
+  /* Dotted line fills the gap between spans */
+  .receipt-line.dotleader::before {
+    content: "";
+    order: 2;
+    flex: 1;
+    border-bottom: 1px dotted #bbb;
+    margin: 0 4px;
+    margin-bottom: 5px;
+    min-width: 8px;
+  }
+
+  /* Subtle print artifact - random slight offset on some lines */
+  .receipt-line.artifact {
+    transform: translateX(0.5px);
+  }
+
+  /* Links in receipt */
+  .receipt-line :global(a) {
+    color: #1a1a1a;
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: #999;
+    transition: color 0.15s, text-decoration-color 0.15s;
+  }
+
+  .receipt-line :global(a:hover) {
+    color: #555;
+    text-decoration-color: #555;
+  }
+
+  /* Barcode */
+  .barcode-container {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .barcode-container.printed {
+    opacity: 1;
+  }
+
+  #barcodeCanvas {
+    width: 200px;
+    height: 50px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* ============================================ */
+  /* PORTRAIT                                      */
+  /* ============================================ */
+
+  .portrait-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .portrait-container.printed {
+    opacity: 1;
+  }
+
+  #portraitCanvas,
+  .portrait-img {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* ============================================ */
+  /* PRINT CURSOR EFFECT                           */
+  /* ============================================ */
+
+  .receipt-line.printing:not(.row):not(.dotleader):not(.spacer)::after {
+    content: "█";
+    animation: blink 0.4s step-end infinite;
+    color: #1a1a1a;
+    mix-blend-mode: difference;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ============================================ */
+  /* SOUND TOGGLE                                  */
+  /* ============================================ */
+
+  .sound-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: rgba(30, 28, 24, 0.85);
+    border: 1px solid rgba(245, 240, 232, 0.12);
+    color: rgba(245, 240, 232, 0.5);
+    font-family: var(--font-receipt);
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    border-radius: 0;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .sound-toggle:hover {
+    color: rgba(245, 240, 232, 0.7);
+    border-color: rgba(245, 240, 232, 0.2);
+  }
+
+  .sound-toggle.active {
+    color: rgba(245, 240, 232, 0.65);
+    border-color: rgba(245, 240, 232, 0.18);
+  }
+
+  /* ============================================ */
+  /* TEAR ZONE (visual hint)                       */
+  /* ============================================ */
+
+  .tear-zone {
+    position: relative;
+    z-index: 5;
+    padding: 4px 0;
+  }
+
+  /* Full-page cut line (fixed across viewport) */
+  .page-cut-line {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(200,180,160,0.15) 10%,
+      rgba(200,180,160,0.35) 30%,
+      rgba(220,200,180,0.5) 50%,
+      rgba(200,180,160,0.35) 70%,
+      rgba(200,180,160,0.15) 90%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 200;
+    display: none;
+    transform: translateY(-50%);
+    border-radius: 1px;
+    box-shadow: 0 0 6px 1px rgba(200,180,160,0.15);
+    transition: width 0.04s ease-out;
+  }
+
+  /* Pieces after tear */
+  .receipt-piece {
+    overflow: hidden !important;
+  }
+
+  /* Swipe affordance hint */
+  .cut-hint {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 72px;
+    font-family: var(--font-pixel);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 2px;
+    padding: 8px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    white-space: nowrap;
+  }
+
+  .cut-hint.visible {
+    opacity: 1;
+    animation: cutHintPulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes cutHintPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* ============================================ */
+  /* CUT HANDLE (desktop draggable dot)            */
+  /* ============================================ */
+
+  .cut-handle {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    cursor: grab;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .cut-handle::after {
+    content: '';
+    width: 14px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1px;
+    transition: background 0.2s;
+  }
+
+  .cut-handle:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .cut-handle:hover::after {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .cut-handle.dragging {
+    cursor: grabbing;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .cut-handle.dragging::after {
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Hide on touch devices and small screens */
+  @media (pointer: coarse) {
+    .cut-handle { display: none; }
+  }
+  @media (max-width: 768px) {
+    .cut-handle { display: none; }
+  }
+
+  /* ============================================ */
+  /* CURSOR DOT (inverse blend, desktop only)      */
+  /* ============================================ */
+
+  .cursor-dot {
+    position: fixed;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  /* Hide on touch devices and small screens */
+  @media (pointer: coarse) {
+    .cursor-dot { display: none; }
+  }
+  @media (max-width: 768px) {
+    .cursor-dot { display: none; }
+  }
+
+  /* ============================================ */
+  /* RESPONSIVE                                    */
+  /* ============================================ */
+
+  @media (max-width: 440px) {
+    .receipt {
+      transform: rotate(0deg);
+      padding: 20px 16px;
+      width: 100%;
+      box-shadow:
+        0 1px 4px rgba(0,0,0,0.2),
+        0 4px 16px rgba(0,0,0,0.15);
     }
 
-    .name-container {
-      display: flex;
-      align-items: baseline;
-      gap: var(--size-xs);
+    .receipt-line {
+      font-size: 16px;
     }
 
-    .name-char {
-      font-size: var(--font-size-sm);
-      color: var(--color-ink-subtle);
+    .receipt-line.big {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 1px;
     }
+
+    .receipt-line.bold {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .receipt-line.divider {
+      font-size: 12px;
+      font-weight: 700;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .receipt-line {
+      font-size: 14px;
+    }
+
+    .receipt-line.big {
+      font-size: 12px;
+      font-weight: 900;
+    }
+  }
 </style>
+
+<script>
+  // ============================================
+  // RECEIPT PRINTER - CLIENT-SIDE LOGIC
+  // ============================================
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // ========================================
+    // 1. SOUND ENGINE
+    //    Sequence: startup → printing loop → tear sounds
+    //    Primary: HTML5 Audio (reliable cross-browser)
+    //    Enhanced: Web Audio API for zero-latency tear playback
+    // ========================================
+    class ReceiptSounds {
+      private startupAudio: HTMLAudioElement;
+      private printingAudio: HTMLAudioElement;
+      private tearPool: HTMLAudioElement[] = [];
+      private _enabled: boolean = true;
+      private _printing: boolean = false;
+      private _fadeTimer: ReturnType<typeof setInterval> | null = null;
+      private audioCtx: AudioContext | null = null;
+      private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
+      private _ready: Promise<void>;
+      private _resolveReady!: () => void;
+      private _unlocked: boolean = false;
+      private _audioStarted: boolean = false;
+
+      constructor() {
+        this._ready = new Promise(resolve => { this._resolveReady = resolve; });
+
+        // --- HTML5 Audio (primary, cross-browser reliable) ---
+        this.startupAudio = new Audio('/sounds/printer-startup.mp3');
+        this.startupAudio.preload = 'auto';
+        this.startupAudio.volume = 0.55;
+
+        this.printingAudio = new Audio('/sounds/printing.mp3');
+        this.printingAudio.preload = 'auto';
+        this.printingAudio.volume = 0.5;
+
+        // Create 2 copies of each tear sound for overlapping playback
+        const tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
+        tearFiles.forEach(file => {
+          for (let copy = 0; copy < 2; copy++) {
+            const a = new Audio(file);
+            a.preload = 'auto';
+            a.volume = 0.5;
+            a.load(); // Force browser to start downloading now
+            this.tearPool.push(a);
+          }
+        });
+
+        // Force-load main audio
+        this.startupAudio.load();
+        this.printingAudio.load();
+
+        // Track preload readiness
+        this._trackReady();
+
+        // --- Web Audio API (enhanced, zero-latency tear) ---
+        this._initWebAudio();
+
+        // Unlock on first user interaction (autoplay policy)
+        const unlock = () => {
+          if (this._unlocked) return;
+          this._unlocked = true;
+
+          // Resume Web Audio context
+          if (this.audioCtx?.state === 'suspended') {
+            this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
+          }
+
+          // If printing is in progress but audio was blocked by autoplay policy,
+          // start the full sequence now that we have a user gesture
+          if (this._enabled && this._printing && !this._audioStarted) {
+            this._audioStarted = true;
+
+            // Play startup sound
+            this.startupAudio.currentTime = 0;
+            this.startupAudio.play().catch(() => {
+              // Startup failed even with gesture — start printing directly
+              this.printingAudio.loop = true;
+              this.printingAudio.currentTime = 0;
+              this.printingAudio.play().catch(() => {});
+            });
+
+            // Pre-start printing sound muted (unlocks it in this gesture context)
+            // so we don't need another gesture when startup ends
+            this.printingAudio.loop = true;
+            this.printingAudio.volume = 0;
+            this.printingAudio.currentTime = 0;
+            this.printingAudio.play().catch(() => {});
+
+            // When startup ends, unmute printing
+            this.startupAudio.onended = () => {
+              if (!this._printing || !this._enabled) {
+                this.printingAudio.pause();
+                this.printingAudio.volume = 0.5;
+                return;
+              }
+              this.printingAudio.volume = 0.5;
+            };
+          }
+
+          document.removeEventListener('click', unlock);
+          document.removeEventListener('touchstart', unlock);
+          document.removeEventListener('keydown', unlock);
+        };
+        document.addEventListener('click', unlock);
+        document.addEventListener('touchstart', unlock);
+        document.addEventListener('keydown', unlock);
+      }
+
+      private _initWebAudio() {
+        try {
+          this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          this._decodeTearBuffers();
+        } catch(e) {}
+      }
+
+      private _decodeTearBuffers() {
+        if (!this.audioCtx || this.audioCtx.state !== 'running') return;
+        const tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
+        tearFiles.forEach((file, idx) => {
+          if (this.tearBuffers[idx]) return;
+          fetch(file)
+            .then(r => r.arrayBuffer())
+            .then(buf => this.audioCtx!.decodeAudioData(buf))
+            .then(decoded => { this.tearBuffers[idx] = decoded; })
+            .catch(() => {});
+        });
+      }
+
+      private _trackReady() {
+        let loaded = 0;
+        const total = 2;
+        const done = () => { if (++loaded >= total) this._resolveReady(); };
+        const timeout = setTimeout(() => this._resolveReady(), 3000);
+
+        const check = (audio: HTMLAudioElement) => {
+          if (audio.readyState >= 4) { done(); return; }
+          audio.addEventListener('canplaythrough', () => { done(); clearTimeout(timeout); }, { once: true });
+        };
+        check(this.startupAudio);
+        check(this.printingAudio);
+      }
+
+      get isEnabled() { return this._enabled; }
+      get ready() { return this._ready; }
+
+      toggle() {
+        this._enabled = !this._enabled;
+        if (!this._enabled) {
+          this.startupAudio.pause();
+          this.printingAudio.loop = false;
+          this.printingAudio.pause();
+        } else if (this._printing) {
+          this.printingAudio.loop = true;
+          this.printingAudio.play().catch(() => {});
+        }
+        return this._enabled;
+      }
+
+      startMotor(): Promise<void> {
+        this._printing = true;
+        if (!this._enabled) return Promise.resolve();
+
+        return new Promise<void>((resolve) => {
+          let resolved = false;
+          const finish = () => { if (!resolved) { resolved = true; resolve(); } };
+
+          this.startupAudio.currentTime = 0;
+          this.startupAudio.play()
+            .then(() => {
+              // Autoplay worked (user already interacted or browser allows it)
+              this._audioStarted = true;
+            })
+            .catch(() => {
+              // Autoplay blocked — animation starts silently.
+              // Audio will begin when user interacts (unlock handler).
+              finish();
+            });
+
+          this.startupAudio.onended = () => {
+            if (!this._printing || !this._enabled) { finish(); return; }
+            this.printingAudio.loop = true;
+            this.printingAudio.currentTime = 0;
+            this.printingAudio.play().then(() => finish()).catch(() => finish());
+          };
+
+          // Safety: don't wait more than 4s for startup to finish
+          setTimeout(() => {
+            if (this._printing && this._enabled && !this.printingAudio.loop) {
+              this.printingAudio.loop = true;
+              this.printingAudio.currentTime = 0;
+              this.printingAudio.play().catch(() => {});
+            }
+            finish();
+          }, 4000);
+        });
+      }
+
+      stopMotor() {
+        this._printing = false;
+        this.startupAudio.onended = null;
+        this.printingAudio.loop = false;
+
+        if (this._fadeTimer) clearInterval(this._fadeTimer);
+
+        const startVol = this.printingAudio.volume;
+        let step = 0;
+        const totalSteps = 8;
+        this._fadeTimer = setInterval(() => {
+          step++;
+          this.printingAudio.volume = Math.max(0, startVol * (1 - step / totalSteps));
+          if (step >= totalSteps) {
+            if (this._fadeTimer) clearInterval(this._fadeTimer);
+            this._fadeTimer = null;
+            this.printingAudio.pause();
+            this.printingAudio.currentTime = 0;
+            this.printingAudio.volume = 0.5;
+          }
+        }, 30);
+
+        setTimeout(() => {
+          if (!this._printing) {
+            this.startupAudio.pause();
+            this.printingAudio.pause();
+            this.printingAudio.currentTime = 0;
+            this.printingAudio.volume = 0.5;
+            this.printingAudio.loop = false;
+          }
+        }, 400);
+      }
+
+      tearSound() {
+        if (!this._enabled) return;
+
+        // Try Web Audio API first (zero-latency, already decoded)
+        if (this.audioCtx && this.audioCtx.state === 'running') {
+          const available = this.tearBuffers.filter((b): b is AudioBuffer => b !== null);
+          if (available.length > 0) {
+            const buffer = available[Math.floor(Math.random() * available.length)];
+            const source = this.audioCtx.createBufferSource();
+            source.buffer = buffer;
+            const gain = this.audioCtx.createGain();
+            gain.gain.value = 0.5;
+            source.connect(gain);
+            gain.connect(this.audioCtx.destination);
+            source.start(0);
+            return;
+          }
+        }
+
+        // If Web Audio context is suspended, try resuming for next time
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
+        }
+
+        // HTML5 Audio: find a tear sound that isn't currently playing
+        const startIdx = Math.floor(Math.random() * this.tearPool.length);
+        for (let i = 0; i < this.tearPool.length; i++) {
+          const audio = this.tearPool[(startIdx + i) % this.tearPool.length];
+          if (audio.paused || audio.ended) {
+            audio.currentTime = 0;
+            audio.volume = 0.5;
+            audio.play().catch(() => {});
+            return;
+          }
+        }
+        // All busy — force the first one to restart
+        const audio = this.tearPool[startIdx];
+        audio.currentTime = 0;
+        audio.volume = 0.5;
+        audio.play().catch(() => {});
+      }
+
+      tick() {}
+    }
+
+    const sounds = new ReceiptSounds();
+
+    // ========================================
+    // 2. SOUND TOGGLE BUTTON (receipt aesthetic)
+    // ========================================
+    const soundToggle = document.getElementById('soundToggle')!;
+    const soundLabel = document.getElementById('soundLabel')!;
+
+    soundToggle.addEventListener('click', () => {
+      const enabled = sounds.toggle();
+      soundLabel.textContent = enabled ? '[ AUDIO: ON ]' : '[ AUDIO: OFF ]';
+      soundToggle.classList.toggle('active', enabled);
+    });
+
+    // ========================================
+    // 2b. DYNAMIC DATE & ORDER NUMBER
+    // ========================================
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+    const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    
+    const receiptDateEl = document.getElementById('receiptDate');
+    if (receiptDateEl) receiptDateEl.textContent = `${dateStr}  ${timeStr}`;
+
+    // Order number: days since June 15, 1992
+    const birthDate = new Date(1992, 5, 15);
+    const daysAlive = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24));
+    const receiptOrderEl = document.getElementById('receiptOrder');
+    if (receiptOrderEl) receiptOrderEl.textContent = daysAlive.toString();
+
+    // Barcode number
+    const barcodeNumberEl = document.getElementById('barcodeNumber');
+    if (barcodeNumberEl) {
+      const orderStr = daysAlive.toString().padStart(12, '0');
+      barcodeNumberEl.textContent = `${orderStr.slice(0,4)} ${orderStr.slice(4,8)} ${orderStr.slice(8,12)}`;
+    }
+
+    // Visitor counter (localStorage-persisted, increments per session)
+    const visitorCountEl = document.getElementById('visitorCount');
+    if (visitorCountEl) {
+      const launchDate = new Date(2024, 5, 1); // June 1, 2024
+      const daysSinceLaunch = Math.floor((now.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
+      let count = parseInt(localStorage.getItem('aw-visitor-count') || '0', 10);
+      const isNewSession = !sessionStorage.getItem('aw-session');
+
+      if (!count || count < daysSinceLaunch) {
+        // First visit or stale - seed with realistic starting count
+        count = Math.floor(daysSinceLaunch * 2.7) + 42;
+      }
+
+      if (isNewSession) {
+        count++;
+        sessionStorage.setItem('aw-session', '1');
+        localStorage.setItem('aw-visitor-count', count.toString());
+      }
+
+      visitorCountEl.textContent = count.toString().padStart(5, '0');
+    }
+
+    // ========================================
+    // 3. FLOYD-STEINBERG DITHERING
+    // ========================================
+    function ditherImage(canvas: HTMLCanvasElement, imageSrc: string) {
+      const ctx = canvas.getContext('2d')!;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = imageSrc;
+
+      img.onload = () => {
+        // Target width for dithering (low-res for receipt look)
+        const ditherWidth = 160;
+        const ditherHeight = Math.round((img.height / img.width) * ditherWidth);
+
+        canvas.width = ditherWidth;
+        canvas.height = ditherHeight;
+
+        // Draw source image scaled down
+        ctx.drawImage(img, 0, 0, ditherWidth, ditherHeight);
+
+        // Get image data
+        const imageData = ctx.getImageData(0, 0, ditherWidth, ditherHeight);
+        const data = imageData.data;
+
+        // Convert to grayscale first
+        for (let i = 0; i < data.length; i += 4) {
+          const gray = data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114;
+          data[i] = data[i+1] = data[i+2] = gray;
+        }
+
+        // Floyd-Steinberg dithering
+        for (let y = 0; y < ditherHeight; y++) {
+          for (let x = 0; x < ditherWidth; x++) {
+            const idx = (y * ditherWidth + x) * 4;
+            const oldVal = data[idx];
+            const newVal = oldVal > 128 ? 255 : 0;
+            const error = oldVal - newVal;
+
+            data[idx] = data[idx+1] = data[idx+2] = newVal;
+
+            // Distribute error to neighbors
+            if (x + 1 < ditherWidth) {
+              const i = (y * ditherWidth + x + 1) * 4;
+              data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 7/16);
+            }
+            if (y + 1 < ditherHeight) {
+              if (x - 1 >= 0) {
+                const i = ((y+1) * ditherWidth + x - 1) * 4;
+                data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 3/16);
+              }
+              {
+                const i = ((y+1) * ditherWidth + x) * 4;
+                data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 5/16);
+              }
+              if (x + 1 < ditherWidth) {
+                const i = ((y+1) * ditherWidth + x + 1) * 4;
+                data[i] = data[i+1] = data[i+2] = clamp(data[i] + error * 1/16);
+              }
+            }
+          }
+        }
+
+        // Put dithered data back
+        ctx.putImageData(imageData, 0, 0);
+
+        // Convert canvas to <img> so cloneNode preserves the rendered image
+        // (canvas pixel data is not cloned by cloneNode)
+        const dataUrl = canvas.toDataURL('image/png');
+        const replacement = document.createElement('img');
+        replacement.src = dataUrl;
+        replacement.alt = 'Andrew Washuta';
+        replacement.className = 'portrait-img';
+        canvas.replaceWith(replacement);
+      };
+
+      img.onerror = () => {
+        // Fallback: just show a placeholder
+        canvas.width = 160;
+        canvas.height = 160;
+        ctx.fillStyle = '#ede7d9';
+        ctx.fillRect(0, 0, 160, 160);
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = '14px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('[PORTRAIT]', 80, 80);
+      };
+    }
+
+    function clamp(val: number): number {
+      return Math.min(255, Math.max(0, val));
+    }
+
+    // Initialize portrait dithering
+    const portraitContainer = document.querySelector('.portrait-container') as HTMLElement;
+    const canvas = document.getElementById('portraitCanvas') as HTMLCanvasElement;
+    if (portraitContainer && canvas) {
+      const src = portraitContainer.dataset.src;
+      if (src) {
+        ditherImage(canvas, src);
+      }
+    }
+
+    // ========================================
+    // 3b. BARCODE GENERATION
+    // ========================================
+    function generateBarcode(canvas: HTMLCanvasElement, value: number) {
+      const ctx = canvas.getContext('2d')!;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Clear with paper color
+      ctx.fillStyle = '#ede7d9';
+      ctx.fillRect(0, 0, w, h);
+
+      // Generate pseudo-barcode pattern from value
+      const seed = value.toString();
+      let x = 10;
+      const barHeight = h - 10;
+      const startY = 5;
+
+      ctx.fillStyle = '#1a1a1a';
+
+      // Start guard pattern
+      for (let g = 0; g < 3; g++) {
+        ctx.fillRect(x, startY, 1, barHeight);
+        x += 2;
+      }
+      x += 2;
+
+      // Generate bars from order number digits
+      const digits = seed.padStart(12, '0');
+      for (let d = 0; d < digits.length; d++) {
+        const digit = parseInt(digits[d]);
+        // Create varying bar patterns based on digit
+        const patterns = [
+          [3,2,1,1], [2,2,2,1], [2,1,2,2], [1,4,1,1], [1,1,3,2],
+          [1,2,3,1], [1,1,1,4], [1,3,1,2], [1,2,1,3], [3,1,1,2]
+        ];
+        const pattern = patterns[digit];
+        for (let p = 0; p < pattern.length; p++) {
+          if (p % 2 === 0) {
+            ctx.fillRect(x, startY, pattern[p], barHeight);
+          }
+          x += pattern[p];
+        }
+        x += 1;
+
+        // Middle guard
+        if (d === 5) {
+          x += 2;
+          for (let g = 0; g < 3; g++) {
+            ctx.fillRect(x, startY, 1, barHeight);
+            x += 2;
+          }
+          x += 2;
+        }
+      }
+
+      // End guard pattern
+      x += 2;
+      for (let g = 0; g < 3; g++) {
+        ctx.fillRect(x, startY, 1, barHeight);
+        x += 2;
+      }
+    }
+
+    const barcodeCanvas = document.getElementById('barcodeCanvas') as HTMLCanvasElement;
+    if (barcodeCanvas) {
+      generateBarcode(barcodeCanvas, daysAlive);
+    }
+
+    // ========================================
+    // 3c. RANDOM PRINT ARTIFACTS
+    // ========================================
+    // Add subtle horizontal misalignment to ~15% of lines for authenticity
+    const allLines = document.querySelectorAll('.receipt-line') as NodeListOf<HTMLElement>;
+    allLines.forEach((line) => {
+      if (Math.random() < 0.12) {
+        const offset = (Math.random() - 0.5) * 1.2; // -0.6 to +0.6 px
+        line.style.transform = `translateX(${offset}px)`;
+      }
+    });
+
+    // ========================================
+    // 4. PRINTING ANIMATION
+    // ========================================
+    const allPrintables = document.querySelectorAll('[data-print]') as NodeListOf<HTMLElement>;
+    let printIndex = 0;
+    let isPrinting = false;
+    let printTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    function printNextLine() {
+      if (printIndex >= allPrintables.length) {
+        finishPrinting();
+        return;
+      }
+
+      const line = allPrintables[printIndex];
+
+      // Remove cursor from previous line
+      if (printIndex > 0) {
+        allPrintables[printIndex - 1].classList.remove('printing');
+      }
+
+      // Print this line
+      line.classList.add('printed');
+      line.classList.add('printing');
+      sounds.tick();
+
+      printIndex++;
+
+      // Vary delay for different line types for authentic feel
+      let delay = 40;
+      const text = line.textContent || '';
+
+      if (text.includes('====') || text.includes('----')) {
+        delay = 55;
+      } else if (line.classList.contains('spacer') || text.trim() === '') {
+        delay = 12;
+      } else if (line.classList.contains('big')) {
+        delay = 70;
+      } else if (line.classList.contains('portrait-container') || line.classList.contains('barcode-container')) {
+        delay = 350;
+      } else if (line.classList.contains('bold')) {
+        delay = 50;
+      }
+
+      printTimeout = setTimeout(printNextLine, delay);
+    }
+
+    // ========================================
+    // CUT HINT / SWIPE AFFORDANCE
+    // ========================================
+    let cutHintEl: HTMLElement | null = null;
+    let cutHintTimer: ReturnType<typeof setTimeout> | null = null;
+
+    function showCutHint() {
+      // Always show on first visit (cleared localStorage key)
+      if (sessionStorage.getItem('aw-hint-shown')) return;
+      sessionStorage.setItem('aw-hint-shown', '1');
+
+      cutHintEl = document.createElement('div');
+      cutHintEl.className = 'cut-hint';
+      cutHintEl.textContent = '\u2702  SWIPE ACROSS TO TEAR  \u2702';
+      document.body.appendChild(cutHintEl);
+
+      // Force reflow before adding class so transition fires
+      cutHintEl.getBoundingClientRect();
+
+      // Fade in after brief pause
+      setTimeout(() => {
+        if (cutHintEl) cutHintEl.classList.add('visible');
+      }, 600);
+
+      // Auto-dismiss after 8 seconds
+      cutHintTimer = setTimeout(() => {
+        if (cutHintEl) {
+          cutHintEl.classList.remove('visible');
+          setTimeout(() => { cutHintEl?.remove(); cutHintEl = null; }, 600);
+        }
+      }, 8000);
+    }
+
+    function dismissCutHint() {
+      if (cutHintTimer) { clearTimeout(cutHintTimer); cutHintTimer = null; }
+      if (cutHintEl) {
+        cutHintEl.classList.remove('visible');
+        setTimeout(() => { cutHintEl?.remove(); cutHintEl = null; }, 600);
+      }
+    }
+
+    function finishPrinting() {
+      isPrinting = false;
+      sounds.stopMotor();
+
+      // Remove any remaining cursor
+      allPrintables.forEach(el => el.classList.remove('printing'));
+
+      // Show swipe affordance hint after a short pause
+      setTimeout(showCutHint, 800);
+    }
+
+    async function startPrinting() {
+      if (isPrinting) return;
+      isPrinting = true;
+
+      // Wait for audio files to be preloaded before starting
+      await sounds.ready;
+
+      // Play startup sound, wait for printing loop to begin
+      await sounds.startMotor();
+
+      // Small additional delay for feel, then begin line-by-line animation
+      printTimeout = setTimeout(printNextLine, 200);
+    }
+
+    // ========================================
+    // 5. RANDOM ROTATION (subtle authenticity)
+    // ========================================
+    const receipt = document.getElementById('receipt');
+    if (receipt) {
+      const rotation = -0.8 + Math.random() * 1.6; // -0.8 to +0.8 degrees
+      receipt.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    // ========================================
+    // 5b. CURSOR DOT (inverse blend, desktop only)
+    // ========================================
+    const cursorDot = document.getElementById('cursorDot');
+    if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+        if (cursorDot.style.opacity !== '1') cursorDot.style.opacity = '1';
+      });
+
+      // Hide when mouse leaves the window
+      document.addEventListener('mouseleave', () => {
+        cursorDot.style.opacity = '0';
+      });
+    }
+
+    // ========================================
+    // 6. TEAR INTERACTION
+    //    - Swipe horizontally ANYWHERE on the page
+    //    - Multiple tears allowed
+    //    - Pieces separate and stay visible
+    // ========================================
+
+    if (receipt) {
+      const TEAR_GAP = 22; // px of separation per tear
+
+      // Each piece tracks its clip bounds, offset, and torn edges
+      type JaggedEdge = number[]; // y-offset values in px, evenly spaced across width
+
+      type TearPiece = {
+        el: HTMLElement;
+        top: number;      // 0-100% content start
+        bottom: number;   // 0-100% content end
+        offsetY: number;  // accumulated px offset
+        rotation: number; // accumulated rotation offset (degrees)
+        topEdge: JaggedEdge | null;    // jagged tear data (null = straight)
+        bottomEdge: JaggedEdge | null; // jagged tear data (null = straight)
+      };
+
+      let pieces: TearPiece[] = [];
+      let tearSystemReady = false;
+      let baseRotation = 0;
+      let receiptH = 0;
+
+      // Generate irregular jagged edge simulating perforated paper tear
+      function generateJaggedEdge(): JaggedEdge {
+        const numPoints = 80;
+        const edge: number[] = [];
+        for (let i = 0; i <= numPoints; i++) {
+          const t = i / numPoints;
+          // Organic waviness from overlapping sine waves
+          const wave = Math.sin(t * Math.PI * 6) * 1.2
+                     + Math.sin(t * Math.PI * 13 + 1.7) * 0.8;
+          // Random teeth: 2-4px irregular triangular variations
+          const tooth = (Math.random() - 0.5) * 5;
+          edge.push(wave + tooth);
+        }
+        return edge;
+      }
+
+      // Convert jagged edge data to polygon point strings
+      function jaggedPoints(edge: JaggedEdge, basePct: number, reverse: boolean): string {
+        const pts = edge.map((yPx, i) => {
+          const x = (i / (edge.length - 1)) * 100;
+          const y = basePct + (yPx / receiptH) * 100;
+          return `${x.toFixed(2)}% ${y.toFixed(2)}%`;
+        });
+        if (reverse) pts.reverse();
+        return pts.join(', ');
+      }
+
+      // Full-viewport cut line
+      const pageCutLine = document.createElement('div');
+      pageCutLine.className = 'page-cut-line';
+      document.body.appendChild(pageCutLine);
+
+      // Build clip-path polygon for a piece, with jagged edges at tear points
+      function clipFor(p: TearPiece): string {
+        // Top edge (left to right)
+        let topStr: string;
+        if (p.topEdge) {
+          topStr = jaggedPoints(p.topEdge, p.top, false);
+        } else {
+          const t = p.top === 0 ? -2 : p.top;
+          topStr = `0% ${t}%, 100% ${t}%`;
+        }
+
+        // Bottom edge (right to left)
+        let botStr: string;
+        if (p.bottomEdge) {
+          botStr = jaggedPoints(p.bottomEdge, p.bottom, true);
+        } else {
+          const b = p.bottom === 100 ? 102 : p.bottom;
+          botStr = `100% ${b}%, 0% ${b}%`;
+        }
+
+        return `polygon(${topStr}, ${botStr})`;
+      }
+
+      function transformFor(p: TearPiece): string {
+        return `translateX(-50%) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
+      }
+
+      // Lazily set up the piece system on the first tear
+      function initTearSystem() {
+        if (tearSystemReady) return;
+        tearSystemReady = true;
+
+        const wrapper = receipt!.parentElement!;
+        wrapper.style.position = 'relative';
+
+        // Capture the current rotation and height
+        const m = receipt!.style.transform?.match(/rotate\(([^)]+)deg\)/);
+        baseRotation = m ? parseFloat(m[1]) : 0;
+        receiptH = receipt!.offsetHeight;
+
+        // Create the initial full-receipt piece
+        const el = makePieceEl(0, 100, 0, 0, null, null);
+        wrapper.appendChild(el);
+        pieces.push({ el, top: 0, bottom: 100, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null });
+
+        // Hide the original (it stays in flow for layout height)
+        receipt!.style.visibility = 'hidden';
+        receipt!.style.boxShadow = 'none';
+        receipt!.style.filter = 'none';
+      }
+
+      // ---- Canvas-generated paper fiber noise textures ----
+      // Generates a unique, high-contrast noise strip that looks like
+      // torn thermal paper fibers: irregular dots, streaks, and grain
+
+      function generateFiberTexture(width: number, height: number, seed: number): string {
+        const c = document.createElement('canvas');
+        c.width = width;
+        c.height = height;
+        const ctx = c.getContext('2d')!;
+
+        // Start with transparent
+        ctx.clearRect(0, 0, width, height);
+
+        // Seeded pseudo-random for reproducibility within a tear
+        let s = seed;
+        const rand = () => { s = (s * 16807 + 0) % 2147483647; return (s & 0x7fffffff) / 0x7fffffff; };
+
+        const imgData = ctx.createImageData(width, height);
+        const d = imgData.data;
+
+        // Layer 1: Base noise — random grayscale speckle
+        for (let i = 0; i < d.length; i += 4) {
+          const px = (i / 4) % width;
+          const py = Math.floor((i / 4) / width);
+          const centerDist = Math.abs(py - height / 2) / (height / 2);
+
+          // Stronger noise near the center (the tear line), fading at edges
+          const edgeFade = 1 - centerDist * centerDist;
+          const noiseVal = rand();
+
+          // High-contrast binary noise with some mid-tones
+          let gray: number;
+          if (noiseVal < 0.35 * edgeFade) {
+            gray = 40 + rand() * 60; // dark speckles
+          } else if (noiseVal < 0.5 * edgeFade) {
+            gray = 120 + rand() * 50; // mid-tone grain
+          } else {
+            gray = 0; // transparent (will be set via alpha)
+          }
+
+          const alpha = noiseVal < 0.5 * edgeFade ? (180 * edgeFade + rand() * 75) : 0;
+          d[i] = gray;
+          d[i + 1] = gray;
+          d[i + 2] = gray;
+          d[i + 3] = Math.min(255, alpha);
+
+          // Occasional horizontal fiber streaks
+          if (rand() < 0.008 * edgeFade) {
+            const streakLen = 3 + Math.floor(rand() * 8);
+            const streakGray = 30 + rand() * 70;
+            for (let sx = 0; sx < streakLen && px + sx < width; sx++) {
+              const si = ((py * width) + px + sx) * 4;
+              d[si] = streakGray;
+              d[si + 1] = streakGray;
+              d[si + 2] = streakGray;
+              d[si + 3] = Math.min(255, 160 * edgeFade + rand() * 90);
+            }
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        // Layer 2: Scattered larger fiber clumps
+        for (let i = 0; i < 20; i++) {
+          const fx = rand() * width;
+          const fy = height * 0.3 + rand() * height * 0.4;
+          const fw = 1 + rand() * 4;
+          const fh = 1 + rand() * 2;
+          const fAlpha = 0.15 + rand() * 0.35;
+          ctx.fillStyle = `rgba(${50 + rand() * 60}, ${40 + rand() * 50}, ${30 + rand() * 40}, ${fAlpha})`;
+          ctx.fillRect(fx, fy, fw, fh);
+        }
+
+        return c.toDataURL('image/png');
+      }
+
+      // Pre-generate a few textures to avoid re-creating per tear
+      let tearTextureCache: string[] = [];
+      function getTearTexture(seed: number): string {
+        const idx = seed % 6;
+        if (!tearTextureCache[idx]) {
+          tearTextureCache[idx] = generateFiberTexture(400, 24, seed * 7919 + idx * 1301);
+        }
+        return tearTextureCache[idx];
+      }
+      let tearCounter = 0;
+
+      function addEdgeGrain(parent: HTMLElement, yPct: number, side: 'top' | 'bottom') {
+        tearCounter++;
+        const tex1 = getTearTexture(tearCounter);
+        const tex2 = getTearTexture(tearCounter + 100);
+
+        // Gradient mask: texture is fully opaque at the tear line and
+        // fades to transparent as it moves away into clean paper.
+        // 'top' side = torn edge is at the bottom of this piece → fade upward
+        // 'bottom' side = torn edge is at the top of this piece → fade downward
+        const maskTop = side === 'top'
+          ? 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 100%)'
+          : 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 100%)';
+
+        // Layer 1: Main fiber texture — pronounced, multiply blend
+        const grain = document.createElement('div');
+        Object.assign(grain.style, {
+          position: 'absolute',
+          left: '-3px',
+          right: '-3px',
+          top: `${yPct}%`,
+          height: '20px',
+          transform: 'translateY(-50%)',
+          backgroundImage: `url(${tex1})`,
+          backgroundSize: '400px 24px',
+          backgroundRepeat: 'repeat-x',
+          mixBlendMode: 'multiply',
+          opacity: '0.6',
+          pointerEvents: 'none',
+          zIndex: '99',
+          WebkitMaskImage: maskTop,
+          maskImage: maskTop,
+        });
+        parent.appendChild(grain);
+
+        // Layer 2: Offset texture for depth — darken blend, shifted
+        const depth = document.createElement('div');
+        Object.assign(depth.style, {
+          position: 'absolute',
+          left: '-2px',
+          right: '-2px',
+          top: `${yPct}%`,
+          height: '14px',
+          transform: 'translateY(-50%) translateX(3px)',
+          backgroundImage: `url(${tex2})`,
+          backgroundSize: '350px 24px',
+          backgroundRepeat: 'repeat-x',
+          mixBlendMode: 'darken',
+          opacity: '0.4',
+          pointerEvents: 'none',
+          zIndex: '100',
+          WebkitMaskImage: maskTop,
+          maskImage: maskTop,
+        });
+        parent.appendChild(depth);
+
+        // Layer 3: Color-tinted edge line — warm brown tint at tear
+        const tint = document.createElement('div');
+        Object.assign(tint.style, {
+          position: 'absolute',
+          left: '-1px',
+          right: '-1px',
+          top: `${yPct}%`,
+          height: '3px',
+          transform: 'translateY(-50%)',
+          background: 'linear-gradient(90deg, transparent, rgba(140,110,70,0.12) 20%, rgba(160,130,80,0.18) 50%, rgba(140,110,70,0.12) 80%, transparent)',
+          pointerEvents: 'none',
+          zIndex: '101',
+        });
+        parent.appendChild(tint);
+      }
+
+      function makePieceEl(top: number, bottom: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): HTMLElement {
+        const clone = receipt!.cloneNode(true) as HTMLElement;
+        clone.removeAttribute('id');
+        clone.classList.add('receipt-piece');
+        const p = { top, bottom, offsetY, rotation: rot, topEdge, bottomEdge } as TearPiece;
+        Object.assign(clone.style, {
+          position: 'absolute',
+          top: '0',
+          left: '50%',
+          width: receipt!.offsetWidth + 'px',
+          margin: '0',
+          visibility: 'visible',
+          clipPath: clipFor(p),
+          boxShadow: 'none',
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))',
+          transform: transformFor(p),
+          transformOrigin: 'center center',
+          pointerEvents: 'none',
+          zIndex: '10',
+          overflow: 'hidden',
+          transition: 'none',
+        });
+
+        // Add paper-fiber grain texture at torn edges
+        // 'bottom' side = this piece's torn top edge (fibers fade downward into paper)
+        // 'top' side = this piece's torn bottom edge (fibers fade upward into paper)
+        if (topEdge) addEdgeGrain(clone, top, 'bottom');
+        if (bottomEdge) addEdgeGrain(clone, bottom, 'top');
+
+        return clone;
+      }
+
+      // Animate a piece to its current state with a spring curve
+      function animatePiece(p: TearPiece) {
+        p.el.style.transition = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        p.el.style.clipPath = clipFor(p);
+        p.el.style.transform = transformFor(p);
+      }
+
+      function executeTear(swipeY: number): boolean {
+        initTearSystem();
+
+        const rr = receipt!.getBoundingClientRect();
+        const rh = rr.height;
+
+        // Find which piece the swipe Y falls within
+        let target: TearPiece | null = null;
+        let targetIdx = -1;
+        let tearPct = 0;
+
+        for (let i = 0; i < pieces.length; i++) {
+          const p = pieces[i];
+          const vTop = rr.top + (p.top / 100) * rh + p.offsetY;
+          const vBot = rr.top + (p.bottom / 100) * rh + p.offsetY;
+          if (swipeY >= vTop + 25 && swipeY <= vBot - 25) {
+            target = p;
+            targetIdx = i;
+            // Map swipe Y back to receipt content %
+            tearPct = ((swipeY - rr.top - p.offsetY) / rh) * 100;
+            break;
+          }
+        }
+
+        if (!target) return false;
+
+        sounds.tearSound();
+        dismissCutHint();
+
+        const origBottom = target.bottom;
+        const origBottomEdge = target.bottomEdge;
+
+        // Generate shared jagged edge for this tear (both pieces share it)
+        const jaggedEdge = generateJaggedEdge();
+
+        // Shrink target to top portion with new jagged bottom
+        target.bottom = tearPct;
+        target.bottomEdge = jaggedEdge;
+        target.rotation += (Math.random() - 0.5) * 0.6;
+
+        // Add grain texture to the top piece's newly torn bottom edge
+        addEdgeGrain(target.el, tearPct, 'top');
+
+        animatePiece(target);
+
+        // Create new piece for bottom portion (jagged top, inherits old bottom edge)
+        const wrapper = receipt!.parentElement!;
+        const newEl = makePieceEl(tearPct, origBottom, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
+        wrapper.appendChild(newEl);
+
+        const newPiece: TearPiece = {
+          el: newEl,
+          top: tearPct,
+          bottom: origBottom,
+          offsetY: target.offsetY,
+          rotation: target.rotation,
+          topEdge: jaggedEdge,
+          bottomEdge: origBottomEdge,
+        };
+        pieces.splice(targetIdx + 1, 0, newPiece);
+
+        // Force reflow so the transition animates from the start position
+        newEl.getBoundingClientRect();
+
+        // Shift the new piece and everything below it down
+        for (let i = targetIdx + 1; i < pieces.length; i++) {
+          pieces[i].offsetY += TEAR_GAP;
+          pieces[i].rotation += (Math.random() - 0.5) * 1.2;
+          animatePiece(pieces[i]);
+        }
+
+        // Grow wrapper so page is scrollable to see all pieces
+        const maxOff = pieces[pieces.length - 1].offsetY;
+        wrapper.style.paddingBottom = (maxOff + 40) + 'px';
+
+        return true;
+      }
+
+      // ---- Desktop cut handle (draggable dot) ----
+
+      const cutHandle = document.createElement('div');
+      cutHandle.className = 'cut-handle';
+      cutHandle.title = 'Drag to cut';
+      document.body.appendChild(cutHandle);
+
+      let handleDragging = false;
+      let handleStartX = 0;
+
+      cutHandle.addEventListener('mousedown', (e: MouseEvent) => {
+        if (isPrinting) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        handleDragging = true;
+        handleStartX = e.clientX;
+
+        // Remove hover transform so pixel position is accurate
+        cutHandle.classList.add('dragging');
+        cutHandle.style.transition = 'none';
+        cutHandle.style.transform = 'none';
+        cutHandle.style.left = `${e.clientX - 18}px`;
+        cutHandle.style.top = `${e.clientY - 18}px`;
+
+        // Show cut line at handle Y
+        pageCutLine.style.top = `${e.clientY}px`;
+        pageCutLine.style.display = 'block';
+        pageCutLine.style.width = '0';
+      });
+
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        if (!handleDragging) return;
+
+        // Move dot to follow mouse
+        cutHandle.style.left = `${e.clientX - 18}px`;
+        cutHandle.style.top = `${e.clientY - 18}px`;
+
+        // Update cut line progress
+        const dx = Math.abs(e.clientX - handleStartX);
+        const progress = Math.min(1, dx / (window.innerWidth * 0.3));
+        pageCutLine.style.width = `${progress * 100}%`;
+
+        if (progress >= 1) {
+          const tearY = e.clientY;
+          const success = executeTear(tearY);
+          resetHandle();
+          // If tear didn't land on a piece, just reset
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (handleDragging) resetHandle();
+      });
+
+      function resetHandle() {
+        handleDragging = false;
+        cutHandle.classList.remove('dragging');
+
+        pageCutLine.style.width = '0';
+        pageCutLine.style.display = 'none';
+
+        // Spring back to rest position
+        cutHandle.style.transition = 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, box-shadow 0.2s';
+        cutHandle.style.left = '20px';
+        cutHandle.style.top = '50%';
+        cutHandle.style.transform = 'translateY(-50%)';
+
+        setTimeout(() => {
+          cutHandle.style.transition = '';
+        }, 450);
+      }
+
+      // ---- Global gesture detection (swipe anywhere, mainly for touch) ----
+
+      let tearStartX = 0;
+      let tearStartY = 0;
+      let isTearing = false;
+      let tearDecided = false;
+      let tearIsHorizontal = false;
+
+      function startTear(cx: number, cy: number) {
+        if (isPrinting) return;
+        tearStartX = cx;
+        tearStartY = cy;
+        isTearing = true;
+        tearDecided = false;
+        tearIsHorizontal = false;
+      }
+
+      function moveTear(cx: number, cy: number) {
+        if (!isTearing) return;
+        const dx = Math.abs(cx - tearStartX);
+        const dy = Math.abs(cy - tearStartY);
+
+        if (!tearDecided && (dx > 12 || dy > 12)) {
+          tearDecided = true;
+          tearIsHorizontal = dx > dy * 1.8;
+          if (tearIsHorizontal) {
+            pageCutLine.style.top = `${tearStartY}px`;
+            pageCutLine.style.display = 'block';
+            pageCutLine.style.width = '0';
+            document.body.style.cursor = 'grabbing';
+          }
+        }
+
+        if (!tearDecided || !tearIsHorizontal) return;
+
+        const progress = Math.min(1, dx / (window.innerWidth * 0.35));
+        pageCutLine.style.width = `${progress * 100}%`;
+
+        if (progress >= 1) {
+          executeTear(tearStartY);
+          endTear();
+        }
+      }
+
+      function endTear() {
+        pageCutLine.style.width = '0';
+        pageCutLine.style.display = 'none';
+        document.body.style.cursor = '';
+        isTearing = false;
+        tearDecided = false;
+        tearIsHorizontal = false;
+      }
+
+      // Mouse (ignore clicks on buttons and the cut handle)
+      document.addEventListener('mousedown', (e: MouseEvent) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        if ((e.target as HTMLElement).closest('.cut-handle')) return;
+        startTear(e.clientX, e.clientY);
+      });
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        if (isTearing) moveTear(e.clientX, e.clientY);
+      });
+      document.addEventListener('mouseup', () => {
+        if (isTearing) endTear();
+      });
+
+      // Touch (swipe gesture stays the same for mobile)
+      document.addEventListener('touchstart', (e: TouchEvent) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        if ((e.target as HTMLElement).closest('a')) return;
+        startTear(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+      document.addEventListener('touchmove', (e: TouchEvent) => {
+        if (isTearing && e.touches.length > 0) {
+          moveTear(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+      document.addEventListener('touchend', () => {
+        if (isTearing) endTear();
+      });
+    }
+
+    // ========================================
+    // 7. KICK OFF THE PRINTING
+    // ========================================
+    startPrinting();
+
+  });
+</script>

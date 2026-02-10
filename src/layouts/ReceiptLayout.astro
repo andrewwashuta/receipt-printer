@@ -1,0 +1,155 @@
+---
+import Analytics from '@vercel/analytics/astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const siteName = "Andrew Washuta";
+const pageTitle = title ? `${title} | ${siteName}` : siteName;
+const pageDescription = description || "New Mexico-based product and visual designer. Receipt #12289.";
+const pageImage = "/og.png";
+const siteUrl = "https://andrew.cv";
+const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={pageDescription} />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- OpenGraph tags -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={currentUrl} />
+    <meta property="og:image" content={`${siteUrl}${pageImage}`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={pageTitle} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={`${siteUrl}${pageImage}`} />
+    
+    <!-- Additional meta tags -->
+    <meta name="author" content={siteName} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={currentUrl} />
+    
+    <!-- VT323 for body text, Geist Pixel for headers/accents -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="preload" href="/fonts/GeistPixel-Square.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Preload audio for receipt printer sounds -->
+    <link rel="preload" href="/sounds/printer-startup.mp3" as="fetch" crossorigin>
+    <link rel="preload" href="/sounds/printing.mp3" as="fetch" crossorigin>
+    
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <slot />
+    <Analytics />
+  </body>
+</html>
+
+<style is:global>
+  /* Geist Pixel font family by Vercel */
+  @font-face {
+    font-family: 'Geist Pixel';
+    src: url('/fonts/GeistPixel-Square.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: block;
+  }
+
+  @font-face {
+    font-family: 'Geist Pixel Grid';
+    src: url('/fonts/GeistPixel-Grid.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Geist Pixel Circle';
+    src: url('/fonts/GeistPixel-Circle.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Geist Pixel Triangle';
+    src: url('/fonts/GeistPixel-Triangle.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Geist Pixel Line';
+    src: url('/fonts/GeistPixel-Line.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  html, body {
+    min-height: 100vh;
+    overscroll-behavior-x: none;
+  }
+
+  :root {
+    --font-receipt: 'VT323', ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
+    --font-pixel: 'Geist Pixel', 'VT323', ui-monospace, monospace;
+  }
+
+  body {
+    background: #1a1a1a;
+    background-image: 
+      radial-gradient(ellipse at 50% 0%, #252525 0%, #1a1a1a 60%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(255,255,255,0.005) 1px,
+        rgba(255,255,255,0.005) 2px
+      );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px 100px;
+    font-family: var(--font-receipt);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+  }
+
+  ::selection {
+    background-color: #333;
+    color: #f5f0e8;
+  }
+</style>
