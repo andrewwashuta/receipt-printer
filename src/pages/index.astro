@@ -11,6 +11,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     <span class="sound-label" id="soundLabel">[ AUDIO: ON ]</span>
   </button>
 
+  <!-- Inverse cursor dot (desktop only) -->
+  <div class="cursor-dot" id="cursorDot"></div>
+
   <div class="receipt-wrapper">
     <div class="receipt" id="receipt">
 
@@ -208,6 +211,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   .receipt {
     width: 380px;
     max-width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
     background: #ede7d9;
     background-image:
       linear-gradient(
@@ -227,6 +233,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       0 12px 48px rgba(0,0,0,0.1);
     overflow: hidden;
     filter: sepia(0.08) saturate(0.95);
+  }
+
+  .receipt * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
   }
 
   /* Paper texture overlay - subtle horizontal feed lines */
@@ -345,7 +357,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   .receipt-line.big {
     font-family: var(--font-pixel);
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 900;
     letter-spacing: 2px;
     text-shadow: 0.5px 0 0 currentColor;
@@ -682,6 +694,32 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   /* ============================================ */
+  /* CURSOR DOT (inverse blend, desktop only)      */
+  /* ============================================ */
+
+  .cursor-dot {
+    position: fixed;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  /* Hide on touch devices and small screens */
+  @media (pointer: coarse) {
+    .cursor-dot { display: none; }
+  }
+  @media (max-width: 768px) {
+    .cursor-dot { display: none; }
+  }
+
+  /* ============================================ */
   /* RESPONSIVE                                    */
   /* ============================================ */
 
@@ -700,7 +738,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .receipt-line.big {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 900;
       letter-spacing: 1px;
     }
@@ -722,7 +760,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .receipt-line.big {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 900;
     }
   }
@@ -753,6 +791,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private _ready: Promise<void>;
       private _resolveReady!: () => void;
       private _unlocked: boolean = false;
+      private _audioStarted: boolean = false;
 
       constructor() {
         this._ready = new Promise(resolve => { this._resolveReady = resolve; });
@@ -798,10 +837,36 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          // If already printing, ensure sound is playing
-          if (this._enabled && this._printing) {
+          // If printing is in progress but audio was blocked by autoplay policy,
+          // start the full sequence now that we have a user gesture
+          if (this._enabled && this._printing && !this._audioStarted) {
+            this._audioStarted = true;
+
+            // Play startup sound
+            this.startupAudio.currentTime = 0;
+            this.startupAudio.play().catch(() => {
+              // Startup failed even with gesture — start printing directly
+              this.printingAudio.loop = true;
+              this.printingAudio.currentTime = 0;
+              this.printingAudio.play().catch(() => {});
+            });
+
+            // Pre-start printing sound muted (unlocks it in this gesture context)
+            // so we don't need another gesture when startup ends
             this.printingAudio.loop = true;
+            this.printingAudio.volume = 0;
+            this.printingAudio.currentTime = 0;
             this.printingAudio.play().catch(() => {});
+
+            // When startup ends, unmute printing
+            this.startupAudio.onended = () => {
+              if (!this._printing || !this._enabled) {
+                this.printingAudio.pause();
+                this.printingAudio.volume = 0.5;
+                return;
+              }
+              this.printingAudio.volume = 0.5;
+            };
           }
 
           document.removeEventListener('click', unlock);
@@ -872,7 +937,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           const finish = () => { if (!resolved) { resolved = true; resolve(); } };
 
           this.startupAudio.currentTime = 0;
-          this.startupAudio.play().catch(() => { finish(); });
+          this.startupAudio.play()
+            .then(() => {
+              // Autoplay worked (user already interacted or browser allows it)
+              this._audioStarted = true;
+            })
+            .catch(() => {
+              // Autoplay blocked — animation starts silently.
+              // Audio will begin when user interacts (unlock handler).
+              finish();
+            });
 
           this.startupAudio.onended = () => {
             if (!this._printing || !this._enabled) { finish(); return; }
@@ -1334,6 +1408,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     if (receipt) {
       const rotation = -0.8 + Math.random() * 1.6; // -0.8 to +0.8 degrees
       receipt.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    // ========================================
+    // 5b. CURSOR DOT (inverse blend, desktop only)
+    // ========================================
+    const cursorDot = document.getElementById('cursorDot');
+    if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+        if (cursorDot.style.opacity !== '1') cursorDot.style.opacity = '1';
+      });
+
+      // Hide when mouse leaves the window
+      document.addEventListener('mouseleave', () => {
+        cursorDot.style.opacity = '0';
+      });
     }
 
     // ========================================
