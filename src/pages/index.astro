@@ -12,7 +12,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   </button>
 
   <!-- Inverse cursor dot (desktop only) -->
-  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-dot" id="cursorDot">
+    <div class="cursor-half cursor-half-top"></div>
+    <div class="cursor-half cursor-half-bottom"></div>
+  </div>
 
   <div class="receipt-wrapper">
     <div class="receipt" id="receipt">
@@ -634,81 +637,39 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   /* CUT HANDLE (desktop draggable dot)            */
   /* ============================================ */
 
-  .cut-handle {
-    position: fixed;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1.5px solid rgba(255, 255, 255, 0.12);
-    cursor: grab;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-    -webkit-user-select: none;
-    transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-  }
-
-  .cut-handle::after {
-    content: '';
-    width: 14px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 1px;
-    transition: background 0.2s;
-  }
-
-  .cut-handle:hover {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.22);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
-  }
-
-  .cut-handle:hover::after {
-    background: rgba(255, 255, 255, 0.5);
-  }
-
-  .cut-handle.dragging {
-    cursor: grabbing;
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  }
-
-  .cut-handle.dragging::after {
-    background: rgba(255, 255, 255, 0.6);
-  }
-
-  /* Hide on touch devices and small screens */
-  @media (pointer: coarse) {
-    .cut-handle { display: none; }
-  }
-  @media (max-width: 768px) {
-    .cut-handle { display: none; }
-  }
-
   /* ============================================ */
   /* CURSOR DOT (inverse blend, desktop only)      */
   /* ============================================ */
 
   .cursor-dot {
     position: fixed;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: white;
-    mix-blend-mode: difference;
+    width: 0;
+    height: 0;
     pointer-events: none;
     z-index: 9999;
-    transform: translate(-50%, -50%);
+    mix-blend-mode: difference;
     opacity: 0;
     transition: opacity 0.15s;
+    will-change: left, top;
+  }
+
+  .cursor-half {
+    position: absolute;
+    width: var(--dot-size, 8px);
+    height: calc(var(--dot-size, 8px) / 2);
+    background: white;
+    pointer-events: none;
+    transition: width 0.18s ease-out, height 0.18s ease-out, transform 0.18s ease-out;
+  }
+
+  .cursor-half-top {
+    border-radius: calc(var(--dot-size, 8px) / 2) calc(var(--dot-size, 8px) / 2) 0 0;
+    transform: translate(-50%, calc(-1 * var(--dot-size, 8px) / 2 + var(--split-offset, 0px)));
+  }
+
+  .cursor-half-bottom {
+    border-radius: 0 0 calc(var(--dot-size, 8px) / 2) calc(var(--dot-size, 8px) / 2);
+    transform: translate(-50%, calc(var(--split-offset-inv, 0px)));
   }
 
   /* Hide on touch devices and small screens */
@@ -717,6 +678,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
   @media (max-width: 768px) {
     .cursor-dot { display: none; }
+  }
+
+  /* Hide OS cursor on desktop */
+  @media (pointer: fine) {
+    *, *::before, *::after {
+      cursor: none !important;
+    }
   }
 
   /* ============================================ */
@@ -1348,7 +1316,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       cutHintEl = document.createElement('div');
       cutHintEl.className = 'cut-hint';
-      cutHintEl.textContent = '\u2702  SWIPE ACROSS TO TEAR  \u2702';
+      cutHintEl.textContent = window.matchMedia('(pointer: fine)').matches
+        ? '\u2702  CLICK & DRAG TO TEAR  \u2702'
+        : '\u2702  SWIPE ACROSS TO TEAR  \u2702';
       document.body.appendChild(cutHintEl);
 
       // Force reflow before adding class so transition fires
@@ -1412,18 +1382,69 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     // ========================================
     // 5b. CURSOR DOT (inverse blend, desktop only)
+    //     with lerp/inertia for trailing lag
     // ========================================
     const cursorDot = document.getElementById('cursorDot');
+    const cursorHalfTop = cursorDot?.querySelector('.cursor-half-top') as HTMLElement | null;
+    const cursorHalfBottom = cursorDot?.querySelector('.cursor-half-bottom') as HTMLElement | null;
+    let dotTargetX = 0;
+    let dotTargetY = 0;
+    let dotCurrentX = 0;
+    let dotCurrentY = 0;
+    let dotVisible = false;
+    let dotAnimating = false;
+    const DOT_LERP = 0.18;
+    const DOT_SIZE_MIN = 8;
+    const DOT_SIZE_MAX = 16;
+    const PROXIMITY_RANGE = 80;
+    const SPLIT_GAP = 1;
+    const CUT_EDGE_SAFETY = 10;
+    const CUT_EDGE_PADDING = 30;
+
     if (cursorDot && window.matchMedia('(pointer: fine)').matches) {
       document.addEventListener('mousemove', (e: MouseEvent) => {
-        cursorDot.style.left = e.clientX + 'px';
-        cursorDot.style.top = e.clientY + 'px';
-        if (cursorDot.style.opacity !== '1') cursorDot.style.opacity = '1';
+        dotTargetX = e.clientX;
+        dotTargetY = e.clientY;
+
+        if (!dotVisible) {
+          dotCurrentX = dotTargetX;
+          dotCurrentY = dotTargetY;
+          cursorDot.style.left = dotCurrentX + 'px';
+          cursorDot.style.top = dotCurrentY + 'px';
+          cursorDot.style.opacity = '1';
+          dotVisible = true;
+        }
+
+        if (!dotAnimating) {
+          dotAnimating = true;
+          requestAnimationFrame(dotLerp);
+        }
       });
 
-      // Hide when mouse leaves the window
+      function dotLerp() {
+        dotCurrentX += (dotTargetX - dotCurrentX) * DOT_LERP;
+        dotCurrentY += (dotTargetY - dotCurrentY) * DOT_LERP;
+
+        cursorDot!.style.left = dotCurrentX + 'px';
+        cursorDot!.style.top = dotCurrentY + 'px';
+
+        const dx = Math.abs(dotTargetX - dotCurrentX);
+        const dy = Math.abs(dotTargetY - dotCurrentY);
+        if (dx > 0.5 || dy > 0.5) {
+          requestAnimationFrame(dotLerp);
+        } else {
+          dotCurrentX = dotTargetX;
+          dotCurrentY = dotTargetY;
+          cursorDot!.style.left = dotCurrentX + 'px';
+          cursorDot!.style.top = dotCurrentY + 'px';
+          dotAnimating = false;
+        }
+      }
+
       document.addEventListener('mouseleave', () => {
         cursorDot.style.opacity = '0';
+        dotVisible = false;
+        dotAnimating = false;
       });
     }
 
@@ -1749,11 +1770,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           const p = pieces[i];
           const vTop = rr.top + (p.top / 100) * rh + p.offsetY;
           const vBot = rr.top + (p.bottom / 100) * rh + p.offsetY;
-          if (swipeY >= vTop + 25 && swipeY <= vBot - 25) {
+          const safeTop = vTop + CUT_EDGE_SAFETY;
+          const safeBot = vBot - CUT_EDGE_SAFETY;
+          // Accept clicks within piece OR within padding outside, then clamp
+          if (swipeY >= safeTop - CUT_EDGE_PADDING && swipeY <= safeBot + CUT_EDGE_PADDING) {
             target = p;
             targetIdx = i;
-            // Map swipe Y back to receipt content %
-            tearPct = ((swipeY - rr.top - p.offsetY) / rh) * 100;
+            const clampedY = Math.max(safeTop, Math.min(safeBot, swipeY));
+            tearPct = ((clampedY - rr.top - p.offsetY) / rh) * 100;
             break;
           }
         }
@@ -1812,80 +1836,172 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return true;
       }
 
-      // ---- Desktop cut handle (draggable dot) ----
+      // ---- Cursor proximity & visual state (desktop) ----
 
-      const cutHandle = document.createElement('div');
-      cutHandle.className = 'cut-handle';
-      cutHandle.title = 'Drag to cut';
-      document.body.appendChild(cutHandle);
+      let nearEdge = false;
 
-      let handleDragging = false;
-      let handleStartX = 0;
+      function getCursorProximity(mouseX: number, mouseY: number): { proximity: number; canCut: boolean } {
+        if (isPrinting) return { proximity: 0, canCut: false };
 
-      cutHandle.addEventListener('mousedown', (e: MouseEvent) => {
-        if (isPrinting) return;
-        e.preventDefault();
-        e.stopPropagation();
+        const rr = receipt!.getBoundingClientRect();
 
-        handleDragging = true;
-        handleStartX = e.clientX;
+        // Horizontal distance to receipt
+        let distX = 0;
+        if (mouseX < rr.left) distX = rr.left - mouseX;
+        else if (mouseX > rr.right) distX = mouseX - rr.right;
+        if (distX > PROXIMITY_RANGE) return { proximity: 0, canCut: false };
 
-        // Remove hover transform so pixel position is accurate
-        cutHandle.classList.add('dragging');
-        cutHandle.style.transition = 'none';
-        cutHandle.style.transform = 'none';
-        cutHandle.style.left = `${e.clientX - 18}px`;
-        cutHandle.style.top = `${e.clientY - 18}px`;
+        let minDistY = Infinity;
+        let insideTearable = false;
 
-        // Show cut line at handle Y
-        pageCutLine.style.top = `${e.clientY}px`;
-        pageCutLine.style.display = 'block';
-        pageCutLine.style.width = '0';
-      });
-
-      document.addEventListener('mousemove', (e: MouseEvent) => {
-        if (!handleDragging) return;
-
-        // Move dot to follow mouse
-        cutHandle.style.left = `${e.clientX - 18}px`;
-        cutHandle.style.top = `${e.clientY - 18}px`;
-
-        // Update cut line progress
-        const dx = Math.abs(e.clientX - handleStartX);
-        const progress = Math.min(1, dx / (window.innerWidth * 0.3));
-        pageCutLine.style.width = `${progress * 100}%`;
-
-        if (progress >= 1) {
-          const tearY = e.clientY;
-          const success = executeTear(tearY);
-          resetHandle();
-          // If tear didn't land on a piece, just reset
+        if (!tearSystemReady || pieces.length === 0) {
+          const innerTop = rr.top + CUT_EDGE_SAFETY;
+          const innerBottom = rr.bottom - CUT_EDGE_SAFETY;
+          if (mouseY >= innerTop && mouseY <= innerBottom) {
+            insideTearable = true;
+            minDistY = 0;
+          } else {
+            if (mouseY < innerTop) minDistY = innerTop - mouseY;
+            else minDistY = mouseY - innerBottom;
+          }
+        } else {
+          const rh = rr.height;
+          for (const p of pieces) {
+            const vTop = rr.top + (p.top / 100) * rh + p.offsetY;
+            const vBot = rr.top + (p.bottom / 100) * rh + p.offsetY;
+            const innerTop = vTop + CUT_EDGE_SAFETY;
+            const innerBot = vBot - CUT_EDGE_SAFETY;
+            if (mouseY >= innerTop && mouseY <= innerBot) {
+              insideTearable = true;
+              minDistY = 0;
+              break;
+            }
+            let d = Infinity;
+            if (mouseY < innerTop) d = innerTop - mouseY;
+            else if (mouseY > innerBot) d = mouseY - innerBot;
+            minDistY = Math.min(minDistY, d);
+          }
         }
-      });
 
-      document.addEventListener('mouseup', () => {
-        if (handleDragging) resetHandle();
-      });
+        const totalDist = Math.sqrt(distX * distX + minDistY * minDistY);
+        const canCut = (insideTearable || minDistY <= CUT_EDGE_PADDING) && distX <= CUT_EDGE_PADDING;
+        const proximity = insideTearable ? 1 : Math.max(0, 1 - totalDist / PROXIMITY_RANGE);
 
-      function resetHandle() {
-        handleDragging = false;
-        cutHandle.classList.remove('dragging');
-
-        pageCutLine.style.width = '0';
-        pageCutLine.style.display = 'none';
-
-        // Spring back to rest position
-        cutHandle.style.transition = 'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s, box-shadow 0.2s';
-        cutHandle.style.left = '20px';
-        cutHandle.style.top = '50%';
-        cutHandle.style.transform = 'translateY(-50%)';
-
-        setTimeout(() => {
-          cutHandle.style.transition = '';
-        }, 450);
+        return { proximity, canCut };
       }
 
-      // ---- Global gesture detection (swipe anywhere, mainly for touch) ----
+      function updateCursorVisual(proximity: number, canCut: boolean, isTearing: boolean) {
+        if (!cursorDot) return;
+
+        let size: number;
+        if (isTearing) {
+          size = DOT_SIZE_MIN;
+        } else if (canCut) {
+          size = DOT_SIZE_MAX;
+        } else {
+          size = DOT_SIZE_MIN + (DOT_SIZE_MAX - DOT_SIZE_MIN) * proximity;
+        }
+
+        const splitOffset = (canCut && !isTearing) ? SPLIT_GAP : 0;
+
+        cursorDot.style.setProperty('--dot-size', size + 'px');
+        cursorDot.style.setProperty('--split-offset', (-splitOffset) + 'px');
+        cursorDot.style.setProperty('--split-offset-inv', splitOffset + 'px');
+      }
+
+      function checkEdgeProximity(mouseX: number, mouseY: number) {
+        if (isPrinting) {
+          nearEdge = false;
+          updateCursorVisual(0, false, false);
+          return;
+        }
+        const { proximity, canCut } = getCursorProximity(mouseX, mouseY);
+        nearEdge = canCut;
+        updateCursorVisual(proximity, canCut, false);
+      }
+
+      // ---- Desktop click-to-tear ----
+
+      if (window.matchMedia('(pointer: fine)').matches) {
+        let desktopTearing = false;
+        let desktopTearStartX = 0;
+        let desktopTearStartY = 0;
+        let desktopTearDecided = false;
+
+        document.addEventListener('mousemove', (e: MouseEvent) => {
+          if (!desktopTearing) {
+            checkEdgeProximity(e.clientX, e.clientY);
+          }
+        });
+
+        document.addEventListener('mousedown', (e: MouseEvent) => {
+          if (isPrinting) return;
+          if ((e.target as HTMLElement).closest('button')) return;
+          if ((e.target as HTMLElement).closest('a')) return;
+
+          if (!nearEdge) {
+            if (!tearSystemReady || pieces.length === 0) {
+              const rr = receipt!.getBoundingClientRect();
+              if (e.clientX < rr.left - CUT_EDGE_PADDING || e.clientX > rr.right + CUT_EDGE_PADDING) return;
+              if (e.clientY < rr.top + CUT_EDGE_SAFETY || e.clientY > rr.bottom - CUT_EDGE_SAFETY) return;
+            } else {
+              return;
+            }
+          }
+
+          desktopTearing = true;
+          desktopTearStartX = e.clientX;
+          desktopTearStartY = e.clientY;
+          desktopTearDecided = false;
+
+          updateCursorVisual(1, true, true);
+        });
+
+        document.addEventListener('mousemove', (e: MouseEvent) => {
+          if (!desktopTearing) return;
+
+          updateCursorVisual(1, true, true);
+
+          const dx = Math.abs(e.clientX - desktopTearStartX);
+          const dy = Math.abs(e.clientY - desktopTearStartY);
+
+          if (!desktopTearDecided && (dx > 8 || dy > 8)) {
+            desktopTearDecided = true;
+            const isHorizontal = dx > dy * 1.2;
+            if (!isHorizontal) {
+              endDesktopTear();
+              return;
+            }
+            pageCutLine.style.top = `${desktopTearStartY}px`;
+            pageCutLine.style.display = 'block';
+            pageCutLine.style.width = '0';
+          }
+
+          if (!desktopTearDecided) return;
+
+          const progress = Math.min(1, dx / (30));
+          pageCutLine.style.width = `${progress * 100}%`;
+
+          if (progress >= 1) {
+            executeTear(desktopTearStartY);
+            endDesktopTear();
+          }
+        });
+
+        document.addEventListener('mouseup', () => {
+          if (desktopTearing) endDesktopTear();
+        });
+
+        function endDesktopTear() {
+          desktopTearing = false;
+          desktopTearDecided = false;
+          pageCutLine.style.width = '0';
+          pageCutLine.style.display = 'none';
+          checkEdgeProximity(dotTargetX, dotTargetY);
+        }
+      }
+
+      // ---- Touch gesture detection (swipe anywhere, mobile) ----
 
       let tearStartX = 0;
       let tearStartY = 0;
@@ -1914,13 +2030,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             pageCutLine.style.top = `${tearStartY}px`;
             pageCutLine.style.display = 'block';
             pageCutLine.style.width = '0';
-            document.body.style.cursor = 'grabbing';
           }
         }
 
         if (!tearDecided || !tearIsHorizontal) return;
 
-        const progress = Math.min(1, dx / (window.innerWidth * 0.35));
+        const progress = Math.min(1, dx / (30));
         pageCutLine.style.width = `${progress * 100}%`;
 
         if (progress >= 1) {
@@ -1932,24 +2047,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function endTear() {
         pageCutLine.style.width = '0';
         pageCutLine.style.display = 'none';
-        document.body.style.cursor = '';
         isTearing = false;
         tearDecided = false;
         tearIsHorizontal = false;
       }
-
-      // Mouse (ignore clicks on buttons and the cut handle)
-      document.addEventListener('mousedown', (e: MouseEvent) => {
-        if ((e.target as HTMLElement).closest('button')) return;
-        if ((e.target as HTMLElement).closest('.cut-handle')) return;
-        startTear(e.clientX, e.clientY);
-      });
-      document.addEventListener('mousemove', (e: MouseEvent) => {
-        if (isTearing) moveTear(e.clientX, e.clientY);
-      });
-      document.addEventListener('mouseup', () => {
-        if (isTearing) endTear();
-      });
 
       // Touch (swipe gesture stays the same for mobile)
       document.addEventListener('touchstart', (e: TouchEvent) => {
