@@ -12,11 +12,6 @@
   "dependencies": {
     "@astrojs/vercel": "^8.2.8",
     "@vercel/analytics": "^1.5.0",
-    "astro": "^5.14.0",
-    "geist": "^1.7.0"
-  },
-  "devDependencies": {
-    "sass": "^1.81.0",
-    "sass-embedded": "^1.81.0"
+    "astro": "^5.14.0"
   }
 }
