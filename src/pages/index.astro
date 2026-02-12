@@ -105,7 +105,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         <pre class="receipt-line dotleader" data-print><span>  Design Systems</span><span>2021-2025</span></pre>
         <pre class="receipt-line dotleader" data-print><span>  Insights</span><span>2017-2021</span></pre>
         <pre class="receipt-line spacer" data-print> </pre>
-        <pre class="receipt-line bold" data-print>  Universal</pre>
+        <pre class="receipt-line bold" data-print>  Universal.xyz</pre>
         <pre class="receipt-line dotleader" data-print><span>  Design Lead</span><span>2022-NOW</span></pre>
         <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line bold" data-print>  Clubessential</pre>
@@ -149,12 +149,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       <div class="receipt-section" data-print-section>
         <pre class="receipt-line bold" data-print>CONTACT</pre>
         <pre class="receipt-line spacer" data-print> </pre>
+        <pre class="receipt-line row" data-print><span>WEB</span><span><a href="https://andrew.cv">andrew.cv</a></span></pre>
         <pre class="receipt-line row" data-print><span>EMAIL</span><span><a href="mailto:hello@andrew.cv">hello@andrew.cv</a></span></pre>
         <pre class="receipt-line row" data-print><span>LINKEDIN</span><span><a href="https://linkedin.com/in/awashuta" target="_blank">/in/awashuta</a></span></pre>
         <pre class="receipt-line row" data-print><span>X</span><span><a href="https://x.com/awashuta" target="_blank">@awashuta</a></span></pre>
         <pre class="receipt-line row" data-print><span>INSTAGRAM</span><span><a href="https://instagram.com/andrewwashuta" target="_blank">@andrewwashuta</a></span></pre>
         <pre class="receipt-line row" data-print><span>REFRAKT</span><span><a href="https://refrakt.app/andrew" target="_blank">refrakt.app/andrew</a></span></pre>
-        <pre class="receipt-line row" data-print><span>WEB</span><span><a href="https://andrew.cv">andrew.cv</a></span></pre>
         <pre class="receipt-line spacer" data-print> </pre>
         <pre class="receipt-line center divider" data-print>================================</pre>
       </div>
@@ -457,6 +457,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     text-decoration-thickness: 1px;
     text-decoration-color: #999;
     transition: color 0.15s, text-decoration-color 0.15s;
+    pointer-events: auto;
+    cursor: pointer;
   }
 
   .receipt-line :global(a:hover) {
@@ -909,26 +911,31 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       barcodeNumberEl.textContent = `${orderStr.slice(0,4)} ${orderStr.slice(4,8)} ${orderStr.slice(8,12)}`;
     }
 
-    // Visitor counter (localStorage-persisted, increments per session)
+    // Visitor counter (Vercel KV/Redis)
     const visitorCountEl = document.getElementById('visitorCount');
     if (visitorCountEl) {
-      const launchDate = new Date(2024, 5, 1); // June 1, 2024
-      const daysSinceLaunch = Math.floor((now.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
-      let count = parseInt(localStorage.getItem('aw-visitor-count') || '0', 10);
       const isNewSession = !sessionStorage.getItem('aw-session');
 
-      if (!count || count < daysSinceLaunch) {
-        // First visit or stale - seed with realistic starting count
-        count = Math.floor(daysSinceLaunch * 2.7) + 42;
-      }
+      // Clear old localStorage value
+      localStorage.removeItem('aw-visitor-count');
 
-      if (isNewSession) {
-        count++;
-        sessionStorage.setItem('aw-session', '1');
-        localStorage.setItem('aw-visitor-count', count.toString());
-      }
+      const endpoint = isNewSession
+        ? '/api/visitor-count?increment=true'
+        : '/api/visitor-count';
 
-      visitorCountEl.textContent = count.toString().padStart(5, '0');
+      fetch(endpoint)
+        .then(res => res.json())
+        .then(data => {
+          const count = data.count || 0;
+          visitorCountEl.textContent = count.toString().padStart(5, '0');
+
+          if (isNewSession) {
+            sessionStorage.setItem('aw-session', '1');
+          }
+        })
+        .catch(() => {
+          visitorCountEl.textContent = '00000';
+        });
     }
 
     // ========================================
