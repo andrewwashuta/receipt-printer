@@ -7,7 +7,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
 >
   <!-- Sound Toggle (receipt-aesthetic) -->
-  <button class="sound-toggle active" id="soundToggle" aria-label="Toggle printer sounds" title="Toggle printer sounds">
+  <button class="sound-toggle active" id="soundToggle" aria-label="Toggle tear sounds" title="Toggle tear sounds">
     <span class="sound-label" id="soundLabel">[ AUDIO: ON ]</span>
   </button>
 
@@ -478,6 +478,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   #barcodeCanvas {
+    display: block;
     width: 200px;
     height: 50px;
     image-rendering: pixelated;
@@ -552,14 +553,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     -webkit-backdrop-filter: blur(4px);
   }
 
-  .sound-toggle:hover {
-    color: rgba(245, 240, 232, 0.7);
-    border-color: rgba(245, 240, 232, 0.2);
-  }
-
   .sound-toggle.active {
     color: rgba(245, 240, 232, 0.65);
     border-color: rgba(245, 240, 232, 0.18);
+  }
+
+  .sound-toggle:hover {
+    color: rgba(245, 240, 232, 0.7);
+    border-color: rgba(245, 240, 232, 0.2);
   }
 
   /* ============================================ */
@@ -602,20 +603,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     overflow: hidden !important;
   }
 
-  /* Swipe affordance hint */
+  /* Swipe affordance hint (matches sound-toggle vibe) */
   .cut-hint {
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 72px;
-    font-family: var(--font-pixel);
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.45);
-    letter-spacing: 2px;
-    padding: 8px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.04);
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    font-family: var(--font-receipt);
+    font-size: 14px;
+    color: rgba(245, 240, 232, 0.5);
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border: 1px solid rgba(245, 240, 232, 0.12);
+    border-radius: 0;
+    background: rgba(30, 28, 24, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     pointer-events: none;
     z-index: 50;
     opacity: 0;
@@ -629,7 +632,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   @keyframes cutHintPulse {
-    0%, 100% { opacity: 0.5; }
+    0%, 100% { opacity: 0.7; }
     50% { opacity: 1; }
   }
 
@@ -742,37 +745,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   document.addEventListener('DOMContentLoaded', () => {
 
     // ========================================
-    // 1. SOUND ENGINE
-    //    Sequence: startup → printing loop → tear sounds
+    // 1. SOUND ENGINE (tear sounds only)
     //    Primary: HTML5 Audio (reliable cross-browser)
     //    Enhanced: Web Audio API for zero-latency tear playback
     // ========================================
     class ReceiptSounds {
-      private startupAudio: HTMLAudioElement;
-      private printingAudio: HTMLAudioElement;
       private tearPool: HTMLAudioElement[] = [];
       private _enabled: boolean = true;
-      private _printing: boolean = false;
-      private _fadeTimer: ReturnType<typeof setInterval> | null = null;
       private audioCtx: AudioContext | null = null;
       private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
-      private _ready: Promise<void>;
-      private _resolveReady!: () => void;
       private _unlocked: boolean = false;
-      private _audioStarted: boolean = false;
 
       constructor() {
-        this._ready = new Promise(resolve => { this._resolveReady = resolve; });
-
-        // --- HTML5 Audio (primary, cross-browser reliable) ---
-        this.startupAudio = new Audio('/sounds/printer-startup.mp3');
-        this.startupAudio.preload = 'auto';
-        this.startupAudio.volume = 0.55;
-
-        this.printingAudio = new Audio('/sounds/printing.mp3');
-        this.printingAudio.preload = 'auto';
-        this.printingAudio.volume = 0.5;
-
+        // Restore saved sound preference
+        const saved = localStorage.getItem('aw-sound-enabled');
+        if (saved !== null) {
+          this._enabled = saved === 'true';
+        }
         // Create 2 copies of each tear sound for overlapping playback
         const tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
         tearFiles.forEach(file => {
@@ -780,19 +769,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             const a = new Audio(file);
             a.preload = 'auto';
             a.volume = 0.5;
-            a.load(); // Force browser to start downloading now
+            a.load();
             this.tearPool.push(a);
           }
         });
 
-        // Force-load main audio
-        this.startupAudio.load();
-        this.printingAudio.load();
-
-        // Track preload readiness
-        this._trackReady();
-
-        // --- Web Audio API (enhanced, zero-latency tear) ---
+        // Web Audio API for zero-latency tear playback
         this._initWebAudio();
 
         // Unlock on first user interaction (autoplay policy)
@@ -800,41 +782,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (this._unlocked) return;
           this._unlocked = true;
 
-          // Resume Web Audio context
           if (this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
-          }
-
-          // If printing is in progress but audio was blocked by autoplay policy,
-          // start the full sequence now that we have a user gesture
-          if (this._enabled && this._printing && !this._audioStarted) {
-            this._audioStarted = true;
-
-            // Play startup sound
-            this.startupAudio.currentTime = 0;
-            this.startupAudio.play().catch(() => {
-              // Startup failed even with gesture — start printing directly
-              this.printingAudio.loop = true;
-              this.printingAudio.currentTime = 0;
-              this.printingAudio.play().catch(() => {});
-            });
-
-            // Pre-start printing sound muted (unlocks it in this gesture context)
-            // so we don't need another gesture when startup ends
-            this.printingAudio.loop = true;
-            this.printingAudio.volume = 0;
-            this.printingAudio.currentTime = 0;
-            this.printingAudio.play().catch(() => {});
-
-            // When startup ends, unmute printing
-            this.startupAudio.onended = () => {
-              if (!this._printing || !this._enabled) {
-                this.printingAudio.pause();
-                this.printingAudio.volume = 0.5;
-                return;
-              }
-              this.printingAudio.volume = 0.5;
-            };
           }
 
           document.removeEventListener('click', unlock);
@@ -866,106 +815,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
       }
 
-      private _trackReady() {
-        let loaded = 0;
-        const total = 2;
-        const done = () => { if (++loaded >= total) this._resolveReady(); };
-        const timeout = setTimeout(() => this._resolveReady(), 3000);
-
-        const check = (audio: HTMLAudioElement) => {
-          if (audio.readyState >= 4) { done(); return; }
-          audio.addEventListener('canplaythrough', () => { done(); clearTimeout(timeout); }, { once: true });
-        };
-        check(this.startupAudio);
-        check(this.printingAudio);
-      }
-
       get isEnabled() { return this._enabled; }
-      get ready() { return this._ready; }
 
       toggle() {
         this._enabled = !this._enabled;
-        if (!this._enabled) {
-          this.startupAudio.pause();
-          this.printingAudio.loop = false;
-          this.printingAudio.pause();
-        } else if (this._printing) {
-          this.printingAudio.loop = true;
-          this.printingAudio.play().catch(() => {});
-        }
+        localStorage.setItem('aw-sound-enabled', this._enabled.toString());
         return this._enabled;
-      }
-
-      startMotor(): Promise<void> {
-        this._printing = true;
-        if (!this._enabled) return Promise.resolve();
-
-        return new Promise<void>((resolve) => {
-          let resolved = false;
-          const finish = () => { if (!resolved) { resolved = true; resolve(); } };
-
-          this.startupAudio.currentTime = 0;
-          this.startupAudio.play()
-            .then(() => {
-              // Autoplay worked (user already interacted or browser allows it)
-              this._audioStarted = true;
-            })
-            .catch(() => {
-              // Autoplay blocked — animation starts silently.
-              // Audio will begin when user interacts (unlock handler).
-              finish();
-            });
-
-          this.startupAudio.onended = () => {
-            if (!this._printing || !this._enabled) { finish(); return; }
-            this.printingAudio.loop = true;
-            this.printingAudio.currentTime = 0;
-            this.printingAudio.play().then(() => finish()).catch(() => finish());
-          };
-
-          // Safety: don't wait more than 4s for startup to finish
-          setTimeout(() => {
-            if (this._printing && this._enabled && !this.printingAudio.loop) {
-              this.printingAudio.loop = true;
-              this.printingAudio.currentTime = 0;
-              this.printingAudio.play().catch(() => {});
-            }
-            finish();
-          }, 4000);
-        });
-      }
-
-      stopMotor() {
-        this._printing = false;
-        this.startupAudio.onended = null;
-        this.printingAudio.loop = false;
-
-        if (this._fadeTimer) clearInterval(this._fadeTimer);
-
-        const startVol = this.printingAudio.volume;
-        let step = 0;
-        const totalSteps = 8;
-        this._fadeTimer = setInterval(() => {
-          step++;
-          this.printingAudio.volume = Math.max(0, startVol * (1 - step / totalSteps));
-          if (step >= totalSteps) {
-            if (this._fadeTimer) clearInterval(this._fadeTimer);
-            this._fadeTimer = null;
-            this.printingAudio.pause();
-            this.printingAudio.currentTime = 0;
-            this.printingAudio.volume = 0.5;
-          }
-        }, 30);
-
-        setTimeout(() => {
-          if (!this._printing) {
-            this.startupAudio.pause();
-            this.printingAudio.pause();
-            this.printingAudio.currentTime = 0;
-            this.printingAudio.volume = 0.5;
-            this.printingAudio.loop = false;
-          }
-        }, 400);
       }
 
       tearSound() {
@@ -992,7 +847,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
         }
 
-        // HTML5 Audio: find a tear sound that isn't currently playing
+        // HTML5 Audio fallback: find a tear sound that isn't currently playing
         const startIdx = Math.floor(Math.random() * this.tearPool.length);
         for (let i = 0; i < this.tearPool.length; i++) {
           const audio = this.tearPool[(startIdx + i) % this.tearPool.length];
@@ -1009,8 +864,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         audio.volume = 0.5;
         audio.play().catch(() => {});
       }
-
-      tick() {}
     }
 
     const sounds = new ReceiptSounds();
@@ -1020,6 +873,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // ========================================
     const soundToggle = document.getElementById('soundToggle')!;
     const soundLabel = document.getElementById('soundLabel')!;
+
+    // Set initial state from saved preference
+    const initialEnabled = sounds.isEnabled;
+    soundLabel.textContent = initialEnabled ? '[ AUDIO: ON ]' : '[ AUDIO: OFF ]';
+    soundToggle.classList.toggle('active', initialEnabled);
 
     soundToggle.addEventListener('click', () => {
       const enabled = sounds.toggle();
@@ -1187,11 +1045,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       ctx.fillStyle = '#ede7d9';
       ctx.fillRect(0, 0, w, h);
 
-      // Generate pseudo-barcode pattern from value
+      // Calculate total barcode width first to center it
       const seed = value.toString();
-      let x = 10;
+      const digits = seed.padStart(12, '0');
+      const patterns = [
+        [3,2,1,1], [2,2,2,1], [2,1,2,2], [1,4,1,1], [1,1,3,2],
+        [1,2,3,1], [1,1,1,4], [1,3,1,2], [1,2,1,3], [3,1,1,2]
+      ];
+
+      let totalWidth = 8; // start guard: 3 bars + 2 spaces = 8px
+      for (let d = 0; d < digits.length; d++) {
+        const digit = parseInt(digits[d]);
+        const pattern = patterns[digit];
+        totalWidth += pattern.reduce((a, b) => a + b, 0) + 1; // pattern + 1px gap
+        if (d === 5) totalWidth += 10; // middle guard
+      }
+      totalWidth += 8; // end guard
+
       const barHeight = h - 10;
       const startY = 5;
+      let x = (w - totalWidth) / 2; // center the barcode
 
       ctx.fillStyle = '#1a1a1a';
 
@@ -1203,14 +1076,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       x += 2;
 
       // Generate bars from order number digits
-      const digits = seed.padStart(12, '0');
       for (let d = 0; d < digits.length; d++) {
         const digit = parseInt(digits[d]);
-        // Create varying bar patterns based on digit
-        const patterns = [
-          [3,2,1,1], [2,2,2,1], [2,1,2,2], [1,4,1,1], [1,1,3,2],
-          [1,2,3,1], [1,1,1,4], [1,3,1,2], [1,2,1,3], [3,1,1,2]
-        ];
         const pattern = patterns[digit];
         for (let p = 0; p < pattern.length; p++) {
           if (p % 2 === 0) {
@@ -1242,6 +1109,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const barcodeCanvas = document.getElementById('barcodeCanvas') as HTMLCanvasElement;
     if (barcodeCanvas) {
       generateBarcode(barcodeCanvas, daysAlive);
+
+      // Convert canvas to <img> so cloneNode preserves the rendered barcode
+      // (canvas pixel data is not cloned by cloneNode)
+      const barcodeDataUrl = barcodeCanvas.toDataURL('image/png');
+      const barcodeImg = document.createElement('img');
+      barcodeImg.src = barcodeDataUrl;
+      barcodeImg.alt = 'Barcode';
+      barcodeImg.id = barcodeCanvas.id;
+      barcodeImg.width = barcodeCanvas.width;
+      barcodeImg.height = barcodeCanvas.height;
+      barcodeCanvas.replaceWith(barcodeImg);
     }
 
     // ========================================
@@ -1263,6 +1141,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let printIndex = 0;
     let isPrinting = false;
     let printTimeout: ReturnType<typeof setTimeout> | null = null;
+    const MIN_LINES_BEFORE_CUT = 8;
+    function canCutDuringPrint(): boolean {
+      return !isPrinting || printIndex >= MIN_LINES_BEFORE_CUT;
+    }
+
+    // Callback set by tear system to mirror class changes to clone pieces
+    let mirrorPrintState: ((index: number, addClasses: string[], removeClasses: string[]) => void) | null = null;
 
     function printNextLine() {
       if (printIndex >= allPrintables.length) {
@@ -1275,12 +1160,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Remove cursor from previous line
       if (printIndex > 0) {
         allPrintables[printIndex - 1].classList.remove('printing');
+        mirrorPrintState?.(printIndex - 1, [], ['printing']);
       }
 
       // Print this line
       line.classList.add('printed');
       line.classList.add('printing');
-      sounds.tick();
+      mirrorPrintState?.(printIndex, ['printed', 'printing'], []);
 
       printIndex++;
 
@@ -1317,8 +1203,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       cutHintEl = document.createElement('div');
       cutHintEl.className = 'cut-hint';
       cutHintEl.textContent = window.matchMedia('(pointer: fine)').matches
-        ? '\u2702  CLICK & DRAG TO TEAR  \u2702'
-        : '\u2702  SWIPE ACROSS TO TEAR  \u2702';
+        ? '[ CLICK & DRAG TO TEAR ]'
+        : '[ SWIPE TO TEAR ]';
       document.body.appendChild(cutHintEl);
 
       // Force reflow before adding class so transition fires
@@ -1348,26 +1234,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     function finishPrinting() {
       isPrinting = false;
-      sounds.stopMotor();
 
       // Remove any remaining cursor
       allPrintables.forEach(el => el.classList.remove('printing'));
+
+      // Mirror cursor removal to clones
+      for (let i = 0; i < allPrintables.length; i++) {
+        mirrorPrintState?.(i, [], ['printing']);
+      }
 
       // Show swipe affordance hint after a short pause
       setTimeout(showCutHint, 800);
     }
 
-    async function startPrinting() {
+    function startPrinting() {
       if (isPrinting) return;
       isPrinting = true;
 
-      // Wait for audio files to be preloaded before starting
-      await sounds.ready;
-
-      // Play startup sound, wait for printing loop to begin
-      await sounds.startMotor();
-
-      // Small additional delay for feel, then begin line-by-line animation
+      // Small delay for feel, then begin line-by-line animation
       printTimeout = setTimeout(printNextLine, 200);
     }
 
@@ -1469,12 +1353,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         rotation: number; // accumulated rotation offset (degrees)
         topEdge: JaggedEdge | null;    // jagged tear data (null = straight)
         bottomEdge: JaggedEdge | null; // jagged tear data (null = straight)
+        printables: HTMLElement[];     // cached [data-print] elements in this clone
       };
 
       let pieces: TearPiece[] = [];
       let tearSystemReady = false;
       let baseRotation = 0;
       let receiptH = 0;
+
+      // Wire up print state mirroring to clone pieces
+      mirrorPrintState = (index, addClasses, removeClasses) => {
+        if (!tearSystemReady) return;
+        for (const piece of pieces) {
+          const target = piece.printables[index];
+          if (!target) continue;
+          for (const cls of addClasses) target.classList.add(cls);
+          for (const cls of removeClasses) target.classList.remove(cls);
+        }
+      };
 
       // Generate irregular jagged edge simulating perforated paper tear
       function generateJaggedEdge(): JaggedEdge {
@@ -1549,9 +1445,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         receiptH = receipt!.offsetHeight;
 
         // Create the initial full-receipt piece
-        const el = makePieceEl(0, 100, 0, 0, null, null);
+        const { el, printables } = makePieceEl(0, 100, 0, 0, null, null);
         wrapper.appendChild(el);
-        pieces.push({ el, top: 0, bottom: 100, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null });
+        pieces.push({ el, top: 0, bottom: 100, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null, printables });
 
         // Hide the original (it stays in flow for layout height)
         receipt!.style.visibility = 'hidden';
@@ -1716,11 +1612,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         parent.appendChild(tint);
       }
 
-      function makePieceEl(top: number, bottom: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): HTMLElement {
+      function makePieceEl(top: number, bottom: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): { el: HTMLElement; printables: HTMLElement[] } {
         const clone = receipt!.cloneNode(true) as HTMLElement;
         clone.removeAttribute('id');
         clone.classList.add('receipt-piece');
-        const p = { top, bottom, offsetY, rotation: rot, topEdge, bottomEdge } as TearPiece;
+        const p = { top, bottom, offsetY, rotation: rot, topEdge, bottomEdge, printables: [] } as TearPiece;
         Object.assign(clone.style, {
           position: 'absolute',
           top: '0',
@@ -1745,7 +1641,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (topEdge) addEdgeGrain(clone, top, 'bottom');
         if (bottomEdge) addEdgeGrain(clone, bottom, 'top');
 
-        return clone;
+        const printables = Array.from(clone.querySelectorAll('[data-print]')) as HTMLElement[];
+        return { el: clone, printables };
       }
 
       // Animate a piece to its current state with a spring curve
@@ -1805,7 +1702,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         // Create new piece for bottom portion (jagged top, inherits old bottom edge)
         const wrapper = receipt!.parentElement!;
-        const newEl = makePieceEl(tearPct, origBottom, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
+        const { el: newEl, printables: newPrintables } = makePieceEl(tearPct, origBottom, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
         wrapper.appendChild(newEl);
 
         const newPiece: TearPiece = {
@@ -1816,6 +1713,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           rotation: target.rotation,
           topEdge: jaggedEdge,
           bottomEdge: origBottomEdge,
+          printables: newPrintables,
         };
         pieces.splice(targetIdx + 1, 0, newPiece);
 
@@ -1841,7 +1739,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let nearEdge = false;
 
       function getCursorProximity(mouseX: number, mouseY: number): { proximity: number; canCut: boolean } {
-        if (isPrinting) return { proximity: 0, canCut: false };
+        if (!canCutDuringPrint()) return { proximity: 0, canCut: false };
 
         const rr = receipt!.getBoundingClientRect();
 
@@ -1910,7 +1808,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function checkEdgeProximity(mouseX: number, mouseY: number) {
-        if (isPrinting) {
+        if (!canCutDuringPrint()) {
           nearEdge = false;
           updateCursorVisual(0, false, false);
           return;
@@ -1935,7 +1833,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
 
         document.addEventListener('mousedown', (e: MouseEvent) => {
-          if (isPrinting) return;
+          if (!canCutDuringPrint()) return;
           if ((e.target as HTMLElement).closest('button')) return;
           if ((e.target as HTMLElement).closest('a')) return;
 
@@ -1997,7 +1895,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           desktopTearDecided = false;
           pageCutLine.style.width = '0';
           pageCutLine.style.display = 'none';
-          checkEdgeProximity(dotTargetX, dotTargetY);
+          // Keep cursor small briefly after release
+          updateCursorVisual(0, false, false);
+          setTimeout(() => {
+            if (!desktopTearing) checkEdgeProximity(dotTargetX, dotTargetY);
+          }, 100);
         }
       }
 
@@ -2010,7 +1912,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let tearIsHorizontal = false;
 
       function startTear(cx: number, cy: number) {
-        if (isPrinting) return;
+        if (!canCutDuringPrint()) return;
         tearStartX = cx;
         tearStartY = cy;
         isTearing = true;
@@ -2061,8 +1963,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       document.addEventListener('touchmove', (e: TouchEvent) => {
         if (isTearing && e.touches.length > 0) {
           moveTear(e.touches[0].clientX, e.touches[0].clientY);
+          // Prevent browser back/forward navigation gesture during horizontal tear
+          if (tearIsHorizontal) e.preventDefault();
         }
-      }, { passive: true });
+      }, { passive: false });
       document.addEventListener('touchend', () => {
         if (isTearing) endTear();
       });
