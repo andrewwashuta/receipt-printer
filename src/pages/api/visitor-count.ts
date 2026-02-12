@@ -1,8 +1,10 @@
 import Redis from 'ioredis';
 import type { APIRoute } from 'astro';
 
+export const prerender = false;
+
 // Create Redis client using the connection URL from Vercel
-const redis = new Redis(import.meta.env.KV_REST_API_REDIS_URL || process.env.KV_REST_API_REDIS_URL || '');
+const redis = new Redis(process.env.KV_REST_API_REDIS_URL || '');
 
 export const GET: APIRoute = async ({ request }) => {
   try {

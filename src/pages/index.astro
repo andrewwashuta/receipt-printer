@@ -235,7 +235,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       0 4px 16px rgba(0,0,0,0.15),
       0 12px 48px rgba(0,0,0,0.1);
     overflow: hidden;
-    filter: sepia(0.08) saturate(0.95);
   }
 
   .receipt * {
@@ -338,7 +337,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     display: block;
     opacity: 0;
     transform: translateY(1px);
-    transition: opacity 0.05s ease, transform 0.05s ease;
     position: relative;
     overflow: hidden;
   }
@@ -519,11 +517,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   /* PRINT CURSOR EFFECT                           */
   /* ============================================ */
 
+  .receipt-line.printing {
+    transition: opacity 0.05s ease, transform 0.05s ease;
+  }
+
   .receipt-line.printing:not(.row):not(.dotleader):not(.spacer)::after {
     content: "█";
     animation: blink 0.4s step-end infinite;
     color: #1a1a1a;
-    mix-blend-mode: difference;
   }
 
   @keyframes blink {
@@ -551,8 +552,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     transition: color 0.2s, border-color 0.2s, background 0.2s;
     border-radius: 0;
     white-space: nowrap;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
   }
 
   .sound-toggle.active {
@@ -618,9 +617,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     padding: 6px 14px;
     border: 1px solid rgba(245, 240, 232, 0.12);
     border-radius: 0;
-    background: rgba(30, 28, 24, 0.85);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(30, 28, 24, 0.92);
     pointer-events: none;
     z-index: 50;
     opacity: 0;
@@ -652,7 +649,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     height: 0;
     pointer-events: none;
     z-index: 9999;
-    mix-blend-mode: difference;
     opacity: 0;
     transition: opacity 0.15s;
     will-change: left, top;
@@ -1748,18 +1744,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function getCursorProximity(mouseX: number, mouseY: number): { proximity: number; canCut: boolean } {
         if (!canCutDuringPrint()) return { proximity: 0, canCut: false };
 
-        const rr = receipt!.getBoundingClientRect();
-
-        // Horizontal distance to receipt
         let distX = 0;
-        if (mouseX < rr.left) distX = rr.left - mouseX;
-        else if (mouseX > rr.right) distX = mouseX - rr.right;
-        if (distX > PROXIMITY_RANGE) return { proximity: 0, canCut: false };
-
         let minDistY = Infinity;
         let insideTearable = false;
 
         if (!tearSystemReady || pieces.length === 0) {
+          const rr = receipt!.getBoundingClientRect();
+
+          // Horizontal distance to receipt
+          if (mouseX < rr.left) distX = rr.left - mouseX;
+          else if (mouseX > rr.right) distX = mouseX - rr.right;
+          if (distX > PROXIMITY_RANGE) return { proximity: 0, canCut: false };
+
           const innerTop = rr.top + CUT_EDGE_SAFETY;
           const innerBottom = rr.bottom - CUT_EDGE_SAFETY;
           if (mouseY >= innerTop && mouseY <= innerBottom) {
@@ -1770,22 +1766,33 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             else minDistY = mouseY - innerBottom;
           }
         } else {
-          const rh = rr.height;
+          // Use each piece's actual bounding rect (accounts for rotation/transforms)
+          distX = Infinity;
           for (const p of pieces) {
-            const vTop = rr.top + (p.top / 100) * rh + p.offsetY;
-            const vBot = rr.top + (p.bottom / 100) * rh + p.offsetY;
-            const innerTop = vTop + CUT_EDGE_SAFETY;
-            const innerBot = vBot - CUT_EDGE_SAFETY;
+            const pieceRect = p.el.getBoundingClientRect();
+
+            let pdx = 0;
+            if (mouseX < pieceRect.left) pdx = pieceRect.left - mouseX;
+            else if (mouseX > pieceRect.right) pdx = mouseX - pieceRect.right;
+            if (pdx > PROXIMITY_RANGE) continue;
+
+            const innerTop = pieceRect.top + CUT_EDGE_SAFETY;
+            const innerBot = pieceRect.bottom - CUT_EDGE_SAFETY;
             if (mouseY >= innerTop && mouseY <= innerBot) {
               insideTearable = true;
               minDistY = 0;
+              distX = pdx;
               break;
             }
             let d = Infinity;
             if (mouseY < innerTop) d = innerTop - mouseY;
             else if (mouseY > innerBot) d = mouseY - innerBot;
-            minDistY = Math.min(minDistY, d);
+            if (d < minDistY) {
+              minDistY = d;
+              distX = pdx;
+            }
           }
+          if (distX === Infinity) distX = PROXIMITY_RANGE + 1;
         }
 
         const totalDist = Math.sqrt(distX * distX + minDistY * minDistY);
