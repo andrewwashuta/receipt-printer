@@ -1386,7 +1386,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       // Generate irregular jagged edge simulating perforated paper tear
       function generateJaggedEdge(): JaggedEdge {
-        const numPoints = 30;
+        const numPoints = 80;
         const edge: number[] = [];
         for (let i = 0; i <= numPoints; i++) {
           const t = i / numPoints;
@@ -1443,6 +1443,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return `translateX(-50%) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
       }
 
+      const PIECE_SHADOW = 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))';
+
       // Lazily set up the piece system on the first tear
       function initTearSystem() {
         if (tearSystemReady) return;
@@ -1458,6 +1460,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         // Create the initial full-receipt piece
         const { el, printables } = makePieceEl(0, 100, 0, 0, null, null);
+        el.style.filter = PIECE_SHADOW;
         wrapper.appendChild(el);
         pieces.push({ el, top: 0, bottom: 100, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null, printables });
 
@@ -1636,7 +1639,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           visibility: 'visible',
           clipPath: clipFor(p),
           boxShadow: 'none',
-          filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))',
+          contain: 'layout paint style',
           transform: transformFor(p),
           transformOrigin: 'center center',
           pointerEvents: 'none',
@@ -1657,9 +1660,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       // Animate a piece to its current state with a spring curve
       function animatePiece(p: TearPiece) {
+        // Remove shadow during animation to avoid Safari re-rasterizing text
+        p.el.style.filter = 'none';
         p.el.style.transition = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)';
         p.el.style.clipPath = clipFor(p);
         p.el.style.transform = transformFor(p);
+        // Apply shadow after animation settles
+        setTimeout(() => { p.el.style.filter = PIECE_SHADOW; }, 600);
       }
 
       function executeTear(swipeY: number): boolean {

@@ -3,8 +3,16 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
-// Create Redis client using the connection URL from Vercel
-const redis = new Redis(process.env.KV_REST_API_REDIS_URL || '');
+// Create Redis client with TLS (required by Upstash/Redis Cloud)
+const redisUrl = process.env.KV_REST_API_REDIS_URL || '';
+const redis = new Redis(redisUrl, {
+  tls: redisUrl ? {} : undefined,
+  maxRetriesPerRequest: 3,
+  retryStrategy(times) {
+    if (times > 3) return null;
+    return Math.min(times * 200, 1000);
+  },
+});
 
 export const GET: APIRoute = async ({ request }) => {
   try {
