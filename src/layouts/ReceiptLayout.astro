@@ -53,10 +53,6 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="preload" href="/fonts/GeistPixel-Square.woff2" as="font" type="font/woff2" crossorigin>
     
-    <!-- Preload audio for receipt printer sounds -->
-    <link rel="preload" href="/sounds/printer-startup.mp3" as="fetch" crossorigin>
-    <link rel="preload" href="/sounds/printing.mp3" as="fetch" crossorigin>
-    
     <title>{pageTitle}</title>
   </head>
   <body>
@@ -129,6 +125,7 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
   }
 
   body {
+    touch-action: pan-y;
     background: #1a1a1a;
     background-image: 
       radial-gradient(ellipse at 50% 0%, #252525 0%, #1a1a1a 60%),
