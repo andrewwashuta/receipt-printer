@@ -11,7 +11,7 @@ const siteName = "Andrew Washuta";
 const pageTitle = title ? `${title} | ${siteName}` : siteName;
 const pageDescription = description || "New Mexico-based product and visual designer. Receipt #12289.";
 const pageImage = "/og.png";
-const siteUrl = "https://andrew.cv";
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || "https://receipt.andrew.cv";
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
 ---
 <html lang="en">
