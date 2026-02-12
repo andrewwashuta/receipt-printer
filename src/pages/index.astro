@@ -338,7 +338,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     display: block;
     opacity: 0;
     transform: translateY(1px);
-    transition: opacity 0.05s ease, transform 0.05s ease;
     position: relative;
     overflow: hidden;
   }
@@ -519,11 +518,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   /* PRINT CURSOR EFFECT                           */
   /* ============================================ */
 
+  .receipt-line.printing {
+    transition: opacity 0.05s ease, transform 0.05s ease;
+  }
+
   .receipt-line.printing:not(.row):not(.dotleader):not(.spacer)::after {
     content: "█";
     animation: blink 0.4s step-end infinite;
     color: #1a1a1a;
-    mix-blend-mode: difference;
   }
 
   @keyframes blink {
@@ -1177,6 +1179,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       printIndex++;
 
+      // Show cut hint once early cutting is available
+      if (printIndex === MIN_LINES_BEFORE_CUT) {
+        setTimeout(showCutHint, 800);
+      }
+
       // Vary delay for different line types for authentic feel
       let delay = 40;
       const text = line.textContent || '';
@@ -1250,8 +1257,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         mirrorPrintState?.(i, [], ['printing']);
       }
 
-      // Show swipe affordance hint after a short pause
-      setTimeout(showCutHint, 800);
     }
 
     function startPrinting() {
@@ -1437,6 +1442,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function transformFor(p: TearPiece): string {
         return `translateX(-50%) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
       }
+
+      const PIECE_SHADOW = 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))';
 
       // Lazily set up the piece system on the first tear
       function initTearSystem() {
@@ -1633,7 +1640,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           visibility: 'visible',
           clipPath: clipFor(p),
           boxShadow: 'none',
-          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))',
+          filter: PIECE_SHADOW,
+          contain: 'layout paint style',
+          backfaceVisibility: 'hidden',
+          willChange: 'clip-path, transform',
           transform: transformFor(p),
           transformOrigin: 'center center',
           pointerEvents: 'none',
@@ -1748,18 +1758,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function getCursorProximity(mouseX: number, mouseY: number): { proximity: number; canCut: boolean } {
         if (!canCutDuringPrint()) return { proximity: 0, canCut: false };
 
-        const rr = receipt!.getBoundingClientRect();
-
-        // Horizontal distance to receipt
         let distX = 0;
-        if (mouseX < rr.left) distX = rr.left - mouseX;
-        else if (mouseX > rr.right) distX = mouseX - rr.right;
-        if (distX > PROXIMITY_RANGE) return { proximity: 0, canCut: false };
-
         let minDistY = Infinity;
         let insideTearable = false;
 
         if (!tearSystemReady || pieces.length === 0) {
+          const rr = receipt!.getBoundingClientRect();
+
+          // Horizontal distance to receipt
+          if (mouseX < rr.left) distX = rr.left - mouseX;
+          else if (mouseX > rr.right) distX = mouseX - rr.right;
+          if (distX > PROXIMITY_RANGE) return { proximity: 0, canCut: false };
+
           const innerTop = rr.top + CUT_EDGE_SAFETY;
           const innerBottom = rr.bottom - CUT_EDGE_SAFETY;
           if (mouseY >= innerTop && mouseY <= innerBottom) {
@@ -1770,22 +1780,33 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             else minDistY = mouseY - innerBottom;
           }
         } else {
-          const rh = rr.height;
+          // Use each piece's actual bounding rect (accounts for rotation/transforms)
+          distX = Infinity;
           for (const p of pieces) {
-            const vTop = rr.top + (p.top / 100) * rh + p.offsetY;
-            const vBot = rr.top + (p.bottom / 100) * rh + p.offsetY;
-            const innerTop = vTop + CUT_EDGE_SAFETY;
-            const innerBot = vBot - CUT_EDGE_SAFETY;
+            const pieceRect = p.el.getBoundingClientRect();
+
+            let pdx = 0;
+            if (mouseX < pieceRect.left) pdx = pieceRect.left - mouseX;
+            else if (mouseX > pieceRect.right) pdx = mouseX - pieceRect.right;
+            if (pdx > PROXIMITY_RANGE) continue;
+
+            const innerTop = pieceRect.top + CUT_EDGE_SAFETY;
+            const innerBot = pieceRect.bottom - CUT_EDGE_SAFETY;
             if (mouseY >= innerTop && mouseY <= innerBot) {
               insideTearable = true;
               minDistY = 0;
+              distX = pdx;
               break;
             }
             let d = Infinity;
             if (mouseY < innerTop) d = innerTop - mouseY;
             else if (mouseY > innerBot) d = mouseY - innerBot;
-            minDistY = Math.min(minDistY, d);
+            if (d < minDistY) {
+              minDistY = d;
+              distX = pdx;
+            }
           }
+          if (distX === Infinity) distX = PROXIMITY_RANGE + 1;
         }
 
         const totalDist = Math.sqrt(distX * distX + minDistY * minDistY);
