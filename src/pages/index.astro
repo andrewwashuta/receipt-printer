@@ -1072,16 +1072,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           });
         }
 
-        // Web Audio API for zero-latency tear playback (mobile + desktop)
-        this._initWebAudio();
+        // Web Audio API for zero-latency tear playback (desktop only)
+        if (this.useWebAudio) this._initWebAudio();
 
         // Unlock on first user interaction (autoplay policy)
         const unlock = () => {
           if (this._unlocked) return;
           this._unlocked = true;
 
-          if (this.audioCtx?.state === 'suspended') {
+          if (this.useWebAudio && this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
+          }
+
+          if (this.isMobileAudio) {
+            this.mobileTearPools.forEach((pool) => pool.forEach((audio) => audio.load()));
           }
 
           const warmups = this.isMobileAudio
@@ -1156,22 +1160,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           const mobilePool = this.mobileTearPools[tearIdx];
           if (!mobilePool || mobilePool.length === 0) return;
 
+          let selected = mobilePool[0];
           for (let i = 0; i < mobilePool.length; i++) {
-            const audio = mobilePool[i];
-            if (audio.paused || audio.ended || audio.currentTime > 0.3) {
-              audio.volume = 0.5;
-              audio.pause();
-              try { audio.currentTime = 0; } catch {}
-              audio.play().catch(() => {});
-              return;
+            const candidate = mobilePool[i];
+            if (candidate.paused || candidate.ended || candidate.currentTime > 0.3) {
+              selected = candidate;
+              break;
             }
           }
 
-          const audio = mobilePool[0];
-          audio.volume = 0.5;
-          audio.pause();
-          try { audio.currentTime = 0; } catch {}
-          audio.play().catch(() => {});
+          selected.volume = 0.5;
+          selected.pause();
+          try { selected.currentTime = 0; } catch {}
+          selected.play().catch(() => {
+            // If first attempt races with mobile autoplay gating, retry once after load().
+            selected.load();
+            selected.play().catch(() => {});
+          });
           return;
         }
 
