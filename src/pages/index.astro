@@ -1030,7 +1030,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private readonly tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
       private readonly mobileTearFile = '/sounds/Tear-1.mp3';
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-      private readonly useWebAudio = !this.isMobileAudio;
+      private readonly useWebAudio = true;
       private desktopTearPools: HTMLAudioElement[][] = [[], [], [], []];
       private mobileTearAudio: HTMLAudioElement | null = null;
       private tearSequenceIdx: number = 0;
@@ -1066,33 +1066,36 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           });
         }
 
-        // Web Audio API for zero-latency tear playback
-        if (this.useWebAudio) this._initWebAudio();
+        // Web Audio API for zero-latency tear playback (mobile + desktop)
+        this._initWebAudio();
 
         // Unlock on first user interaction (autoplay policy)
         const unlock = () => {
           if (this._unlocked) return;
           this._unlocked = true;
 
-          if (this.useWebAudio && this.audioCtx?.state === 'suspended') {
+          if (this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          const warmups = this.isMobileAudio
-            ? ([this.mobileTearAudio].filter(Boolean) as HTMLAudioElement[])
-            : this.desktopTearPools.map((pool) => pool[0]).filter(Boolean) as HTMLAudioElement[];
-          warmups.forEach((warmup) => {
-            warmup.muted = true;
-            warmup.play()
-              .then(() => {
-                warmup.pause();
-                warmup.currentTime = 0;
-                warmup.muted = false;
-              })
-              .catch(() => {
-                warmup.muted = false;
-              });
-          });
+          // Warm up HTMLAudioElements on desktop only.
+          // On mobile, skip this — the muted play/pause warmup races with
+          // tearSound() during the same touch gesture, causing silent playback.
+          if (!this.isMobileAudio) {
+            const warmups = this.desktopTearPools.map((pool) => pool[0]).filter(Boolean) as HTMLAudioElement[];
+            warmups.forEach((warmup) => {
+              warmup.muted = true;
+              warmup.play()
+                .then(() => {
+                  warmup.pause();
+                  warmup.currentTime = 0;
+                  warmup.muted = false;
+                })
+                .catch(() => {
+                  warmup.muted = false;
+                });
+            });
+          }
 
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
@@ -1117,7 +1120,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       private _decodeTearBuffers() {
         if (!this.audioCtx || this.audioCtx.state !== 'running') return;
-        this.tearFiles.forEach((file, idx) => {
+        const files: [string, number][] = this.isMobileAudio
+          ? [[this.mobileTearFile, 0]]
+          : this.tearFiles.map((f, i) => [f, i]);
+        files.forEach(([file, idx]) => {
           if (this.tearBuffers[idx] || this.decodeRequested[idx]) return;
           this.decodeRequested[idx] = true;
           fetch(file)
@@ -1143,16 +1149,29 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!this._enabled) return;
 
         if (this.isMobileAudio) {
+          // Web Audio: fresh BufferSourceNode per play, no state conflicts
+          if (this.audioCtx && this.audioCtx.state === 'running') {
+            const buffer = this.tearBuffers[0];
+            if (buffer) {
+              const source = this.audioCtx.createBufferSource();
+              source.buffer = buffer;
+              const gain = this.audioCtx.createGain();
+              gain.gain.value = 0.5;
+              source.connect(gain);
+              gain.connect(this.audioCtx.destination);
+              source.start(0);
+              return;
+            }
+          }
+          if (this.audioCtx && this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
+          }
+          // Fallback: HTMLAudioElement (before buffer is decoded)
           if (!this.mobileTearAudio) return;
           const audio = this.mobileTearAudio;
           audio.volume = 0.5;
-          if (audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
-            audio.load();
-          }
           audio.pause();
-          try {
-            audio.currentTime = 0;
-          } catch {}
+          try { audio.currentTime = 0; } catch {}
           audio.play().catch(() => {});
           return;
         }
