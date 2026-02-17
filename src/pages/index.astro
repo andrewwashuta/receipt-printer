@@ -1032,6 +1032,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
       private readonly useWebAudio = !this.isMobileAudio;
       private desktopTearPools: HTMLAudioElement[][] = [[], [], [], []];
+      private readonly mobilePoolSize: number = 6;
+      private readonly maxMobilePoolSize: number = 10;
+      private readonly desktopPoolSize: number = 2;
       private mobileTearPools: HTMLAudioElement[][] = [[], []];
       private mobileTearSequenceIdx: number = 0;
       private tearSequenceIdx: number = 0;
@@ -1048,7 +1051,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
         if (this.isMobileAudio) {
           this.mobileTearFiles.forEach((file, tearIdx) => {
-            for (let copy = 0; copy < 2; copy++) {
+            for (let copy = 0; copy < this.mobilePoolSize; copy++) {
               const a = new Audio(file);
               a.preload = 'auto';
               a.playsInline = true;
@@ -1061,7 +1064,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         } else {
           // Create 2 copies of each tear sound for overlapping desktop playback
           this.tearFiles.forEach((file, tearIdx) => {
-            for (let copy = 0; copy < 2; copy++) {
+            for (let copy = 0; copy < this.desktopPoolSize; copy++) {
               const a = new Audio(file);
               a.preload = 'auto';
               a.playsInline = true;
@@ -1160,23 +1163,28 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           const mobilePool = this.mobileTearPools[tearIdx];
           if (!mobilePool || mobilePool.length === 0) return;
 
-          let selected = mobilePool[0];
-          for (let i = 0; i < mobilePool.length; i++) {
-            const candidate = mobilePool[i];
-            if (candidate.paused || candidate.ended || candidate.currentTime > 0.3) {
-              selected = candidate;
-              break;
-            }
+          let selected = mobilePool.find((candidate) => candidate.paused || candidate.ended) || null;
+
+          if (!selected && mobilePool.length < this.maxMobilePoolSize) {
+            selected = new Audio(this.mobileTearFiles[tearIdx]);
+            selected.preload = 'auto';
+            selected.playsInline = true;
+            selected.setAttribute('webkit-playsinline', 'true');
+            selected.volume = 0.5;
+            selected.load();
+            mobilePool.push(selected);
+          }
+
+          if (!selected) {
+            selected = mobilePool[0];
+            selected.pause();
+            try { selected.currentTime = 0; } catch {}
+          } else {
+            try { selected.currentTime = 0; } catch {}
           }
 
           selected.volume = 0.5;
-          selected.pause();
-          try { selected.currentTime = 0; } catch {}
-          selected.play().catch(() => {
-            // If first attempt races with mobile autoplay gating, retry once after load().
-            selected.load();
-            selected.play().catch(() => {});
-          });
+          selected.play().catch(() => {});
           return;
         }
 
