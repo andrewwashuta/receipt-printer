@@ -659,7 +659,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   @media (max-width: 600px) {
     .toolbar {
       top: auto;
-      bottom: 20px;
+      bottom: calc(20px + env(safe-area-inset-bottom));
       right: auto;
       left: 50%;
       transform: translateX(-50%);
@@ -1045,17 +1045,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          // Warm up one HTML5 Audio element for immediate fallback on mobile
-          const warmup = this.tearPool[0];
-          warmup.volume = 0;
-          warmup.play().then(() => { warmup.pause(); warmup.currentTime = 0; warmup.volume = 0.5; }).catch(() => {});
+          this.tearPool.forEach(a => {
+            a.volume = 0;
+            a.play().then(() => { a.pause(); a.currentTime = 0; a.volume = 0.5; }).catch(() => {});
+          });
 
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
+          document.removeEventListener('pointerdown', unlock);
           document.removeEventListener('keydown', unlock);
         };
         document.addEventListener('click', unlock);
         document.addEventListener('touchstart', unlock);
+        document.addEventListener('pointerdown', unlock);
         document.addEventListener('keydown', unlock);
       }
 
@@ -1094,7 +1096,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!this._enabled) return;
 
         if (this.audioCtx && this.audioCtx.state === 'suspended') {
-          this.audioCtx.resume().catch(() => {});
+          this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
         }
 
         if (this.audioCtx && this.audioCtx.state === 'running') {
@@ -1685,6 +1687,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let washiStartY = 0;
       let washiCurrentX = 0;
       let washiCurrentY = 0;
+      let washiStartScrollX = 0;
+      let washiStartScrollY = 0;
       const usePointerWashi = typeof window !== 'undefined' && 'PointerEvent' in window;
       let activeWashiPointerId: number | null = null;
       const MIN_WASHI_STROKE = 10;
@@ -1740,8 +1744,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function updateWashiPreview() {
-        const dx = washiCurrentX - washiStartX;
-        const dy = washiCurrentY - washiStartY;
+        const scrollDX = window.scrollX - washiStartScrollX;
+        const scrollDY = window.scrollY - washiStartScrollY;
+        const adjStartX = washiStartX - scrollDX;
+        const adjStartY = washiStartY - scrollDY;
+        const dx = washiCurrentX - adjStartX;
+        const dy = washiCurrentY - adjStartY;
         const len = Math.hypot(dx, dy);
         if (len < 2) {
           hideWashiPreview();
@@ -1749,8 +1757,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
 
         const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        const midX = (washiStartX + washiCurrentX) / 2;
-        const midY = (washiStartY + washiCurrentY) / 2;
+        const midX = (adjStartX + washiCurrentX) / 2;
+        const midY = (adjStartY + washiCurrentY) / 2;
 
         washiPreview.style.display = 'block';
         washiPreview.style.left = `${midX}px`;
@@ -2084,7 +2092,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         strip.style.left = `${centerXPct}%`;
         strip.style.top = `${seamYPct.toFixed(3)}%`;
         strip.style.width = `${widthPct.toFixed(3)}%`;
-        strip.style.height = `${(18 + Math.random() * 8).toFixed(2)}px`;
+        strip.style.height = '20px';
         strip.style.transform = `translate(-50%, -50%) rotate(${relativeAngle.toFixed(3)}deg)`;
         strip.style.clipPath = createWashiClipPath();
         strip.style.setProperty('--washi-alpha', (0.80 + Math.random() * 0.12).toFixed(2));
@@ -2108,7 +2116,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         strip.style.left = `${midX.toFixed(2)}px`;
         strip.style.top = `${midY.toFixed(2)}px`;
         strip.style.width = `${(len + 12).toFixed(2)}px`;
-        strip.style.height = `${(18 + Math.random() * 8).toFixed(2)}px`;
+        strip.style.height = '20px';
         strip.style.transform = `translate(-50%, -50%) rotate(${angle.toFixed(3)}deg)`;
         strip.style.clipPath = createWashiClipPath();
         strip.style.setProperty('--washi-alpha', (0.80 + Math.random() * 0.12).toFixed(2));
@@ -2561,8 +2569,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         washiStartY = clientY;
         washiCurrentX = clientX;
         washiCurrentY = clientY;
+        washiStartScrollX = window.scrollX;
+        washiStartScrollY = window.scrollY;
         washiPreviewClip = createWashiClipPath();
         washiPreview.style.setProperty('--washi-alpha', (0.82 + Math.random() * 0.10).toFixed(2));
+        document.documentElement.style.touchAction = 'none';
+        navigator.vibrate?.(10);
         updateWashiPreview();
       }
 
@@ -2575,9 +2587,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function endWashiStroke() {
         if (!washiDrawing) return;
+        document.documentElement.style.touchAction = '';
+        const scrollDX = window.scrollX - washiStartScrollX;
+        const scrollDY = window.scrollY - washiStartScrollY;
         const stroke: TapeStroke = {
-          startX: washiStartX,
-          startY: washiStartY,
+          startX: washiStartX - scrollDX,
+          startY: washiStartY - scrollDY,
           endX: washiCurrentX,
           endY: washiCurrentY,
         };
@@ -2818,8 +2833,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         startTear(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: true });
       document.addEventListener('touchmove', (e: TouchEvent) => {
-        if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true) && e.touches.length > 0) {
-          updateWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
+        if (washiMode && washiDrawing) {
+          if (activeWashiPointerId === null && e.touches.length > 0) {
+            updateWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
+          }
           e.preventDefault();
           return;
         }
