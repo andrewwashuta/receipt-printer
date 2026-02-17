@@ -1027,13 +1027,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     //    Enhanced: Web Audio API for zero-latency tear playback
     // ========================================
     class ReceiptSounds {
-      private readonly tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3'];
+      private readonly desktopTearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
+      private readonly mobileTearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3'];
+      private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
       private readonly fallbackPoolSize = 4;
-      private fallbackPools: HTMLAudioElement[][] = [[], []];
+      private fallbackPools: HTMLAudioElement[][] = [[], [], [], []];
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
-      private tearBuffers: (AudioBuffer | null)[] = [null, null];
-      private decodeRequested: boolean[] = [false, false];
+      private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
+      private decodeRequested: boolean[] = [false, false, false, false];
       private tearSequenceIdx: number = 0;
       private _unlocked: boolean = false;
 
@@ -1041,8 +1043,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const saved = localStorage.getItem('aw-sound-enabled');
         if (saved !== null) this._enabled = saved === 'true';
 
-        // Always prepare HTMLAudio fallback pool; useful before decode and on unsupported browsers.
-        this.tearFiles.forEach((file, idx) => {
+        // Prepare fallback HTMLAudio pools for all tear files.
+        this.desktopTearFiles.forEach((file, idx) => {
           for (let copy = 0; copy < this.fallbackPoolSize; copy++) {
             const a = new Audio(file);
             a.preload = 'auto';
@@ -1066,8 +1068,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this._decodeTearBuffers();
           }
 
-          // Ensure both files are requested as soon as user interacts.
-          this.fallbackPools.forEach((pool) => pool.forEach((audio) => audio.load()));
+          // Request active files as soon as there is user interaction.
+          this._activeTearIndices().forEach((idx) => {
+            this.fallbackPools[idx].forEach((audio) => audio.load());
+          });
 
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
@@ -1079,6 +1083,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         document.addEventListener('touchstart', unlock);
         document.addEventListener('pointerdown', unlock);
         document.addEventListener('keydown', unlock);
+      }
+
+      private _activeTearIndices(): number[] {
+        return this.isMobileAudio ? [0, 1] : [0, 1, 2, 3];
       }
 
       private _initWebAudio() {
@@ -1095,10 +1103,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       private _decodeTearBuffers() {
         if (!this.audioCtx || this.audioCtx.state !== 'running') return;
-        this.tearFiles.forEach((file, idx) => {
+        this._activeTearIndices().forEach((idx) => {
           if (this.tearBuffers[idx] || this.decodeRequested[idx]) return;
           this.decodeRequested[idx] = true;
-          fetch(file)
+          fetch(this.desktopTearFiles[idx])
             .then(r => r.arrayBuffer())
             .then(buf => this.audioCtx!.decodeAudioData(buf))
             .then(decoded => { this.tearBuffers[idx] = decoded; })
@@ -1123,17 +1131,25 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return true;
       }
 
-      private _playFromFallbackPool(tearIdx: number) {
+      private _playFromFallbackPool(tearIdx: number, allowAlternate = true) {
         const pool = this.fallbackPools[tearIdx];
         if (!pool || pool.length === 0) return;
+
         let audio = pool.find((candidate) => candidate.paused || candidate.ended) || null;
         if (!audio) {
           audio = pool[0];
           audio.pause();
         }
+
         try { audio.currentTime = 0; } catch {}
         audio.volume = 0.5;
-        audio.play().catch(() => {});
+        audio.play().catch(() => {
+          if (!allowAlternate) return;
+          const active = this._activeTearIndices();
+          const pos = active.indexOf(tearIdx);
+          const altIdx = active[(pos + 1) % active.length];
+          if (altIdx !== tearIdx) this._playFromFallbackPool(altIdx, false);
+        });
       }
 
       get isEnabled() { return this._enabled; }
@@ -1147,7 +1163,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       tearSound() {
         if (!this._enabled) return;
 
-        const tearIdx = this.tearSequenceIdx % this.tearFiles.length;
+        const active = this._activeTearIndices();
+        const sequencePos = this.tearSequenceIdx % active.length;
+        const tearIdx = active[sequencePos];
         this.tearSequenceIdx++;
 
         if (this.audioCtx && this.audioCtx.state === 'suspended') {
