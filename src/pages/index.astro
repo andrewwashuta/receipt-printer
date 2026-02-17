@@ -1029,10 +1029,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     class ReceiptSounds {
       private readonly tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-      private readonly useWebAudio = !this.isMobileAudio;
+      private readonly useWebAudio = true;
       private tearPool: HTMLAudioElement[] = [];
-      private mobileTearPool: HTMLAudioElement[] = [];
-      private mobileLastIdx: number = -1;
+      private mobileTearFallback: HTMLAudioElement | null = null;
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
       private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
@@ -1045,14 +1044,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           this._enabled = saved === 'true';
         }
         if (this.isMobileAudio) {
-          this.tearFiles.forEach(file => {
-            const a = new Audio(file);
-            a.preload = 'auto';
-            a.playsInline = true;
-            a.volume = 0.5;
-            a.load();
-            this.mobileTearPool.push(a);
-          });
+          const fallback = new Audio(this.tearFiles[0]);
+          fallback.preload = 'auto';
+          fallback.playsInline = true;
+          fallback.volume = 0.5;
+          fallback.load();
+          this.mobileTearFallback = fallback;
         } else {
           // Create 2 copies of each tear sound for overlapping desktop playback
           this.tearFiles.forEach(file => {
@@ -1079,7 +1076,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          const warmups = this.isMobileAudio ? this.mobileTearPool : [this.tearPool[0]].filter(Boolean) as HTMLAudioElement[];
+          const warmups = this.isMobileAudio
+            ? ([this.mobileTearFallback].filter(Boolean) as HTMLAudioElement[])
+            : ([this.tearPool[0]].filter(Boolean) as HTMLAudioElement[]);
           warmups.forEach((warmup) => {
             warmup.muted = true;
             warmup.play()
@@ -1161,23 +1160,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
 
         if (this.isMobileAudio) {
-          if (this.mobileTearPool.length === 0) return;
-          let idx = Math.floor(Math.random() * this.mobileTearPool.length);
-          if (this.mobileTearPool.length > 1 && idx === this.mobileLastIdx) {
-            idx = (idx + 1) % this.mobileTearPool.length;
-          }
-          this.mobileLastIdx = idx;
-          const primary = this.mobileTearPool[idx];
-          primary.pause();
-          primary.currentTime = 0;
-          primary.volume = 0.5;
-          primary.play().catch(() => {
-            const backup = this.mobileTearPool[(idx + 1) % this.mobileTearPool.length];
-            backup.pause();
-            backup.currentTime = 0;
-            backup.volume = 0.5;
-            backup.play().catch(() => {});
-          });
+          if (!this.mobileTearFallback) return;
+          this.mobileTearFallback.pause();
+          this.mobileTearFallback.currentTime = 0;
+          this.mobileTearFallback.volume = 0.5;
+          this.mobileTearFallback.play().catch(() => {});
           return;
         }
 
