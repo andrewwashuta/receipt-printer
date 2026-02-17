@@ -1029,7 +1029,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     class ReceiptSounds {
       private readonly tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-      private readonly useWebAudio = true;
+      private readonly useWebAudio = !this.isMobileAudio;
       private tearPool: HTMLAudioElement[] = [];
       private mobileFallbackPool: HTMLAudioElement[] = [];
       private mobileFallbackCursor: number = 0;
@@ -1046,13 +1046,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           this._enabled = saved === 'true';
         }
         if (this.isMobileAudio) {
-          for (let i = 0; i < 3; i++) {
-            const fallback = new Audio(this.tearFiles[0]);
-            fallback.preload = 'auto';
-            fallback.playsInline = true;
-            fallback.volume = 0.5;
-            fallback.load();
-            this.mobileFallbackPool.push(fallback);
+          const mobileTearFiles = [this.tearFiles[0], this.tearFiles[1]];
+          for (let copy = 0; copy < 2; copy++) {
+            mobileTearFiles.forEach((file) => {
+              const fallback = new Audio(file);
+              fallback.preload = 'auto';
+              fallback.playsInline = true;
+              fallback.volume = 0.5;
+              fallback.load();
+              this.mobileFallbackPool.push(fallback);
+            });
           }
         } else {
           // Create 2 copies of each tear sound for overlapping desktop playback
