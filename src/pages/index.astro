@@ -1037,6 +1037,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
       private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
+      private rawTearData: (ArrayBuffer | null)[] = [null, null, null, null];
       private decodeRequested: boolean[] = [false, false, false, false];
       private _unlocked: boolean = false;
 
@@ -1067,6 +1068,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             }
           });
         }
+
+        // Pre-fetch MP3 data immediately (no AudioContext needed) so decoding
+        // is near-instant once the context unlocks on first user interaction.
+        this._prefetchTearFiles();
 
         // Web Audio API for zero-latency tear playback (mobile + desktop)
         this._initWebAudio();
@@ -1110,6 +1115,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         document.addEventListener('keydown', unlock);
       }
 
+      private _prefetchTearFiles() {
+        const files = this.isMobileAudio ? this.mobileTearFiles : this.tearFiles;
+        files.forEach((file, idx) => {
+          fetch(file)
+            .then(r => r.arrayBuffer())
+            .then(buf => {
+              this.rawTearData[idx] = buf;
+              // If AudioContext is already running, decode immediately
+              this._decodeTearBuffers();
+            })
+            .catch(() => {});
+        });
+      }
+
       private _initWebAudio() {
         try {
           this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -1122,21 +1141,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       private _decodeTearBuffers() {
         if (!this.audioCtx || this.audioCtx.state !== 'running') return;
-        const files: [string, number][] = this.isMobileAudio
-          ? this.mobileTearFiles.map((f, i) => [f, i])
-          : this.tearFiles.map((f, i) => [f, i]);
-        files.forEach(([file, idx]) => {
-          if (this.tearBuffers[idx] || this.decodeRequested[idx]) return;
+        const count = this.isMobileAudio ? this.mobileTearFiles.length : this.tearFiles.length;
+        for (let idx = 0; idx < count; idx++) {
+          if (this.tearBuffers[idx] || this.decodeRequested[idx]) continue;
+          const raw = this.rawTearData[idx];
+          if (!raw) continue; // not fetched yet
           this.decodeRequested[idx] = true;
-          fetch(file)
-            .then(r => r.arrayBuffer())
-            .then(buf => this.audioCtx!.decodeAudioData(buf))
+          this.audioCtx.decodeAudioData(raw)
             .then(decoded => { this.tearBuffers[idx] = decoded; })
             .catch(() => {})
             .finally(() => {
               if (!this.tearBuffers[idx]) this.decodeRequested[idx] = false;
             });
-        });
+        }
       }
 
       get isEnabled() { return this._enabled; }
