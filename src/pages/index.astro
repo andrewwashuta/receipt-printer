@@ -1033,7 +1033,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private readonly useWebAudio = !this.isMobileAudio;
       private desktopTearPools: HTMLAudioElement[][] = [[], [], [], []];
       private mobileTearAudio: HTMLAudioElement | null = null;
-      private mobileLastPlayAt = 0;
       private tearSequenceIdx: number = 0;
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
@@ -1145,14 +1144,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         if (this.isMobileAudio) {
           if (!this.mobileTearAudio) return;
-          const now = performance.now();
-          if (now - this.mobileLastPlayAt < 45) return;
-          this.mobileLastPlayAt = now;
           const audio = this.mobileTearAudio;
           audio.volume = 0.5;
           if (audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
             audio.load();
           }
+          audio.pause();
           try {
             audio.currentTime = 0;
           } catch {}
