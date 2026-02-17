@@ -950,10 +950,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
   }
 
-  :global(body.washi-mode) {
-    touch-action: none;
-  }
-
   /* ============================================ */
   /* RESPONSIVE                                    */
   /* ============================================ */
@@ -1021,7 +1017,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private _unlocked: boolean = false;
 
       constructor() {
-        // Restore saved sound preference
         const saved = localStorage.getItem('aw-sound-enabled');
         if (saved !== null) {
           this._enabled = saved === 'true';
@@ -1067,6 +1062,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private _initWebAudio() {
         try {
           this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          this.audioCtx.addEventListener('statechange', () => {
+            if (this.audioCtx?.state === 'running') this._decodeTearBuffers();
+          });
           this._decodeTearBuffers();
         } catch(e) {}
       }
@@ -1095,7 +1093,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       tearSound() {
         if (!this._enabled) return;
 
-        // Try Web Audio API first (zero-latency, already decoded)
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume().catch(() => {});
+        }
+
         if (this.audioCtx && this.audioCtx.state === 'running') {
           const available = this.tearBuffers.filter((b): b is AudioBuffer => b !== null);
           if (available.length > 0) {
@@ -1111,23 +1112,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }
         }
 
-        // If Web Audio context is suspended, try resuming for next time
-        if (this.audioCtx && this.audioCtx.state === 'suspended') {
-          this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
-        }
-
-        // HTML5 Audio fallback: find a tear sound that isn't currently playing
         const startIdx = Math.floor(Math.random() * this.tearPool.length);
         for (let i = 0; i < this.tearPool.length; i++) {
           const audio = this.tearPool[(startIdx + i) % this.tearPool.length];
-          if (audio.paused || audio.ended) {
+          if (audio.paused || audio.ended || audio.currentTime > 0.3) {
             audio.currentTime = 0;
             audio.volume = 0.5;
             audio.play().catch(() => {});
             return;
           }
         }
-        // All busy — force the first one to restart
         const audio = this.tearPool[startIdx];
         audio.currentTime = 0;
         audio.volume = 0.5;
@@ -1146,7 +1140,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const tapeIcon = document.getElementById('tapeIcon') as HTMLElement | null;
     const clearTapeBtn = document.getElementById('clearTape') as HTMLButtonElement | null;
 
-    // Set initial state from saved preference
     const initialEnabled = sounds.isEnabled;
     soundIcon.textContent = initialEnabled ? '\u{1F50A}' : '\u{1F507}';
     soundToggle.classList.toggle('active', initialEnabled);
@@ -1488,7 +1481,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       printIndex++;
 
-      // Show cut hint once early cutting is available
       if (printIndex === MIN_LINES_BEFORE_CUT) {
         setTimeout(showCutHint, 800);
       }
@@ -1561,7 +1553,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Remove any remaining cursor
       allPrintables.forEach(el => el.classList.remove('printing'));
 
-      // Mirror cursor removal to clones
       for (let i = 0; i < allPrintables.length; i++) {
         mirrorPrintState?.(i, [], ['printing']);
       }
@@ -1572,7 +1563,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (isPrinting) return;
       isPrinting = true;
 
-      // Small delay for feel, then begin line-by-line animation
       printTimeout = setTimeout(printNextLine, 200);
     }
 
@@ -1868,8 +1858,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       // ---- Canvas-generated paper fiber noise textures ----
-      // Generates a unique, high-contrast noise strip that looks like
-      // torn thermal paper fibers: irregular dots, streaks, and grain
 
       function generateFiberTexture(width: number, height: number, seed: number): string {
         const c = document.createElement('canvas');
@@ -1877,7 +1865,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         c.height = height;
         const ctx = c.getContext('2d')!;
 
-        // Start with transparent
         ctx.clearRect(0, 0, width, height);
 
         // Seeded pseudo-random for reproducibility within a tear
@@ -2050,9 +2037,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           transition: 'none',
         });
 
-        // Add paper-fiber grain texture at torn edges
-        // 'bottom' side = this piece's torn top edge (fibers fade downward into paper)
-        // 'top' side = this piece's torn bottom edge (fibers fade upward into paper)
         if (topEdge) addEdgeGrain(clone, top, 'bottom');
         if (bottomEdge) addEdgeGrain(clone, bottom, 'top');
 
@@ -2730,7 +2714,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           desktopTearDecided = false;
           pageCutLine.style.width = '0';
           pageCutLine.style.display = 'none';
-          // Keep cursor small briefly after release
           updateCursorVisual(0, false, false);
           setTimeout(() => {
             if (!desktopTearing && !washiMode) checkEdgeProximity(dotTargetX, dotTargetY);
