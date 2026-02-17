@@ -659,7 +659,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   @media (max-width: 600px) {
     .toolbar {
       top: auto;
-      bottom: calc(20px + env(safe-area-inset-bottom));
+      bottom: calc(20px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       right: auto;
       left: 50%;
       transform: translateX(-50%);
@@ -804,17 +804,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   :global(.tape-seam) {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: -1px;
+    bottom: 0;
+    left: -1px;
     z-index: 122;
     pointer-events: none;
     background:
       linear-gradient(
         90deg,
-        transparent 0%,
+        rgba(85, 66, 44, 0.2) 0%,
         rgba(85, 66, 44, 0.34) 20%,
         rgba(80, 64, 42, 0.44) 50%,
         rgba(85, 66, 44, 0.34) 80%,
-        transparent 100%
+        rgba(85, 66, 44, 0.2) 100%
       );
     mix-blend-mode: multiply;
     opacity: 0.75;
@@ -865,7 +868,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: calc(72px + env(safe-area-inset-bottom));
+    bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
     font-family: var(--font-receipt);
     font-size: 14px;
     color: rgba(245, 240, 232, 0.5);
@@ -1027,6 +1030,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           for (let copy = 0; copy < 2; copy++) {
             const a = new Audio(file);
             a.preload = 'auto';
+            a.playsInline = true;
             a.volume = 0.5;
             a.load();
             this.tearPool.push(a);
@@ -1045,10 +1049,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          this.tearPool.forEach(a => {
-            a.volume = 0;
-            a.play().then(() => { a.pause(); a.currentTime = 0; a.volume = 0.5; }).catch(() => {});
-          });
+          const warmup = this.tearPool[0];
+          if (warmup) {
+            warmup.muted = true;
+            warmup.play()
+              .then(() => {
+                warmup.pause();
+                warmup.currentTime = 0;
+                warmup.muted = false;
+              })
+              .catch(() => {
+                warmup.muted = false;
+              });
+          }
 
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
@@ -1162,6 +1175,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     function clearAllTape() {
       document.querySelectorAll('.washi-strip').forEach(el => el.remove());
     }
+
+    const viewport = window.visualViewport;
+    const syncViewportBottomOffset = () => {
+      if (!window.matchMedia('(max-width: 600px)').matches || !viewport) {
+        document.documentElement.style.setProperty('--vv-bottom-offset', '0px');
+        return;
+      }
+      const viewportBottom = viewport.offsetTop + viewport.height;
+      const hiddenUiOffset = Math.max(0, window.innerHeight - viewportBottom);
+      document.documentElement.style.setProperty('--vv-bottom-offset', `${hiddenUiOffset.toFixed(2)}px`);
+    };
+    syncViewportBottomOffset();
+    window.addEventListener('resize', syncViewportBottomOffset, { passive: true });
+    window.addEventListener('orientationchange', syncViewportBottomOffset, { passive: true });
+    viewport?.addEventListener('resize', syncViewportBottomOffset);
+    viewport?.addEventListener('scroll', syncViewportBottomOffset);
 
     function flashButton(btn: HTMLElement | null) {
       if (!btn) return;
@@ -2053,7 +2082,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function seamClipPath(edge: JaggedEdge, basePct: number): string {
-        const halfThicknessPx = 1.0;
+        const halfThicknessPx = 0.5;
         const topPoints: string[] = [];
         const bottomPoints: string[] = [];
         for (let i = 0; i < edge.length; i++) {
@@ -2574,7 +2603,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         washiPreviewClip = createWashiClipPath();
         washiPreview.style.setProperty('--washi-alpha', (0.82 + Math.random() * 0.10).toFixed(2));
         document.documentElement.style.touchAction = 'none';
-        navigator.vibrate?.(10);
         updateWashiPreview();
       }
 
