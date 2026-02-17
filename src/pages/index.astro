@@ -1031,7 +1031,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
       private readonly useWebAudio = true;
       private tearPool: HTMLAudioElement[] = [];
-      private mobileTearFallback: HTMLAudioElement | null = null;
+      private mobileFallbackPool: HTMLAudioElement[] = [];
+      private mobileFallbackCursor: number = 0;
+      private readonly mobileFallbackStartOffset = 0.02;
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
       private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
@@ -1044,12 +1046,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           this._enabled = saved === 'true';
         }
         if (this.isMobileAudio) {
-          const fallback = new Audio(this.tearFiles[0]);
-          fallback.preload = 'auto';
-          fallback.playsInline = true;
-          fallback.volume = 0.5;
-          fallback.load();
-          this.mobileTearFallback = fallback;
+          for (let i = 0; i < 3; i++) {
+            const fallback = new Audio(this.tearFiles[0]);
+            fallback.preload = 'auto';
+            fallback.playsInline = true;
+            fallback.volume = 0.5;
+            fallback.load();
+            this.mobileFallbackPool.push(fallback);
+          }
         } else {
           // Create 2 copies of each tear sound for overlapping desktop playback
           this.tearFiles.forEach(file => {
@@ -1077,7 +1081,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }
 
           const warmups = this.isMobileAudio
-            ? ([this.mobileTearFallback].filter(Boolean) as HTMLAudioElement[])
+            ? this.mobileFallbackPool
             : ([this.tearPool[0]].filter(Boolean) as HTMLAudioElement[]);
           warmups.forEach((warmup) => {
             warmup.muted = true;
@@ -1160,11 +1164,28 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
 
         if (this.isMobileAudio) {
-          if (!this.mobileTearFallback) return;
-          this.mobileTearFallback.pause();
-          this.mobileTearFallback.currentTime = 0;
-          this.mobileTearFallback.volume = 0.5;
-          this.mobileTearFallback.play().catch(() => {});
+          if (this.mobileFallbackPool.length === 0) return;
+          const audio = this.mobileFallbackPool[this.mobileFallbackCursor % this.mobileFallbackPool.length];
+          this.mobileFallbackCursor++;
+          audio.volume = 0.5;
+          if (audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+            audio.load();
+          }
+          try {
+            audio.currentTime = this.mobileFallbackStartOffset;
+          } catch {}
+          audio.play().catch(() => {
+            const backup = this.mobileFallbackPool[this.mobileFallbackCursor % this.mobileFallbackPool.length];
+            this.mobileFallbackCursor++;
+            backup.volume = 0.5;
+            if (backup.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+              backup.load();
+            }
+            try {
+              backup.currentTime = this.mobileFallbackStartOffset;
+            } catch {}
+            backup.play().catch(() => {});
+          });
           return;
         }
 
