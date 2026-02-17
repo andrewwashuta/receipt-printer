@@ -15,7 +15,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     </button>
     <button class="toolbar-btn" id="tapeToggle" aria-label="Toggle washi tape" title="Toggle washi tape">
       <span class="toolbar-label">Washi</span>
-      <span class="toolbar-icon" id="tapeIcon">&#x1F48A;</span>
+      <span class="toolbar-icon" id="tapeIcon">&#x270F;</span>
       <span class="toolbar-key">W</span>
     </button>
     <button class="toolbar-btn toolbar-btn--washi-only" id="clearTape" aria-label="Clear tape" title="Clear tape">
@@ -655,6 +655,55 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     color: rgba(245, 240, 232, 0.7);
   }
 
+  @media (max-width: 600px) {
+    .toolbar {
+      top: auto;
+      bottom: 20px;
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: row;
+    }
+
+    .toolbar-btn + .toolbar-btn {
+      margin-top: 0;
+      margin-left: 2px;
+    }
+
+    .toolbar-label {
+      right: auto;
+      top: auto;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      filter: blur(3px);
+    }
+
+    .toolbar-btn:hover .toolbar-label,
+    .toolbar-btn:active .toolbar-label,
+    .toolbar-btn.toolbar-btn--label-show .toolbar-label {
+      transform: translateX(-50%) translateY(0);
+      filter: blur(0);
+      opacity: 1;
+    }
+
+    .toolbar-btn--washi-only {
+      max-height: 36px;
+      max-width: 0;
+      margin-top: 0;
+      margin-left: 0;
+      opacity: 0;
+      transition: max-width 0.25s ease, opacity 0.2s ease, margin-left 0.25s ease;
+    }
+
+    :global(body.washi-mode) .toolbar-btn--washi-only {
+      max-width: 36px;
+      margin-left: 2px;
+      margin-top: 0;
+      opacity: 1;
+    }
+  }
+
   :global(.washi-preview),
   :global(.washi-strip) {
     border: none;
@@ -996,6 +1045,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
+          // Warm up HTML5 Audio pool so fallback works immediately on mobile
+          for (const a of this.tearPool) {
+            a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {});
+          }
+
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
           document.removeEventListener('keydown', unlock);
@@ -1115,14 +1169,27 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       setTimeout(() => btn.classList.remove('toolbar-btn--pressed'), 300);
     }
 
-    soundToggle.addEventListener('click', toggleSound);
+    function showLabelBriefly(btn: HTMLElement | null) {
+      if (!btn) return;
+      btn.classList.add('toolbar-btn--label-show');
+      setTimeout(() => btn.classList.remove('toolbar-btn--label-show'), 1200);
+    }
+
+    soundToggle.addEventListener('click', () => {
+      toggleSound();
+      showLabelBriefly(soundToggle);
+    });
 
     tapeToggle?.addEventListener('click', () => {
       washiMode = !washiMode;
       syncWashiToggle();
+      showLabelBriefly(tapeToggle);
     });
 
-    clearTapeBtn?.addEventListener('click', clearAllTape);
+    clearTapeBtn?.addEventListener('click', () => {
+      clearAllTape();
+      showLabelBriefly(clearTapeBtn);
+    });
 
     syncWashiToggle();
 
@@ -2551,15 +2618,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           e.preventDefault();
         });
 
-        const finishPointerWashi = (e: PointerEvent) => {
+        document.addEventListener('pointerup', (e: PointerEvent) => {
           if (activeWashiPointerId !== e.pointerId) return;
           updateWashiStroke(e.clientX, e.clientY);
           activeWashiPointerId = null;
           endWashiStroke();
           e.preventDefault();
-        };
-        document.addEventListener('pointerup', finishPointerWashi);
-        document.addEventListener('pointercancel', finishPointerWashi);
+        });
+        document.addEventListener('pointercancel', (e: PointerEvent) => {
+          if (activeWashiPointerId !== e.pointerId) return;
+          activeWashiPointerId = null;
+          endWashiStroke();
+        });
       }
 
       // ---- Desktop click-to-tear ----
