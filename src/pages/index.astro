@@ -616,7 +616,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     position: absolute;
     right: calc(100% + 8px);
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) translateX(4px);
     white-space: nowrap;
     font-family: var(--font-receipt);
     font-size: 12px;
@@ -627,11 +627,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     color: rgba(245, 240, 232, 0.7);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.15s;
+    filter: blur(3px);
+    transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
   }
 
   .toolbar-btn:hover .toolbar-label {
     opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    filter: blur(0);
   }
 
   .toolbar-btn--washi-only {
@@ -681,8 +684,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     overflow: hidden;
     pointer-events: none;
     transform-origin: center;
-    mix-blend-mode: multiply;
-    opacity: 0.72;
+    opacity: 0.88;
     filter: saturate(1.2) contrast(1.08);
   }
 
@@ -765,7 +767,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         transparent 100%
       );
     mix-blend-mode: multiply;
-    opacity: 0.6;
+    opacity: 0.75;
   }
 
   /* ============================================ */
@@ -1987,7 +1989,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function seamClipPath(edge: JaggedEdge, basePct: number): string {
-        const halfThicknessPx = 0.5;
+        const halfThicknessPx = 1.0;
         const topPoints: string[] = [];
         const bottomPoints: string[] = [];
         for (let i = 0; i < edge.length; i++) {
@@ -2029,7 +2031,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         strip.style.height = `${(18 + Math.random() * 8).toFixed(2)}px`;
         strip.style.transform = `translate(-50%, -50%) rotate(${relativeAngle.toFixed(3)}deg)`;
         strip.style.clipPath = createWashiClipPath();
-        strip.style.setProperty('--washi-alpha', (0.62 + Math.random() * 0.16).toFixed(2));
+        strip.style.setProperty('--washi-alpha', (0.80 + Math.random() * 0.12).toFixed(2));
         parent.appendChild(strip);
       }
 
@@ -2053,7 +2055,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         strip.style.height = `${(18 + Math.random() * 8).toFixed(2)}px`;
         strip.style.transform = `translate(-50%, -50%) rotate(${angle.toFixed(3)}deg)`;
         strip.style.clipPath = createWashiClipPath();
-        strip.style.setProperty('--washi-alpha', (0.62 + Math.random() * 0.16).toFixed(2));
+        strip.style.setProperty('--washi-alpha', (0.80 + Math.random() * 0.12).toFixed(2));
         washiOverlay.appendChild(strip);
       }
 
