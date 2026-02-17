@@ -52,6 +52,7 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="preload" href="/fonts/GeistPixel-Square.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/MDThermochrome0.4-Regular.woff2" as="font" type="font/woff2" crossorigin>
     
     <title>{pageTitle}</title>
   </head>
@@ -103,6 +104,15 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     font-display: swap;
   }
 
+  /* MD Thermochrome icon font */
+  @font-face {
+    font-family: 'MD Thermochrome';
+    src: url('/fonts/MDThermochrome0.4-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+  }
+
   *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -122,6 +132,7 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
   :root {
     --font-receipt: 'VT323', ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
     --font-pixel: 'Geist Pixel', 'VT323', ui-monospace, monospace;
+    --font-thermo: 'MD Thermochrome', sans-serif;
   }
 
   body {

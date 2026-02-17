@@ -6,10 +6,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 <ReceiptLayout
   description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
 >
-  <!-- Sound Toggle (receipt-aesthetic) -->
-  <button class="sound-toggle active" id="soundToggle" aria-label="Toggle tear sounds" title="Toggle tear sounds">
-    <span class="sound-label" id="soundLabel">[ AUDIO: ON ]</span>
-  </button>
+  <!-- Toolbar -->
+  <div class="toolbar" id="toolbar">
+    <button class="toolbar-btn active" id="soundToggle" aria-label="Toggle sounds" title="Toggle sounds">
+      <span class="toolbar-label">Sound</span>
+      <span class="toolbar-icon" id="soundIcon">&#x1F50A;</span>
+      <span class="toolbar-key">S</span>
+    </button>
+    <button class="toolbar-btn" id="tapeToggle" aria-label="Toggle washi tape" title="Toggle washi tape">
+      <span class="toolbar-label">Washi</span>
+      <span class="toolbar-icon" id="tapeIcon">&#x1F48A;</span>
+      <span class="toolbar-key">W</span>
+    </button>
+    <button class="toolbar-btn toolbar-btn--washi-only" id="clearTape" aria-label="Clear tape" title="Clear tape">
+      <span class="toolbar-label">Clear</span>
+      <span class="toolbar-icon">&#x1F5D1;</span>
+      <span class="toolbar-key">C</span>
+    </button>
+  </div>
 
   <!-- Inverse cursor dot (desktop only) -->
   <div class="cursor-dot" id="cursorDot">
@@ -207,6 +221,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   .receipt-wrapper {
     display: flex;
     justify-content: center;
+    position: relative;
     width: 100%;
     max-width: 100%;
   }
@@ -534,37 +549,223 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   /* ============================================ */
-  /* SOUND TOGGLE                                  */
+  /* TOOLBAR                                        */
   /* ============================================ */
 
-  .sound-toggle {
+  .toolbar {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
     background: rgba(30, 28, 24, 0.85);
     border: 1px solid rgba(245, 240, 232, 0.12);
-    color: rgba(245, 240, 232, 0.5);
-    font-family: var(--font-receipt);
-    font-size: 14px;
-    letter-spacing: 1px;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
-    border-radius: 0;
-    white-space: nowrap;
+    padding: 4px;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
 
-  .sound-toggle.active {
-    color: rgba(245, 240, 232, 0.65);
-    border-color: rgba(245, 240, 232, 0.18);
+  .toolbar-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    color: rgba(245, 240, 232, 0.5);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    padding: 0;
+    margin: 0;
   }
 
-  .sound-toggle:hover {
+  .toolbar-btn + .toolbar-btn {
+    margin-top: 2px;
+  }
+
+  .toolbar-btn.active {
+    color: rgba(244, 236, 215, 0.86);
+    background: rgba(48, 40, 26, 0.88);
+  }
+
+  .toolbar-btn:hover {
     color: rgba(245, 240, 232, 0.7);
-    border-color: rgba(245, 240, 232, 0.2);
+  }
+
+  .toolbar-icon {
+    font-family: var(--font-thermo), sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .toolbar-key {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-family: var(--font-receipt);
+    font-size: 12px;
+    opacity: 0.45;
+    line-height: 1;
+  }
+
+  .toolbar-label {
+    position: absolute;
+    right: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: var(--font-receipt);
+    font-size: 12px;
+    letter-spacing: 1px;
+    background: rgba(30, 28, 24, 0.9);
+    padding: 3px 8px;
+    border: 1px solid rgba(245, 240, 232, 0.12);
+    color: rgba(245, 240, 232, 0.7);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+  }
+
+  .toolbar-btn:hover .toolbar-label {
+    opacity: 1;
+  }
+
+  .toolbar-btn--washi-only {
+    max-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.25s ease, opacity 0.2s ease, margin-top 0.25s ease;
+  }
+
+  :global(body.washi-mode) .toolbar-btn--washi-only {
+    max-height: 36px;
+    margin-top: 2px;
+    opacity: 1;
+  }
+
+  .toolbar-btn--pressed {
+    color: rgba(245, 240, 232, 0.7);
+  }
+
+  :global(.washi-preview),
+  :global(.washi-strip) {
+    border: none;
+    border-radius: 3px;
+    background-color: rgba(236, 236, 236, 0.72);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, calc(var(--washi-alpha, 0.72) * 0.35)) 0%,
+        rgba(230, 230, 230, calc(var(--washi-alpha, 0.72) * 0.25)) 100%
+      ),
+      repeating-conic-gradient(
+        from 0deg,
+        rgba(10, 10, 10, 0.6) 0% 25%,
+        rgba(255, 255, 255, 0.7) 25% 50%
+      );
+    background-size:
+      auto,
+      12px 12px;
+    background-position:
+      0 0,
+      0 0;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.44) inset,
+      0 2px 2px rgba(12, 12, 12, 0.34),
+      0 6px 14px rgba(10, 10, 10, 0.34);
+    overflow: hidden;
+    pointer-events: none;
+    transform-origin: center;
+    mix-blend-mode: multiply;
+    opacity: 0.72;
+    filter: saturate(1.2) contrast(1.08);
+  }
+
+  :global(.washi-preview)::before,
+  :global(.washi-strip)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(8, 8, 8, 0.3) 0,
+        rgba(8, 8, 8, 0.3) 5px,
+        rgba(255, 255, 255, 0) 6px,
+        rgba(255, 255, 255, 0) 12px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.34) 0,
+        rgba(255, 255, 255, 0.34) 5px,
+        rgba(255, 255, 255, 0) 6px,
+        rgba(255, 255, 255, 0) 12px
+      );
+    opacity: 0.5;
+  }
+
+  :global(.washi-preview)::after,
+  :global(.washi-strip)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.24'/%3E%3C/svg%3E");
+    background-size: 120px 120px;
+    opacity: 0.22;
+    mix-blend-mode: multiply;
+  }
+
+  :global(.washi-preview) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    z-index: 360;
+    display: none;
+    min-height: 20px;
+    min-width: 22px;
+  }
+
+  :global(.washi-overlay) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10050;
+  }
+
+  :global(.washi-strip) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10051;
+    min-height: 20px;
+    min-width: 22px;
+  }
+
+  :global(.tape-seam) {
+    position: absolute;
+    inset: 0;
+    z-index: 122;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(85, 66, 44, 0.34) 20%,
+        rgba(80, 64, 42, 0.44) 50%,
+        rgba(85, 66, 44, 0.34) 80%,
+        transparent 100%
+      );
+    mix-blend-mode: multiply;
+    opacity: 0.6;
   }
 
   /* ============================================ */
@@ -691,6 +892,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   @media (pointer: fine) {
     *, *::before, *::after {
       cursor: none !important;
+    }
+    :global(body.washi-mode) *, :global(body.washi-mode) *::before, :global(body.washi-mode) *::after {
+      cursor: crosshair !important;
     }
   }
 
@@ -873,21 +1077,52 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const sounds = new ReceiptSounds();
 
     // ========================================
-    // 2. SOUND TOGGLE BUTTON (receipt aesthetic)
+    // 2. TOP-RIGHT CONTROLS
     // ========================================
     const soundToggle = document.getElementById('soundToggle')!;
-    const soundLabel = document.getElementById('soundLabel')!;
+    const soundIcon = document.getElementById('soundIcon')!;
+    const tapeToggle = document.getElementById('tapeToggle') as HTMLButtonElement | null;
+    const tapeIcon = document.getElementById('tapeIcon') as HTMLElement | null;
+    const clearTapeBtn = document.getElementById('clearTape') as HTMLButtonElement | null;
 
     // Set initial state from saved preference
     const initialEnabled = sounds.isEnabled;
-    soundLabel.textContent = initialEnabled ? '[ AUDIO: ON ]' : '[ AUDIO: OFF ]';
+    soundIcon.textContent = initialEnabled ? '\u{1F50A}' : '\u{1F507}';
     soundToggle.classList.toggle('active', initialEnabled);
+    let washiMode = false;
 
-    soundToggle.addEventListener('click', () => {
+    function syncWashiToggle() {
+      if (!tapeToggle) return;
+      tapeToggle.classList.toggle('active', washiMode);
+      document.body.classList.toggle('washi-mode', washiMode);
+    }
+
+    function toggleSound() {
       const enabled = sounds.toggle();
-      soundLabel.textContent = enabled ? '[ AUDIO: ON ]' : '[ AUDIO: OFF ]';
+      soundIcon.textContent = enabled ? '\u{1F50A}' : '\u{1F507}';
       soundToggle.classList.toggle('active', enabled);
+    }
+
+    function clearAllTape() {
+      document.querySelectorAll('.washi-strip').forEach(el => el.remove());
+    }
+
+    function flashButton(btn: HTMLElement | null) {
+      if (!btn) return;
+      btn.classList.add('toolbar-btn--pressed');
+      setTimeout(() => btn.classList.remove('toolbar-btn--pressed'), 300);
+    }
+
+    soundToggle.addEventListener('click', toggleSound);
+
+    tapeToggle?.addEventListener('click', () => {
+      washiMode = !washiMode;
+      syncWashiToggle();
     });
+
+    clearTapeBtn?.addEventListener('click', clearAllTape);
+
+    syncWashiToggle();
 
     // ========================================
     // 2b. DYNAMIC DATE & ORDER NUMBER
@@ -1372,6 +1607,95 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let tearSystemReady = false;
       let baseRotation = 0;
       let receiptH = 0;
+      const desktopFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+      type TapeStroke = {
+        startX: number;
+        startY: number;
+        endX: number;
+        endY: number;
+      };
+
+      let washiDrawing = false;
+      let washiStartX = 0;
+      let washiStartY = 0;
+      let washiCurrentX = 0;
+      let washiCurrentY = 0;
+      const usePointerWashi = typeof window !== 'undefined' && 'PointerEvent' in window;
+      let activeWashiPointerId: number | null = null;
+      const MIN_WASHI_STROKE = 10;
+      let washiPreviewClip = 'polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%)';
+      const washiPreview = document.createElement('div');
+      washiPreview.className = 'washi-preview';
+      const washiOverlay = document.createElement('div');
+      washiOverlay.className = 'washi-overlay';
+      const receiptWrapper = receipt!.parentElement as HTMLElement;
+      if (getComputedStyle(receiptWrapper).position === 'static') {
+        receiptWrapper.style.position = 'relative';
+      }
+      Object.assign(washiOverlay.style, {
+        position: 'absolute',
+        left: '0',
+        top: '0',
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: '10050',
+      });
+      receiptWrapper.appendChild(washiOverlay);
+      document.body.appendChild(washiPreview);
+
+      function clampPct(v: number, min: number, max: number): number {
+        return Math.max(min, Math.min(max, v));
+      }
+
+      function createWashiClipPath(): string {
+        const segments = 7;
+        let s = Math.floor(Math.random() * 2147483647) || 17;
+        const rand = () => {
+          s = (s * 48271) % 2147483647;
+          return s / 2147483647;
+        };
+
+        const left: string[] = [];
+        const right: string[] = [];
+        for (let i = 0; i <= segments; i++) {
+          const y = (i / segments) * 100;
+          const lx = 1.2 + rand() * 6.5;
+          const rx = 98.8 - rand() * 6.5;
+          left.push(`${lx.toFixed(2)}% ${y.toFixed(2)}%`);
+          right.push(`${rx.toFixed(2)}% ${y.toFixed(2)}%`);
+        }
+        right.reverse();
+        return `polygon(${left.join(', ')}, ${right.join(', ')})`;
+      }
+
+      function hideWashiPreview() {
+        washiPreview.style.display = 'none';
+        washiPreview.style.width = '0';
+      }
+
+      function updateWashiPreview() {
+        const dx = washiCurrentX - washiStartX;
+        const dy = washiCurrentY - washiStartY;
+        const len = Math.hypot(dx, dy);
+        if (len < 2) {
+          hideWashiPreview();
+          return;
+        }
+
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        const midX = (washiStartX + washiCurrentX) / 2;
+        const midY = (washiStartY + washiCurrentY) / 2;
+
+        washiPreview.style.display = 'block';
+        washiPreview.style.left = `${midX}px`;
+        washiPreview.style.top = `${midY}px`;
+        washiPreview.style.width = `${len + 12}px`;
+        washiPreview.style.height = `${20}px`;
+        washiPreview.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+        washiPreview.style.clipPath = washiPreviewClip;
+      }
 
       // Wire up print state mirroring to clone pieces
       mirrorPrintState = (index, addClasses, removeClasses) => {
@@ -1662,6 +1986,304 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return { el: clone, printables };
       }
 
+      function seamClipPath(edge: JaggedEdge, basePct: number): string {
+        const halfThicknessPx = 0.5;
+        const topPoints: string[] = [];
+        const bottomPoints: string[] = [];
+        for (let i = 0; i < edge.length; i++) {
+          const x = (i / (edge.length - 1)) * 100;
+          const topY = basePct + ((edge[i] - halfThicknessPx) / receiptH) * 100;
+          const bottomY = basePct + ((edge[i] + halfThicknessPx) / receiptH) * 100;
+          topPoints.push(`${x.toFixed(2)}% ${topY.toFixed(2)}%`);
+          bottomPoints.push(`${x.toFixed(2)}% ${bottomY.toFixed(2)}%`);
+        }
+        bottomPoints.reverse();
+        return `polygon(${topPoints.join(', ')}, ${bottomPoints.join(', ')})`;
+      }
+
+      function addSeamTrace(parent: HTMLElement, edge: JaggedEdge, seamYPct: number) {
+        const seam = document.createElement('div');
+        seam.className = 'tape-seam';
+        seam.dataset.seamY = seamYPct.toFixed(3);
+        seam.style.clipPath = seamClipPath(edge, seamYPct);
+        parent.appendChild(seam);
+      }
+
+      function addWashiStrip(parent: HTMLElement, stroke: TapeStroke, seamYPct: number, pieceAngleDeg: number) {
+        const rr = receipt!.getBoundingClientRect();
+        if (rr.width < 1 || rr.height < 1) return;
+
+        const startXPct = ((stroke.startX - rr.left) / rr.width) * 100;
+        const endXPct = ((stroke.endX - rr.left) / rr.width) * 100;
+        const centerXPct = clampPct((startXPct + endXPct) / 2, -12, 112);
+        const widthPct = clampPct(Math.abs(endXPct - startXPct) + 14, 22, 110);
+        const rawAngle = Math.atan2(stroke.endY - stroke.startY, stroke.endX - stroke.startX) * (180 / Math.PI);
+        const relativeAngle = rawAngle - pieceAngleDeg;
+
+        const strip = document.createElement('div');
+        strip.className = 'washi-strip';
+        strip.dataset.seamY = seamYPct.toFixed(3);
+        strip.style.left = `${centerXPct}%`;
+        strip.style.top = `${seamYPct.toFixed(3)}%`;
+        strip.style.width = `${widthPct.toFixed(3)}%`;
+        strip.style.height = `${(18 + Math.random() * 8).toFixed(2)}px`;
+        strip.style.transform = `translate(-50%, -50%) rotate(${relativeAngle.toFixed(3)}deg)`;
+        strip.style.clipPath = createWashiClipPath();
+        strip.style.setProperty('--washi-alpha', (0.62 + Math.random() * 0.16).toFixed(2));
+        parent.appendChild(strip);
+      }
+
+      function addFreeWashiStrip(stroke: TapeStroke) {
+        const dx = stroke.endX - stroke.startX;
+        const dy = stroke.endY - stroke.startY;
+        const len = Math.hypot(dx, dy);
+        if (len < 2) return;
+
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        const overlayRect = washiOverlay.getBoundingClientRect();
+        const midX = (stroke.startX + stroke.endX) / 2 - overlayRect.left;
+        const midY = (stroke.startY + stroke.endY) / 2 - overlayRect.top;
+        if (!Number.isFinite(midX) || !Number.isFinite(midY)) return;
+
+        const strip = document.createElement('div');
+        strip.className = 'washi-strip';
+        strip.style.left = `${midX.toFixed(2)}px`;
+        strip.style.top = `${midY.toFixed(2)}px`;
+        strip.style.width = `${(len + 12).toFixed(2)}px`;
+        strip.style.height = `${(18 + Math.random() * 8).toFixed(2)}px`;
+        strip.style.transform = `translate(-50%, -50%) rotate(${angle.toFixed(3)}deg)`;
+        strip.style.clipPath = createWashiClipPath();
+        strip.style.setProperty('--washi-alpha', (0.62 + Math.random() * 0.16).toFixed(2));
+        washiOverlay.appendChild(strip);
+      }
+
+      function pointToSegmentDistance(
+        px: number,
+        py: number,
+        x1: number,
+        y1: number,
+        x2: number,
+        y2: number,
+      ): number {
+        const vx = x2 - x1;
+        const vy = y2 - y1;
+        const wx = px - x1;
+        const wy = py - y1;
+        const c1 = vx * wx + vy * wy;
+        if (c1 <= 0) return Math.hypot(px - x1, py - y1);
+        const c2 = vx * vx + vy * vy;
+        if (c2 <= c1) return Math.hypot(px - x2, py - y2);
+        const b = c1 / c2;
+        const bx = x1 + b * vx;
+        const by = y1 + b * vy;
+        return Math.hypot(px - bx, py - by);
+      }
+
+      function strokeCrossesHorizontalSeam(
+        stroke: TapeStroke,
+        seamY: number,
+        seamLeft: number,
+        seamRight: number,
+      ): boolean {
+        const y1 = stroke.startY;
+        const y2 = stroke.endY;
+        const x1 = stroke.startX;
+        const x2 = stroke.endX;
+        const dy = y2 - y1;
+        if (Math.abs(dy) < 0.001) return false;
+        const t = (seamY - y1) / dy;
+        if (t < 0 || t > 1) return false;
+        const xAtSeam = x1 + (x2 - x1) * t;
+        return xAtSeam >= seamLeft - 26 && xAtSeam <= seamRight + 26;
+      }
+
+      function strokeIntersectsSeamBand(
+        stroke: TapeStroke,
+        seamY: number,
+        seamLeft: number,
+        seamRight: number,
+      ): boolean {
+        const sxMin = Math.min(stroke.startX, stroke.endX);
+        const sxMax = Math.max(stroke.startX, stroke.endX);
+        const syMin = Math.min(stroke.startY, stroke.endY);
+        const syMax = Math.max(stroke.startY, stroke.endY);
+        const bandPadX = 34;
+        const bandPadY = 34;
+
+        const overlapsBandBox =
+          sxMax >= seamLeft - bandPadX &&
+          sxMin <= seamRight + bandPadX &&
+          syMax >= seamY - bandPadY &&
+          syMin <= seamY + bandPadY;
+        if (!overlapsBandBox) return false;
+
+        if (strokeCrossesHorizontalSeam(stroke, seamY, seamLeft, seamRight)) return true;
+
+        const midX = (stroke.startX + stroke.endX) / 2;
+        const midY = (stroke.startY + stroke.endY) / 2;
+        const nearX = midX >= seamLeft - bandPadX && midX <= seamRight + bandPadX;
+        const nearY = Math.abs(midY - seamY) <= bandPadY;
+        return nearX && nearY;
+      }
+
+      function getSeamGeometry(topPiece: TearPiece, bottomPiece: TearPiece) {
+        const rr = receipt!.getBoundingClientRect();
+        const rh = rr.height;
+        const topVisibleBottom = rr.top + (topPiece.bottom / 100) * rh + topPiece.offsetY;
+        const bottomVisibleTop = rr.top + (bottomPiece.top / 100) * rh + bottomPiece.offsetY;
+        return {
+          seamY: (topVisibleBottom + bottomVisibleTop) / 2,
+          seamLeft: rr.left - 20,
+          seamRight: rr.right + 20,
+        };
+      }
+
+      function findSeamIndexForStroke(stroke: TapeStroke): number {
+        if (!tearSystemReady || pieces.length < 2) return -1;
+        const dx = stroke.endX - stroke.startX;
+        const dy = stroke.endY - stroke.startY;
+        const length = Math.hypot(dx, dy);
+        if (length < 10) return -1;
+        const midX = (stroke.startX + stroke.endX) / 2;
+        const midY = (stroke.startY + stroke.endY) / 2;
+
+        let bestIdx = -1;
+        let bestScore = Infinity;
+        for (let i = 0; i < pieces.length - 1; i++) {
+          const topPiece = pieces[i];
+          const bottomPiece = pieces[i + 1];
+
+          const { seamY, seamLeft, seamRight } = getSeamGeometry(topPiece, bottomPiece);
+          if (seamRight <= seamLeft) continue;
+          if (!strokeIntersectsSeamBand(stroke, seamY, seamLeft, seamRight)) continue;
+
+          const probeX = clampPct(midX, seamLeft, seamRight);
+          const distMid = pointToSegmentDistance(
+            probeX,
+            seamY,
+            stroke.startX,
+            stroke.startY,
+            stroke.endX,
+            stroke.endY,
+          );
+          const distLeft = pointToSegmentDistance(
+            seamLeft,
+            seamY,
+            stroke.startX,
+            stroke.startY,
+            stroke.endX,
+            stroke.endY,
+          );
+          const distRight = pointToSegmentDistance(
+            seamRight,
+            seamY,
+            stroke.startX,
+            stroke.startY,
+            stroke.endX,
+            stroke.endY,
+          );
+          const distToStroke = Math.min(distMid, distLeft, distRight);
+          const seamOffsetPenalty = Math.abs(midY - seamY) * 0.35;
+          const verticalBonus = Math.abs(dy) > Math.abs(dx) * 0.85 ? -10 : 0;
+          const score = distToStroke + seamOffsetPenalty + verticalBonus;
+          if (score < bestScore) {
+            bestScore = score;
+            bestIdx = i;
+          }
+        }
+        if (bestScore > 140) return -1;
+        return bestIdx;
+      }
+
+      function findNearestSeamByMidpoint(stroke: TapeStroke): number {
+        if (!tearSystemReady || pieces.length < 2) return -1;
+        const midX = (stroke.startX + stroke.endX) / 2;
+        const midY = (stroke.startY + stroke.endY) / 2;
+        const rr = receipt!.getBoundingClientRect();
+        if (midX < rr.left - 90 || midX > rr.right + 90) return -1;
+
+        let bestIdx = -1;
+        let bestDist = Infinity;
+        for (let i = 0; i < pieces.length - 1; i++) {
+          const { seamY } = getSeamGeometry(pieces[i], pieces[i + 1]);
+          const dist = Math.abs(midY - seamY);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+          }
+        }
+        if (bestDist > 110) return -1;
+        return bestIdx;
+      }
+
+      function mergePiecesAt(topIdx: number, stroke: TapeStroke | null): boolean {
+        if (topIdx < 0 || topIdx >= pieces.length - 1) return false;
+
+        const topPiece = pieces[topIdx];
+        const bottomPiece = pieces[topIdx + 1];
+        const seamEdge = topPiece.bottomEdge || bottomPiece.topEdge || generateJaggedEdge();
+
+        const wrapper = receipt!.parentElement!;
+        const mergedTop = topPiece.top;
+        const mergedBottom = bottomPiece.bottom;
+        const seamYPct = (topPiece.bottom + bottomPiece.top) / 2;
+        const mergedOffsetY = topPiece.offsetY;
+        const mergedRotation = (topPiece.rotation + bottomPiece.rotation) / 2;
+        const mergedTopEdge = topPiece.topEdge;
+        const mergedBottomEdge = bottomPiece.bottomEdge;
+
+        const { el: mergedEl, printables: mergedPrintables } = makePieceEl(
+          mergedTop,
+          mergedBottom,
+          mergedOffsetY,
+          mergedRotation,
+          mergedTopEdge,
+          mergedBottomEdge,
+        );
+        const nextEl = pieces[topIdx + 2]?.el;
+        if (nextEl) wrapper.insertBefore(mergedEl, nextEl);
+        else wrapper.appendChild(mergedEl);
+
+        if (stroke) addWashiStrip(mergedEl, stroke, seamYPct, baseRotation + mergedRotation);
+        addSeamTrace(mergedEl, seamEdge, seamYPct);
+
+        // Transfer existing seam traces and washi strips from old pieces to merged element
+        for (const child of [...topPiece.el.querySelectorAll(':scope > .tape-seam, :scope > .washi-strip')]) {
+          mergedEl.appendChild(child);
+        }
+        for (const child of [...bottomPiece.el.querySelectorAll(':scope > .tape-seam, :scope > .washi-strip')]) {
+          mergedEl.appendChild(child);
+        }
+
+        topPiece.el.remove();
+        bottomPiece.el.remove();
+
+        const mergedPiece: TearPiece = {
+          el: mergedEl,
+          top: mergedTop,
+          bottom: mergedBottom,
+          offsetY: mergedOffsetY,
+          rotation: mergedRotation,
+          topEdge: mergedTopEdge,
+          bottomEdge: mergedBottomEdge,
+          printables: mergedPrintables,
+        };
+
+        pieces.splice(topIdx, 2, mergedPiece);
+
+        for (let i = topIdx + 1; i < pieces.length; i++) {
+          pieces[i].offsetY = Math.max(0, pieces[i].offsetY - TEAR_GAP);
+          pieces[i].rotation += (Math.random() - 0.5) * 0.35;
+          animatePiece(pieces[i]);
+        }
+
+        animatePiece(mergedPiece);
+
+        const maxOff = pieces.length > 0 ? pieces[pieces.length - 1].offsetY : 0;
+        wrapper.style.paddingBottom = `${maxOff + 40}px`;
+        return true;
+      }
+
       // Animate a piece to its current state with a spring curve
       function animatePiece(p: TearPiece) {
         p.el.style.transition = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)';
@@ -1721,6 +2343,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const wrapper = receipt!.parentElement!;
         const { el: newEl, printables: newPrintables } = makePieceEl(tearPct, origBottom, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
         wrapper.appendChild(newEl);
+
+        // Transfer seam traces and washi strips that fall below the tear to the new piece
+        for (const child of [...target.el.querySelectorAll(':scope > .tape-seam, :scope > .washi-strip')]) {
+          const yPct = parseFloat(child.getAttribute('data-seam-y') || '0');
+          if (yPct >= tearPct) {
+            newEl.appendChild(child);
+          }
+        }
 
         const newPiece: TearPiece = {
           el: newEl,
@@ -1836,6 +2466,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function checkEdgeProximity(mouseX: number, mouseY: number) {
+        if (washiMode) {
+          nearEdge = false;
+          updateCursorVisual(0, false, false);
+          return;
+        }
         if (!canCutDuringPrint()) {
           nearEdge = false;
           updateCursorVisual(0, false, false);
@@ -1846,24 +2481,117 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         updateCursorVisual(proximity, canCut, false);
       }
 
+      function finishWashiStroke(stroke: TapeStroke) {
+        if (!washiMode) return;
+        if (Math.hypot(stroke.endX - stroke.startX, stroke.endY - stroke.startY) < MIN_WASHI_STROKE) return;
+        let seamIdx = findSeamIndexForStroke(stroke);
+        let merged = seamIdx >= 0 ? mergePiecesAt(seamIdx, stroke) : false;
+        if (!merged) {
+          seamIdx = findNearestSeamByMidpoint(stroke);
+          if (seamIdx >= 0) {
+            merged = mergePiecesAt(seamIdx, stroke);
+          }
+        }
+        if (!merged) {
+          addFreeWashiStrip(stroke);
+        }
+        sounds.tearSound();
+      }
+
+      function startWashiStroke(clientX: number, clientY: number) {
+        washiDrawing = true;
+        washiStartX = clientX;
+        washiStartY = clientY;
+        washiCurrentX = clientX;
+        washiCurrentY = clientY;
+        washiPreviewClip = createWashiClipPath();
+        washiPreview.style.setProperty('--washi-alpha', (0.82 + Math.random() * 0.10).toFixed(2));
+        updateWashiPreview();
+      }
+
+      function updateWashiStroke(clientX: number, clientY: number) {
+        if (!washiDrawing) return;
+        washiCurrentX = clientX;
+        washiCurrentY = clientY;
+        updateWashiPreview();
+      }
+
+      function endWashiStroke() {
+        if (!washiDrawing) return;
+        const stroke: TapeStroke = {
+          startX: washiStartX,
+          startY: washiStartY,
+          endX: washiCurrentX,
+          endY: washiCurrentY,
+        };
+        washiDrawing = false;
+        hideWashiPreview();
+        finishWashiStroke(stroke);
+      }
+
+      if (usePointerWashi) {
+        document.addEventListener('pointerdown', (e: PointerEvent) => {
+          if (!washiMode) return;
+          if (e.isPrimary === false) return;
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+          if ((e.target as HTMLElement).closest('button')) return;
+          if ((e.target as HTMLElement).closest('a')) return;
+          if (!washiDrawing && activeWashiPointerId !== null) activeWashiPointerId = null;
+          if (washiDrawing) return;
+          activeWashiPointerId = e.pointerId;
+          startWashiStroke(e.clientX, e.clientY);
+          e.preventDefault();
+        });
+
+        document.addEventListener('pointermove', (e: PointerEvent) => {
+          if (!washiMode || activeWashiPointerId !== e.pointerId) return;
+          updateWashiStroke(e.clientX, e.clientY);
+          e.preventDefault();
+        });
+
+        const finishPointerWashi = (e: PointerEvent) => {
+          if (activeWashiPointerId !== e.pointerId) return;
+          updateWashiStroke(e.clientX, e.clientY);
+          activeWashiPointerId = null;
+          endWashiStroke();
+          e.preventDefault();
+        };
+        document.addEventListener('pointerup', finishPointerWashi);
+        document.addEventListener('pointercancel', finishPointerWashi);
+      }
+
       // ---- Desktop click-to-tear ----
 
-      if (window.matchMedia('(pointer: fine)').matches) {
+      if (desktopFinePointer) {
         let desktopTearing = false;
         let desktopTearStartX = 0;
         let desktopTearStartY = 0;
         let desktopTearDecided = false;
 
         document.addEventListener('mousemove', (e: MouseEvent) => {
+          if (washiDrawing && (!usePointerWashi || activeWashiPointerId === null)) {
+            washiCurrentX = e.clientX;
+            washiCurrentY = e.clientY;
+            updateWashiPreview();
+            return;
+          }
           if (!desktopTearing) {
             checkEdgeProximity(e.clientX, e.clientY);
           }
         });
 
         document.addEventListener('mousedown', (e: MouseEvent) => {
-          if (!canCutDuringPrint()) return;
           if ((e.target as HTMLElement).closest('button')) return;
           if ((e.target as HTMLElement).closest('a')) return;
+
+          if (washiMode) {
+            if (usePointerWashi && activeWashiPointerId !== null && washiDrawing) return;
+            if (washiDrawing) return;
+            startWashiStroke(e.clientX, e.clientY);
+            return;
+          }
+
+          if (!canCutDuringPrint()) return;
 
           if (!nearEdge) {
             if (!tearSystemReady || pieces.length === 0) {
@@ -1916,6 +2644,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         document.addEventListener('mouseup', () => {
           if (desktopTearing) endDesktopTear();
+          if (usePointerWashi && activeWashiPointerId !== null && washiDrawing) return;
+          if (!washiDrawing) return;
+          endWashiStroke();
         });
 
         function endDesktopTear() {
@@ -1926,10 +2657,41 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           // Keep cursor small briefly after release
           updateCursorVisual(0, false, false);
           setTimeout(() => {
-            if (!desktopTearing) checkEdgeProximity(dotTargetX, dotTargetY);
+            if (!desktopTearing && !washiMode) checkEdgeProximity(dotTargetX, dotTargetY);
           }, 100);
         }
       }
+
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.repeat) return;
+        const key = e.key.toLowerCase();
+        const active = document.activeElement as HTMLElement | null;
+        if (
+          active &&
+          (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)
+        ) {
+          return;
+        }
+        if (key === 'w') {
+          washiMode = !washiMode;
+          if (!washiMode && washiDrawing) {
+            activeWashiPointerId = null;
+            washiDrawing = false;
+            hideWashiPreview();
+          }
+          syncWashiToggle();
+          flashButton(tapeToggle);
+          e.preventDefault();
+        } else if (key === 'c' && washiMode) {
+          clearAllTape();
+          flashButton(clearTapeBtn);
+          e.preventDefault();
+        } else if (key === 's') {
+          toggleSound();
+          flashButton(soundToggle);
+          e.preventDefault();
+        }
+      });
 
       // ---- Touch gesture detection (swipe anywhere, mobile) ----
 
@@ -1940,6 +2702,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let tearIsHorizontal = false;
 
       function startTear(cx: number, cy: number) {
+        if (washiMode) return;
         if (!canCutDuringPrint()) return;
         tearStartX = cx;
         tearStartY = cy;
@@ -1986,9 +2749,21 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       document.addEventListener('touchstart', (e: TouchEvent) => {
         if ((e.target as HTMLElement).closest('button')) return;
         if ((e.target as HTMLElement).closest('a')) return;
+        if (washiMode) {
+          if (usePointerWashi && activeWashiPointerId !== null && washiDrawing) return;
+          if (e.touches.length === 0) return;
+          if (washiDrawing) return;
+          startWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
+          return;
+        }
         startTear(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: true });
       document.addEventListener('touchmove', (e: TouchEvent) => {
+        if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true) && e.touches.length > 0) {
+          updateWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
+          e.preventDefault();
+          return;
+        }
         if (isTearing && e.touches.length > 0) {
           moveTear(e.touches[0].clientX, e.touches[0].clientY);
           // Prevent browser back/forward navigation gesture during horizontal tear
@@ -1996,6 +2771,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
       }, { passive: false });
       document.addEventListener('touchend', () => {
+        if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true)) {
+          endWashiStroke();
+          return;
+        }
         if (isTearing) endTear();
       });
     }
