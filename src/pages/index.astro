@@ -556,7 +556,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 100;
+    z-index: 10100;
     display: flex;
     flex-direction: column;
     background: rgba(30, 28, 24, 0.85);
@@ -580,6 +580,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     transition: color 0.2s, background 0.2s;
     padding: 0;
     margin: 0;
+    outline: none;
   }
 
   .toolbar-btn + .toolbar-btn {
@@ -949,6 +950,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
   }
 
+  :global(body.washi-mode) {
+    touch-action: none;
+  }
+
   /* ============================================ */
   /* RESPONSIVE                                    */
   /* ============================================ */
@@ -1045,10 +1050,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          // Warm up HTML5 Audio pool so fallback works immediately on mobile
-          for (const a of this.tearPool) {
-            a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(() => {});
-          }
+          // Warm up one HTML5 Audio element for immediate fallback on mobile
+          const warmup = this.tearPool[0];
+          warmup.volume = 0;
+          warmup.play().then(() => { warmup.pause(); warmup.currentTime = 0; warmup.volume = 0.5; }).catch(() => {});
 
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
@@ -1593,7 +1598,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let dotCurrentY = 0;
     let dotVisible = false;
     let dotAnimating = false;
-    const DOT_LERP = 0.18;
+    const DOT_LERP = 0.35;
     const DOT_SIZE_MIN = 8;
     const DOT_SIZE_MAX = 16;
     const PROXIMITY_RANGE = 80;
@@ -2564,7 +2569,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!merged) {
           addFreeWashiStrip(stroke);
         }
-        sounds.tearSound();
       }
 
       function startWashiStroke(clientX: number, clientY: number) {
