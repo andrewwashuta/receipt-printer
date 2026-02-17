@@ -1027,91 +1027,54 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     //    Enhanced: Web Audio API for zero-latency tear playback
     // ========================================
     class ReceiptSounds {
-      private readonly tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
-      private readonly mobileTearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3'];
-      private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-      private readonly useWebAudio = !this.isMobileAudio;
-      private desktopTearPools: HTMLAudioElement[][] = [[], [], [], []];
-      private readonly mobilePoolSize: number = 6;
-      private readonly maxMobilePoolSize: number = 10;
-      private readonly desktopPoolSize: number = 2;
-      private mobileTearPools: HTMLAudioElement[][] = [[], []];
-      private mobileTearSequenceIdx: number = 0;
-      private tearSequenceIdx: number = 0;
+      private readonly tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3'];
+      private readonly fallbackPoolSize = 4;
+      private fallbackPools: HTMLAudioElement[][] = [[], []];
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
-      private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
-      private decodeRequested: boolean[] = [false, false, false, false];
+      private tearBuffers: (AudioBuffer | null)[] = [null, null];
+      private decodeRequested: boolean[] = [false, false];
+      private tearSequenceIdx: number = 0;
       private _unlocked: boolean = false;
 
       constructor() {
         const saved = localStorage.getItem('aw-sound-enabled');
-        if (saved !== null) {
-          this._enabled = saved === 'true';
-        }
-        if (this.isMobileAudio) {
-          this.mobileTearFiles.forEach((file, tearIdx) => {
-            for (let copy = 0; copy < this.mobilePoolSize; copy++) {
-              const a = new Audio(file);
-              a.preload = 'auto';
-              a.playsInline = true;
-              a.setAttribute('webkit-playsinline', 'true');
-              a.volume = 0.5;
-              a.load();
-              this.mobileTearPools[tearIdx].push(a);
-            }
-          });
-        } else {
-          // Create 2 copies of each tear sound for overlapping desktop playback
-          this.tearFiles.forEach((file, tearIdx) => {
-            for (let copy = 0; copy < this.desktopPoolSize; copy++) {
-              const a = new Audio(file);
-              a.preload = 'auto';
-              a.playsInline = true;
-              a.volume = 0.5;
-              a.load();
-              this.desktopTearPools[tearIdx].push(a);
-            }
-          });
-        }
+        if (saved !== null) this._enabled = saved === 'true';
 
-        // Web Audio API for zero-latency tear playback (desktop only)
-        if (this.useWebAudio) this._initWebAudio();
+        // Always prepare HTMLAudio fallback pool; useful before decode and on unsupported browsers.
+        this.tearFiles.forEach((file, idx) => {
+          for (let copy = 0; copy < this.fallbackPoolSize; copy++) {
+            const a = new Audio(file);
+            a.preload = 'auto';
+            a.playsInline = true;
+            a.setAttribute('webkit-playsinline', 'true');
+            a.volume = 0.5;
+            a.load();
+            this.fallbackPools[idx].push(a);
+          }
+        });
 
-        // Unlock on first user interaction (autoplay policy)
+        this._initWebAudio();
+
         const unlock = () => {
           if (this._unlocked) return;
           this._unlocked = true;
 
-          if (this.useWebAudio && this.audioCtx?.state === 'suspended') {
+          if (this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
+          } else {
+            this._decodeTearBuffers();
           }
 
-          if (this.isMobileAudio) {
-            this.mobileTearPools.forEach((pool) => pool.forEach((audio) => audio.load()));
-          }
-
-          if (!this.isMobileAudio) {
-            const warmups = this.desktopTearPools.map((pool) => pool[0]).filter(Boolean) as HTMLAudioElement[];
-            warmups.forEach((warmup) => {
-              warmup.muted = true;
-              warmup.play()
-                .then(() => {
-                  warmup.pause();
-                  warmup.currentTime = 0;
-                  warmup.muted = false;
-                })
-                .catch(() => {
-                  warmup.muted = false;
-                });
-            });
-          }
+          // Ensure both files are requested as soon as user interacts.
+          this.fallbackPools.forEach((pool) => pool.forEach((audio) => audio.load()));
 
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
           document.removeEventListener('pointerdown', unlock);
           document.removeEventListener('keydown', unlock);
         };
+
         document.addEventListener('click', unlock);
         document.addEventListener('touchstart', unlock);
         document.addEventListener('pointerdown', unlock);
@@ -1125,13 +1088,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             if (this.audioCtx?.state === 'running') this._decodeTearBuffers();
           });
           this._decodeTearBuffers();
-        } catch(e) {}
+        } catch(e) {
+          this.audioCtx = null;
+        }
       }
 
       private _decodeTearBuffers() {
         if (!this.audioCtx || this.audioCtx.state !== 'running') return;
-        const files: [string, number][] = this.tearFiles.map((f, i) => [f, i]);
-        files.forEach(([file, idx]) => {
+        this.tearFiles.forEach((file, idx) => {
           if (this.tearBuffers[idx] || this.decodeRequested[idx]) return;
           this.decodeRequested[idx] = true;
           fetch(file)
@@ -1145,6 +1109,33 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
       }
 
+      private _playFromBuffer(tearIdx: number): boolean {
+        if (!this.audioCtx || this.audioCtx.state !== 'running') return false;
+        const buffer = this.tearBuffers[tearIdx];
+        if (!buffer) return false;
+        const source = this.audioCtx.createBufferSource();
+        source.buffer = buffer;
+        const gain = this.audioCtx.createGain();
+        gain.gain.value = 0.5;
+        source.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        source.start(0);
+        return true;
+      }
+
+      private _playFromFallbackPool(tearIdx: number) {
+        const pool = this.fallbackPools[tearIdx];
+        if (!pool || pool.length === 0) return;
+        let audio = pool.find((candidate) => candidate.paused || candidate.ended) || null;
+        if (!audio) {
+          audio = pool[0];
+          audio.pause();
+        }
+        try { audio.currentTime = 0; } catch {}
+        audio.volume = 0.5;
+        audio.play().catch(() => {});
+      }
+
       get isEnabled() { return this._enabled; }
 
       toggle() {
@@ -1156,74 +1147,21 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       tearSound() {
         if (!this._enabled) return;
 
-        if (this.isMobileAudio) {
-          const tearIdx = this.mobileTearSequenceIdx % this.mobileTearFiles.length;
-          this.mobileTearSequenceIdx++;
-
-          const mobilePool = this.mobileTearPools[tearIdx];
-          if (!mobilePool || mobilePool.length === 0) return;
-
-          let selected = mobilePool.find((candidate) => candidate.paused || candidate.ended) || null;
-
-          if (!selected && mobilePool.length < this.maxMobilePoolSize) {
-            selected = new Audio(this.mobileTearFiles[tearIdx]);
-            selected.preload = 'auto';
-            selected.playsInline = true;
-            selected.setAttribute('webkit-playsinline', 'true');
-            selected.volume = 0.5;
-            selected.load();
-            mobilePool.push(selected);
-          }
-
-          if (!selected) {
-            selected = mobilePool[0];
-            selected.pause();
-            try { selected.currentTime = 0; } catch {}
-          } else {
-            try { selected.currentTime = 0; } catch {}
-          }
-
-          selected.volume = 0.5;
-          selected.play().catch(() => {});
-          return;
-        }
-
         const tearIdx = this.tearSequenceIdx % this.tearFiles.length;
         this.tearSequenceIdx++;
 
-        if (this.useWebAudio && this.audioCtx && this.audioCtx.state === 'suspended') {
-          this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume()
+            .then(() => {
+              this._decodeTearBuffers();
+              if (!this._playFromBuffer(tearIdx)) this._playFromFallbackPool(tearIdx);
+            })
+            .catch(() => this._playFromFallbackPool(tearIdx));
+          return;
         }
 
-        if (this.useWebAudio && this.audioCtx && this.audioCtx.state === 'running') {
-          const buffer = this.tearBuffers[tearIdx];
-          if (buffer) {
-            const source = this.audioCtx.createBufferSource();
-            source.buffer = buffer;
-            const gain = this.audioCtx.createGain();
-            gain.gain.value = 0.5;
-            source.connect(gain);
-            gain.connect(this.audioCtx.destination);
-            source.start(0);
-            return;
-          }
-        }
-
-        const desktopPool = this.desktopTearPools[tearIdx];
-        if (!desktopPool || desktopPool.length === 0) return;
-        for (let i = 0; i < desktopPool.length; i++) {
-          const audio = desktopPool[i];
-          if (audio.paused || audio.ended || audio.currentTime > 0.3) {
-            audio.currentTime = 0;
-            audio.volume = 0.5;
-            audio.play().catch(() => {});
-            return;
-          }
-        }
-        const audio = desktopPool[0];
-        audio.currentTime = 0;
-        audio.volume = 0.5;
-        audio.play().catch(() => {});
+        if (this._playFromBuffer(tearIdx)) return;
+        this._playFromFallbackPool(tearIdx);
       }
     }
 
