@@ -1028,11 +1028,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // ========================================
     class ReceiptSounds {
       private readonly tearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
-      private readonly mobileTearFile = '/sounds/Tear-1.mp3';
+      private readonly mobileTearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3'];
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-      private readonly useWebAudio = true;
+      private readonly useWebAudio = !this.isMobileAudio;
       private desktopTearPools: HTMLAudioElement[][] = [[], [], [], []];
-      private mobileTearAudio: HTMLAudioElement | null = null;
+      private mobileTearPools: HTMLAudioElement[][] = [[], []];
+      private mobileTearSequenceIdx: number = 0;
       private tearSequenceIdx: number = 0;
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
@@ -1046,12 +1047,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           this._enabled = saved === 'true';
         }
         if (this.isMobileAudio) {
-          const a = new Audio(this.mobileTearFile);
-          a.preload = 'auto';
-          a.playsInline = true;
-          a.volume = 0.5;
-          a.load();
-          this.mobileTearAudio = a;
+          this.mobileTearFiles.forEach((file, tearIdx) => {
+            for (let copy = 0; copy < 2; copy++) {
+              const a = new Audio(file);
+              a.preload = 'auto';
+              a.playsInline = true;
+              a.setAttribute('webkit-playsinline', 'true');
+              a.volume = 0.5;
+              a.load();
+              this.mobileTearPools[tearIdx].push(a);
+            }
+          });
         } else {
           // Create 2 copies of each tear sound for overlapping desktop playback
           this.tearFiles.forEach((file, tearIdx) => {
@@ -1066,21 +1072,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           });
         }
 
-        // Web Audio API for zero-latency tear playback (mobile + desktop)
-        this._initWebAudio();
+        // Web Audio API for zero-latency tear playback (desktop only)
+        if (this.useWebAudio) this._initWebAudio();
 
         // Unlock on first user interaction (autoplay policy)
         const unlock = () => {
           if (this._unlocked) return;
           this._unlocked = true;
 
-          if (this.audioCtx?.state === 'suspended') {
+          if (this.useWebAudio && this.audioCtx?.state === 'suspended') {
             this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
           }
 
-          // Warm up HTMLAudioElements on desktop only.
-          // On mobile, skip this — the muted play/pause warmup races with
-          // tearSound() during the same touch gesture, causing silent playback.
+          if (this.isMobileAudio) {
+            this.mobileTearPools.forEach((pool) => pool.forEach((audio) => audio.load()));
+          }
+
           if (!this.isMobileAudio) {
             const warmups = this.desktopTearPools.map((pool) => pool[0]).filter(Boolean) as HTMLAudioElement[];
             warmups.forEach((warmup) => {
@@ -1120,9 +1127,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       private _decodeTearBuffers() {
         if (!this.audioCtx || this.audioCtx.state !== 'running') return;
-        const files: [string, number][] = this.isMobileAudio
-          ? [[this.mobileTearFile, 0]]
-          : this.tearFiles.map((f, i) => [f, i]);
+        const files: [string, number][] = this.tearFiles.map((f, i) => [f, i]);
         files.forEach(([file, idx]) => {
           if (this.tearBuffers[idx] || this.decodeRequested[idx]) return;
           this.decodeRequested[idx] = true;
@@ -1149,30 +1154,29 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!this._enabled) return;
 
         if (this.isMobileAudio) {
-          // Web Audio: fresh BufferSourceNode per play, no state conflicts
-          if (this.audioCtx && this.audioCtx.state === 'running') {
-            const buffer = this.tearBuffers[0];
-            if (buffer) {
-              const source = this.audioCtx.createBufferSource();
-              source.buffer = buffer;
-              const gain = this.audioCtx.createGain();
-              gain.gain.value = 0.5;
-              source.connect(gain);
-              gain.connect(this.audioCtx.destination);
-              source.start(0);
-              return;
+          const tearIdx = this.mobileTearSequenceIdx % this.mobileTearFiles.length;
+          this.mobileTearSequenceIdx++;
+
+          const mobilePool = this.mobileTearPools[tearIdx];
+          if (!mobilePool || mobilePool.length === 0) return;
+
+          let selected = mobilePool[0];
+          for (let i = 0; i < mobilePool.length; i++) {
+            const candidate = mobilePool[i];
+            if (candidate.paused || candidate.ended || candidate.currentTime > 0.3) {
+              selected = candidate;
+              break;
             }
           }
-          if (this.audioCtx && this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
-          }
-          // Fallback: HTMLAudioElement (before buffer is decoded)
-          if (!this.mobileTearAudio) return;
-          const audio = this.mobileTearAudio;
-          audio.volume = 0.5;
-          audio.pause();
-          try { audio.currentTime = 0; } catch {}
-          audio.play().catch(() => {});
+
+          selected.volume = 0.5;
+          selected.pause();
+          try { selected.currentTime = 0; } catch {}
+          selected.play().catch(() => {
+            // If first attempt races with mobile autoplay gating, retry once after load().
+            selected.load();
+            selected.play().catch(() => {});
+          });
           return;
         }
 
