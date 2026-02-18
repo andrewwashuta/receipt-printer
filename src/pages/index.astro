@@ -1029,7 +1029,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     class ReceiptSounds {
       private readonly desktopTearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
-      private readonly fallbackPoolSize = 4;
+      private readonly fallbackPoolSize = this.isMobileAudio ? 2 : 4;
       private fallbackPools: HTMLAudioElement[][] = [[], [], [], []];
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
@@ -1045,8 +1045,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const saved = localStorage.getItem('aw-sound-enabled');
         if (saved !== null) this._enabled = saved === 'true';
 
-        // Prepare fallback HTMLAudio pools for all tear files.
-        this.desktopTearFiles.forEach((file, idx) => {
+        // Prepare fallback HTMLAudio pools only for active tear files.
+        this._activeTearIndices().forEach((idx) => {
+          const file = this.desktopTearFiles[idx];
           for (let copy = 0; copy < this.fallbackPoolSize; copy++) {
             const a = new Audio(file);
             a.preload = 'auto';
@@ -1163,9 +1164,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const pool = this.fallbackPools[tearIdx];
         if (!pool || pool.length === 0) return false;
 
-        let audio = pool.find((candidate) => (candidate.paused || candidate.ended) && candidate.readyState >= 2) || null;
+        let audio = pool.find((candidate) => candidate.paused || candidate.ended) || null;
         if (!audio) {
-          audio = pool.find((candidate) => candidate.readyState >= 2) || null;
+          audio = pool[0] || null;
         }
         if (!audio) {
           if (allowAlternate) {
