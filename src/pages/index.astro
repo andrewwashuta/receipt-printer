@@ -1038,6 +1038,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private decodeRequested: boolean[] = [false, false, false, false];
       private tearSequenceIdx: number = 0;
       private _unlocked: boolean = false;
+      private _needsGestureReunlock: boolean = false;
 
       constructor() {
         const saved = localStorage.getItem('aw-sound-enabled');
@@ -1066,42 +1067,29 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             .catch(() => {});
         });
 
-        const unlock = () => {
-          if (this._unlocked) return;
+        // Persistent unlock listeners are more reliable on iOS than one-shot unlock.
+        // Keep them attached so audio can recover after Safari background/foreground transitions.
+        const unlockFromGesture = () => {
           this._unlocked = true;
-
-          // Activate Web Audio with a silent buffer during this user gesture
-          if (this.audioCtx && this.audioCtx.state !== 'closed') {
-            this.audioCtx.resume().catch(() => {});
-            try {
-              const silentBuf = this.audioCtx.createBuffer(1, 1, 22050);
-              const src = this.audioCtx.createBufferSource();
-              src.buffer = silentBuf;
-              src.connect(this.audioCtx.destination);
-              src.start(0);
-            } catch {}
-          }
-
-          this._decodeTearBuffers();
-
-          document.removeEventListener('click', unlock);
-          document.removeEventListener('touchstart', unlock);
-          document.removeEventListener('pointerdown', unlock);
-          document.removeEventListener('keydown', unlock);
+          this._attemptUnlock(false);
         };
+        ['touchstart', 'touchend', 'click', 'keydown'].forEach((eventName) => {
+          document.addEventListener(eventName, unlockFromGesture, { capture: true, passive: true });
+        });
 
-        document.addEventListener('click', unlock);
-        document.addEventListener('touchstart', unlock);
-        document.addEventListener('pointerdown', unlock);
-        document.addEventListener('keydown', unlock);
-
-        // Persistent: resume AudioContext on every touchstart (cheap no-op if running).
-        // Keeps context warm before touchend-triggered tear playback on mobile.
-        document.addEventListener('touchstart', () => {
-          if (this.audioCtx && this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume().catch(() => {});
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            this._needsGestureReunlock = true;
+            this._attemptUnlock(false);
           }
-        }, { passive: true });
+        });
+        window.addEventListener('pageshow', () => {
+          this._needsGestureReunlock = true;
+          this._attemptUnlock(false);
+        });
+        window.addEventListener('pagehide', () => {
+          this._needsGestureReunlock = true;
+        });
       }
 
       private _activeTearIndices(): number[] {
@@ -1117,6 +1105,29 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         } catch(e) {
           this.audioCtx = null;
         }
+      }
+
+      private _attemptUnlock(forceKick: boolean) {
+        if (!this.audioCtx || this.audioCtx.state === 'closed') return;
+
+        const shouldResume = this.audioCtx.state !== 'running' || this._needsGestureReunlock || forceKick;
+        if (shouldResume) {
+          this.audioCtx.resume()
+            .then(() => {
+              if (this.audioCtx?.state === 'running') this._needsGestureReunlock = false;
+            })
+            .catch(() => {});
+          try {
+            const silentBuf = this.audioCtx.createBuffer(1, 1, 22050);
+            const src = this.audioCtx.createBufferSource();
+            src.buffer = silentBuf;
+            src.connect(this.audioCtx.destination);
+            src.start(0);
+            src.stop(0);
+          } catch {}
+        }
+
+        this._decodeTearBuffers();
       }
 
       private _decodeTearBuffers() {
@@ -1179,6 +1190,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       tearSound() {
         if (!this._enabled) return;
+        this._attemptUnlock(false);
 
         const active = this._activeTearIndices();
         const sequencePos = this.tearSequenceIdx % active.length;
@@ -2888,6 +2900,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       let tearStartX = 0;
       let tearStartY = 0;
+      let tearLastX = 0;
+      let tearLastY = 0;
       let isTearing = false;
       let tearDecided = false;
       let tearIsHorizontal = false;
@@ -2898,6 +2912,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!canCutDuringPrint()) return;
         tearStartX = cx;
         tearStartY = cy;
+        tearLastX = cx;
+        tearLastY = cy;
         isTearing = true;
         tearDecided = false;
         tearIsHorizontal = false;
@@ -2906,16 +2922,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function moveTear(cx: number, cy: number) {
         if (!isTearing) return;
+        tearLastX = cx;
+        tearLastY = cy;
         const dx = Math.abs(cx - tearStartX);
         const dy = Math.abs(cy - tearStartY);
 
         if (!tearDecided && (dx > 12 || dy > 12)) {
           tearDecided = true;
-          tearIsHorizontal = dx > dy * 1.8;
+          tearIsHorizontal = dx > dy * 1.2;
           if (tearIsHorizontal) {
             pageCutLine.style.top = `${tearStartY}px`;
             pageCutLine.style.display = 'block';
             pageCutLine.style.width = '0';
+            // Mobile should tear reliably even on shorter swipes once direction is clear.
+            tearReady = true;
           }
         }
 
@@ -2966,12 +2986,21 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (tearIsHorizontal) e.preventDefault();
         }
       }, { passive: false });
-      document.addEventListener('touchend', () => {
+      document.addEventListener('touchend', (e: TouchEvent) => {
         if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true)) {
           endWashiStroke();
           return;
         }
+        if (e.changedTouches.length > 0) {
+          tearLastX = e.changedTouches[0].clientX;
+          tearLastY = e.changedTouches[0].clientY;
+        }
+        const finalDx = Math.abs(tearLastX - tearStartX);
+        const finalDy = Math.abs(tearLastY - tearStartY);
+        const finalHorizontal = finalDx > 12 && finalDx > finalDy * 1.2;
         if (isTearing && tearReady) {
+          executeTear(tearStartY);
+        } else if (isTearing && finalHorizontal) {
           executeTear(tearStartY);
         }
         if (isTearing) endTear();
