@@ -1039,6 +1039,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private tearSequenceIdx: number = 0;
       private _unlocked: boolean = false;
       private _needsGestureReunlock: boolean = false;
+      private _tearRetryTimer: ReturnType<typeof setTimeout> | null = null;
 
       constructor() {
         const saved = localStorage.getItem('aw-sound-enabled');
@@ -1158,13 +1159,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return true;
       }
 
-      private _playFromFallbackPool(tearIdx: number, allowAlternate = true) {
+      private _playFromFallbackPool(tearIdx: number, allowAlternate = true): boolean {
         const pool = this.fallbackPools[tearIdx];
-        if (!pool || pool.length === 0) return;
+        if (!pool || pool.length === 0) return false;
 
-        let audio = pool.find((candidate) => candidate.paused || candidate.ended) || null;
+        let audio = pool.find((candidate) => (candidate.paused || candidate.ended) && candidate.readyState >= 2) || null;
         if (!audio) {
-          audio = pool[0];
+          audio = pool.find((candidate) => candidate.readyState >= 2) || null;
+        }
+        if (!audio) {
+          if (allowAlternate) {
+            const active = this._activeTearIndices();
+            const pos = active.indexOf(tearIdx);
+            const altIdx = active[(pos + 1) % active.length];
+            if (altIdx !== tearIdx) return this._playFromFallbackPool(altIdx, false);
+          }
+          return false;
+        }
+        if (!(audio.paused || audio.ended)) {
           audio.pause();
         }
 
@@ -1178,6 +1190,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           const altIdx = active[(pos + 1) % active.length];
           if (altIdx !== tearIdx) this._playFromFallbackPool(altIdx, false);
         });
+        return true;
       }
 
       get isEnabled() { return this._enabled; }
@@ -1186,6 +1199,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         this._enabled = !this._enabled;
         localStorage.setItem('aw-sound-enabled', this._enabled.toString());
         return this._enabled;
+      }
+
+      prepareTearGesture() {
+        if (!this._enabled) return;
+        this._attemptUnlock(true);
       }
 
       tearSound() {
@@ -1198,7 +1216,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         this.tearSequenceIdx++;
 
         if (this._playFromBuffer(tearIdx)) return;
-        this._playFromFallbackPool(tearIdx);
+        if (this._playFromFallbackPool(tearIdx)) return;
+
+        // If nothing is loaded yet (first cuts during initial render), retry once shortly.
+        if (this._tearRetryTimer) clearTimeout(this._tearRetryTimer);
+        this._tearRetryTimer = setTimeout(() => {
+          this._tearRetryTimer = null;
+          this._attemptUnlock(true);
+          if (this._playFromBuffer(tearIdx)) return;
+          this._playFromFallbackPool(tearIdx);
+        }, 120);
       }
     }
 
@@ -2796,6 +2823,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }
 
           if (!canCutDuringPrint()) return;
+          sounds.prepareTearGesture();
 
           if (!nearEdge) {
             if (!tearSystemReady || pieces.length === 0) {
@@ -2910,6 +2938,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function startTear(cx: number, cy: number) {
         if (washiMode) return;
         if (!canCutDuringPrint()) return;
+        sounds.prepareTearGesture();
         tearStartX = cx;
         tearStartY = cy;
         tearLastX = cx;
