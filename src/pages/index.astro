@@ -1132,6 +1132,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         this._decodeTearBuffers();
       }
 
+      private _hasReadyFallback(tearIdx: number): boolean {
+        const pool = this.fallbackPools[tearIdx];
+        if (!pool || pool.length === 0) return false;
+        return pool.some((candidate) => candidate.readyState >= 2);
+      }
+
+      private _scheduleTearRetry(tearIdx: number) {
+        if (this._tearRetryTimer) clearTimeout(this._tearRetryTimer);
+        this._tearRetryTimer = setTimeout(() => {
+          this._tearRetryTimer = null;
+          this._attemptUnlock(true);
+          if (this._playFromBuffer(tearIdx)) return;
+          this._playFromFallbackPool(tearIdx);
+        }, 120);
+      }
+
       private _decodeTearBuffers() {
         if (!this.audioCtx || this.audioCtx.state === 'closed') return;
         this._activeTearIndices().forEach((idx) => {
@@ -1185,11 +1201,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         audio.volume = 0.5;
         audio.play().catch((err: any) => {
           console.warn(`[ReceiptSounds] fallback play ${tearIdx}:`, err.message);
-          if (!allowAlternate) return;
+          if (!allowAlternate) {
+            this._scheduleTearRetry(tearIdx);
+            return;
+          }
           const active = this._activeTearIndices();
           const pos = active.indexOf(tearIdx);
           const altIdx = active[(pos + 1) % active.length];
-          if (altIdx !== tearIdx) this._playFromFallbackPool(altIdx, false);
+          if (altIdx !== tearIdx) {
+            const attemptedAlt = this._playFromFallbackPool(altIdx, false);
+            if (!attemptedAlt) this._scheduleTearRetry(tearIdx);
+            return;
+          }
+          this._scheduleTearRetry(tearIdx);
         });
         return true;
       }
@@ -1213,20 +1237,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         const active = this._activeTearIndices();
         const sequencePos = this.tearSequenceIdx % active.length;
-        const tearIdx = active[sequencePos];
+        const preferredIdx = active[sequencePos];
         this.tearSequenceIdx++;
+        let tearIdx = preferredIdx;
+
+        // During initial load, prefer whichever source is actually ready so early cuts still make sound.
+        if (!this.tearBuffers[tearIdx]) {
+          const readyBufferIdx = active.find((idx) => !!this.tearBuffers[idx]);
+          if (readyBufferIdx !== undefined) {
+            tearIdx = readyBufferIdx;
+          } else {
+            const readyFallbackIdx = active.find((idx) => this._hasReadyFallback(idx));
+            if (readyFallbackIdx !== undefined) tearIdx = readyFallbackIdx;
+          }
+        }
 
         if (this._playFromBuffer(tearIdx)) return;
         if (this._playFromFallbackPool(tearIdx)) return;
 
         // If nothing is loaded yet (first cuts during initial render), retry once shortly.
-        if (this._tearRetryTimer) clearTimeout(this._tearRetryTimer);
-        this._tearRetryTimer = setTimeout(() => {
-          this._tearRetryTimer = null;
-          this._attemptUnlock(true);
-          if (this._playFromBuffer(tearIdx)) return;
-          this._playFromFallbackPool(tearIdx);
-        }, 120);
+        this._scheduleTearRetry(tearIdx);
       }
     }
 
