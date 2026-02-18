@@ -1028,17 +1028,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // ========================================
     class ReceiptSounds {
       private readonly desktopTearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3', '/sounds/Tear-3.mp3', '/sounds/Tear-4.mp3'];
-      private readonly mobileTearFiles = ['/sounds/Tear-1.mp3', '/sounds/Tear-2.mp3'];
       private readonly isMobileAudio = window.matchMedia('(pointer: coarse)').matches || /iphone|ipad|ipod|android/i.test(navigator.userAgent);
       private readonly fallbackPoolSize = 4;
       private fallbackPools: HTMLAudioElement[][] = [[], [], [], []];
       private _enabled: boolean = true;
       private audioCtx: AudioContext | null = null;
       private tearBuffers: (AudioBuffer | null)[] = [null, null, null, null];
+      private rawBuffers: (ArrayBuffer | null)[] = [null, null, null, null];
       private decodeRequested: boolean[] = [false, false, false, false];
       private tearSequenceIdx: number = 0;
       private _unlocked: boolean = false;
-      private _poolsBlessed: boolean = false;
 
       constructor() {
         const saved = localStorage.getItem('aw-sound-enabled');
@@ -1059,6 +1058,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         this._initWebAudio();
 
+        // Pre-fetch MP3 data immediately (before any gesture) so decode can start early.
+        this._activeTearIndices().forEach((idx) => {
+          fetch(this.desktopTearFiles[idx])
+            .then(r => r.arrayBuffer())
+            .then(buf => { this.rawBuffers[idx] = buf; this._decodeTearBuffers(); })
+            .catch(() => {});
+        });
+
         const unlock = () => {
           if (this._unlocked) return;
           this._unlocked = true;
@@ -1075,10 +1082,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             } catch {}
           }
 
-          // Bless HTMLAudio elements so they can play from non-gesture contexts
-          this._blessHTMLAudioPools();
-
-          // Start decoding real tear buffers in background
           this._decodeTearBuffers();
 
           document.removeEventListener('click', unlock);
@@ -1098,33 +1101,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (this.audioCtx && this.audioCtx.state === 'suspended') {
             this.audioCtx.resume().catch(() => {});
           }
-          if (!this._poolsBlessed) this._blessHTMLAudioPools();
         }, { passive: true });
       }
 
       private _activeTearIndices(): number[] {
         return this.isMobileAudio ? [0, 1] : [0, 1, 2, 3];
-      }
-
-      private _blessHTMLAudioPools() {
-        if (this._poolsBlessed) return;
-        this._poolsBlessed = true;
-        this._activeTearIndices().forEach((idx) => {
-          this.fallbackPools[idx].forEach((audio) => {
-            const prevVol = audio.volume;
-            audio.volume = 0;
-            audio.play()
-              .then(() => {
-                audio.pause();
-                audio.currentTime = 0;
-                audio.volume = prevVol;
-              })
-              .catch(() => {
-                audio.volume = prevVol;
-                this._poolsBlessed = false;
-              });
-          });
-        });
       }
 
       private _initWebAudio() {
@@ -1133,20 +1114,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           this.audioCtx.addEventListener('statechange', () => {
             if (this.audioCtx?.state === 'running') this._decodeTearBuffers();
           });
-          this._decodeTearBuffers();
         } catch(e) {
           this.audioCtx = null;
         }
       }
 
       private _decodeTearBuffers() {
-        if (!this.audioCtx || this.audioCtx.state !== 'running') return;
+        if (!this.audioCtx || this.audioCtx.state === 'closed') return;
         this._activeTearIndices().forEach((idx) => {
-          if (this.tearBuffers[idx] || this.decodeRequested[idx]) return;
+          if (this.tearBuffers[idx] || this.decodeRequested[idx] || !this.rawBuffers[idx]) return;
           this.decodeRequested[idx] = true;
-          fetch(this.desktopTearFiles[idx])
-            .then(r => r.arrayBuffer())
-            .then(buf => this.audioCtx!.decodeAudioData(buf))
+          this.audioCtx!.decodeAudioData(this.rawBuffers[idx]!.slice(0))
             .then(decoded => { this.tearBuffers[idx] = decoded; })
             .catch((err: any) => { console.warn(`[ReceiptSounds] decode buffer ${idx}:`, err); })
             .finally(() => {
