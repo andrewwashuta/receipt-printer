@@ -1096,7 +1096,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         document.addEventListener('keydown', unlock);
 
         // Persistent: resume AudioContext on every touchstart (cheap no-op if running).
-        // Ensures context is running before touchmove fires tearSound().
+        // Keeps context warm before touchend-triggered tear playback on mobile.
         document.addEventListener('touchstart', () => {
           if (this.audioCtx && this.audioCtx.state === 'suspended') {
             this.audioCtx.resume().catch(() => {});
@@ -2891,6 +2891,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let isTearing = false;
       let tearDecided = false;
       let tearIsHorizontal = false;
+      let tearReady = false;
 
       function startTear(cx: number, cy: number) {
         if (washiMode) return;
@@ -2900,6 +2901,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         isTearing = true;
         tearDecided = false;
         tearIsHorizontal = false;
+        tearReady = false;
       }
 
       function moveTear(cx: number, cy: number) {
@@ -2923,8 +2925,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         pageCutLine.style.width = `${progress * 100}%`;
 
         if (progress >= 1) {
-          executeTear(tearStartY);
-          endTear();
+          tearReady = true;
+          pageCutLine.style.width = '100%';
         }
       }
 
@@ -2934,6 +2936,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         isTearing = false;
         tearDecided = false;
         tearIsHorizontal = false;
+        tearReady = false;
       }
 
       // Touch (swipe gesture stays the same for mobile)
@@ -2967,6 +2970,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true)) {
           endWashiStroke();
           return;
+        }
+        if (isTearing && tearReady) {
+          executeTear(tearStartY);
         }
         if (isTearing) endTear();
       });
