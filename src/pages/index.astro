@@ -1038,6 +1038,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       private decodeRequested: boolean[] = [false, false, false, false];
       private tearSequenceIdx: number = 0;
       private _unlocked: boolean = false;
+      private _poolsBlessed: boolean = false;
 
       constructor() {
         const saved = localStorage.getItem('aw-sound-enabled');
@@ -1062,16 +1063,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (this._unlocked) return;
           this._unlocked = true;
 
-          if (this.audioCtx?.state === 'suspended') {
-            this.audioCtx.resume().then(() => this._decodeTearBuffers()).catch(() => {});
-          } else {
-            this._decodeTearBuffers();
+          // Activate Web Audio with a silent buffer during this user gesture
+          if (this.audioCtx && this.audioCtx.state !== 'closed') {
+            this.audioCtx.resume().catch(() => {});
+            try {
+              const silentBuf = this.audioCtx.createBuffer(1, 1, 22050);
+              const src = this.audioCtx.createBufferSource();
+              src.buffer = silentBuf;
+              src.connect(this.audioCtx.destination);
+              src.start(0);
+            } catch {}
           }
 
-          // Request active files as soon as there is user interaction.
-          this._activeTearIndices().forEach((idx) => {
-            this.fallbackPools[idx].forEach((audio) => audio.load());
-          });
+          // Bless HTMLAudio elements so they can play from non-gesture contexts
+          this._blessHTMLAudioPools();
+
+          // Start decoding real tear buffers in background
+          this._decodeTearBuffers();
 
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
@@ -1083,10 +1091,40 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         document.addEventListener('touchstart', unlock);
         document.addEventListener('pointerdown', unlock);
         document.addEventListener('keydown', unlock);
+
+        // Persistent: resume AudioContext on every touchstart (cheap no-op if running).
+        // Ensures context is running before touchmove fires tearSound().
+        document.addEventListener('touchstart', () => {
+          if (this.audioCtx && this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume().catch(() => {});
+          }
+          if (!this._poolsBlessed) this._blessHTMLAudioPools();
+        }, { passive: true });
       }
 
       private _activeTearIndices(): number[] {
         return this.isMobileAudio ? [0, 1] : [0, 1, 2, 3];
+      }
+
+      private _blessHTMLAudioPools() {
+        if (this._poolsBlessed) return;
+        this._poolsBlessed = true;
+        this._activeTearIndices().forEach((idx) => {
+          this.fallbackPools[idx].forEach((audio) => {
+            const prevVol = audio.volume;
+            audio.volume = 0;
+            audio.play()
+              .then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = prevVol;
+              })
+              .catch(() => {
+                audio.volume = prevVol;
+                this._poolsBlessed = false;
+              });
+          });
+        });
       }
 
       private _initWebAudio() {
@@ -1110,7 +1148,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             .then(r => r.arrayBuffer())
             .then(buf => this.audioCtx!.decodeAudioData(buf))
             .then(decoded => { this.tearBuffers[idx] = decoded; })
-            .catch(() => {})
+            .catch((err: any) => { console.warn(`[ReceiptSounds] decode buffer ${idx}:`, err); })
             .finally(() => {
               if (!this.tearBuffers[idx]) this.decodeRequested[idx] = false;
             });
@@ -1143,7 +1181,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         try { audio.currentTime = 0; } catch {}
         audio.volume = 0.5;
-        audio.play().catch(() => {
+        audio.play().catch((err: any) => {
+          console.warn(`[ReceiptSounds] fallback play ${tearIdx}:`, err.message);
           if (!allowAlternate) return;
           const active = this._activeTearIndices();
           const pos = active.indexOf(tearIdx);
@@ -1167,16 +1206,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const sequencePos = this.tearSequenceIdx % active.length;
         const tearIdx = active[sequencePos];
         this.tearSequenceIdx++;
-
-        if (this.audioCtx && this.audioCtx.state === 'suspended') {
-          this.audioCtx.resume()
-            .then(() => {
-              this._decodeTearBuffers();
-              if (!this._playFromBuffer(tearIdx)) this._playFromFallbackPool(tearIdx);
-            })
-            .catch(() => this._playFromFallbackPool(tearIdx));
-          return;
-        }
 
         if (this._playFromBuffer(tearIdx)) return;
         this._playFromFallbackPool(tearIdx);
