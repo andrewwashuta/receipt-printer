@@ -741,14 +741,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       display: none;
       position: fixed;
       left: 50%;
-      bottom: calc(64px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       transform: translateX(-50%);
       z-index: 10099;
       font-family: 'MD Thermochrome 0.4', monospace;
       font-size: 11px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: rgba(245, 240, 232, 0.5);
       white-space: nowrap;
       pointer-events: none;
       opacity: 0;
@@ -765,6 +764,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: shimmer 3s ease-in-out infinite;
+      padding: 6px 14px;
+    }
+
+    .mode-hint::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(20, 18, 15, 0.6);
+      border-radius: 10px;
+      z-index: -1;
     }
 
     .mode-hint.visible {
@@ -1344,6 +1353,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const handToggleBtn = document.getElementById('handToggle') as HTMLButtonElement | null;
     const handLabel = document.getElementById('handLabel') as HTMLElement | null;
     const modeHint = document.getElementById('modeHint') as HTMLElement | null;
+    let modeHintReady = false;
 
     function syncControlLabels() {
       if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound On' : 'Sound Off';
@@ -1352,17 +1362,31 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       syncModeHint();
     }
 
+    let modeHintDismissed = false;
+
     function syncModeHint() {
       if (!modeHint) return;
+      // Reset dismissed state when mode changes
+      modeHintDismissed = false;
       if (washiMode) {
-        modeHint.textContent = '\u2728 Tape anywhere \u00B7 scroll disabled \u2728';
+        modeHint.textContent = 'Tape anywhere \u00B7 scroll disabled';
         modeHint.classList.add('visible');
       } else if (handMode) {
-        modeHint.textContent = '\u2728 Drag pieces \u00B7 scroll disabled \u2728';
+        modeHint.textContent = 'Drag pieces \u00B7 scroll disabled';
+        modeHint.classList.add('visible');
+      } else if (modeHintReady) {
+        modeHint.textContent = 'Swipe to cut';
         modeHint.classList.add('visible');
       } else {
         modeHint.classList.remove('visible');
       }
+    }
+
+    // Dismiss hint on first interaction in the current mode
+    function dismissModeHint() {
+      if (!modeHint || modeHintDismissed) return;
+      modeHintDismissed = true;
+      modeHint.classList.remove('visible');
     }
 
     function syncWashiToggle() {
@@ -1826,6 +1850,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let cutHintTimer: ReturnType<typeof setTimeout> | null = null;
 
     function showCutHint() {
+      modeHintReady = true;
+      syncModeHint();
+
       // Always show on first visit (cleared localStorage key)
       if (sessionStorage.getItem('aw-hint-shown')) return;
       sessionStorage.setItem('aw-hint-shown', '1');
@@ -2973,6 +3000,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function startWashiStroke(clientX: number, clientY: number) {
+        dismissModeHint();
         washiDrawing = true;
         washiStartX = clientX;
         washiStartY = clientY;
@@ -3289,6 +3317,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const piece = findPieceByEl(e.target as HTMLElement);
         if (!piece) return;
 
+        dismissModeHint();
         activeHandPointerId = e.pointerId;
         handDragging = true;
         handDragPiece = piece;
@@ -3404,6 +3433,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function startTear(cx: number, cy: number) {
         if (washiMode || handMode) return;
         if (!canCutDuringPrint()) return;
+        dismissModeHint();
         sounds.prepareTearGesture();
         tearStartX = cx;
         tearStartY = cy;
