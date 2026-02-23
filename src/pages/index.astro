@@ -698,20 +698,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .toolbar-label {
-      right: auto;
-      top: auto;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%) translateY(4px);
-      filter: blur(3px);
-    }
-
-    .toolbar-btn:hover .toolbar-label,
-    .toolbar-btn:active .toolbar-label,
-    .toolbar-btn.toolbar-btn--label-show .toolbar-label {
-      transform: translateX(-50%) translateY(0);
-      filter: blur(0);
-      opacity: 1;
+      display: none;
     }
 
     .toolbar-btn--washi-only {
@@ -731,7 +718,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
   }
 
-  /* Mobile mode hint */
+  /* Mobile unified label (replaces per-button toolbar labels) */
   .mode-hint {
     display: none;
   }
@@ -741,24 +728,33 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       display: block;
       position: fixed;
       left: 50%;
-      bottom: calc(90px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      bottom: calc(60px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       transform: translateX(-50%);
-      z-index: 10099;
-      font-family: 'MD Thermochrome 0.4', monospace;
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
+      z-index: 10100;
+      font-family: var(--font-receipt);
+      font-size: 12px;
+      letter-spacing: 1px;
       white-space: nowrap;
       pointer-events: none;
-      color: white;
-      mix-blend-mode: difference;
+      background: rgba(48, 40, 26, 0.78);
+      padding: 3px 8px;
+      color: rgba(244, 236, 215, 0.86);
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.4s ease;
     }
 
     .mode-hint.visible {
       opacity: 1;
     }
+
+    .mode-hint.shimmer {
+      animation: hintShimmer 2.5s ease-in-out infinite;
+    }
+  }
+
+  @keyframes hintShimmer {
+    0%, 100% { color: rgba(244, 236, 215, 0.45); }
+    50% { color: rgba(244, 236, 215, 0.95); }
   }
 
   :global(.washi-preview),
@@ -1327,40 +1323,34 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const handToggleBtn = document.getElementById('handToggle') as HTMLButtonElement | null;
     const handLabel = document.getElementById('handLabel') as HTMLElement | null;
     const modeHint = document.getElementById('modeHint') as HTMLElement | null;
-    let modeHintReady = false;
+    let hintTimer: ReturnType<typeof setTimeout> | null = null;
+    let hintPersistent = false;
 
     function syncControlLabels() {
       if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound On' : 'Sound Off';
       if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi On' : 'Washi Off';
       if (handLabel) handLabel.textContent = handMode ? 'Hand On' : 'Hand Off';
-      syncModeHint();
     }
 
-    let modeHintDismissed = false;
-
-    function syncModeHint() {
+    function showHint(text: string, persistent: boolean) {
       if (!modeHint) return;
-      // Reset dismissed state when mode changes
-      modeHintDismissed = false;
-      if (washiMode) {
-        modeHint.textContent = 'Tape anywhere \u00B7 scroll disabled';
-        modeHint.classList.add('visible');
-      } else if (handMode) {
-        modeHint.textContent = 'Drag pieces \u00B7 scroll disabled';
-        modeHint.classList.add('visible');
-      } else if (modeHintReady) {
-        modeHint.textContent = 'Swipe to cut';
-        modeHint.classList.add('visible');
-      } else {
-        modeHint.classList.remove('visible');
+      if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
+      modeHint.textContent = text;
+      modeHint.classList.add('visible');
+      modeHint.classList.toggle('shimmer', persistent);
+      hintPersistent = persistent;
+      if (!persistent) {
+        hintTimer = setTimeout(() => {
+          modeHint.classList.remove('visible', 'shimmer');
+          hintTimer = null;
+        }, 1500);
       }
     }
 
-    // Dismiss hint on first interaction in the current mode
-    function dismissModeHint() {
-      if (!modeHint || modeHintDismissed) return;
-      modeHintDismissed = true;
-      modeHint.classList.remove('visible');
+    function dismissHint() {
+      if (!modeHint || !hintPersistent) return;
+      hintPersistent = false;
+      modeHint.classList.remove('visible', 'shimmer');
     }
 
     function syncWashiToggle() {
@@ -1455,13 +1445,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
     let activeLabelBtn: HTMLElement | null = null;
+    const isMobileHint = window.matchMedia('(max-width: 600px)').matches;
 
     function showLabelBriefly(btn: HTMLElement | null) {
-      if (!btn) return;
-      if (labelTimer) {
-        clearTimeout(labelTimer);
-        labelTimer = null;
-      }
+      if (!btn || isMobileHint) return;
+      if (labelTimer) { clearTimeout(labelTimer); labelTimer = null; }
       if (activeLabelBtn && activeLabelBtn !== btn) {
         activeLabelBtn.classList.remove('toolbar-btn--label-show');
       }
@@ -1480,26 +1468,37 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     soundToggle.addEventListener('click', () => {
       toggleSound();
       showLabelBriefly(soundToggle);
+      if (isMobileHint) showHint(sounds.isEnabled ? 'Sound On' : 'Sound Off', false);
     });
 
     tapeToggle?.addEventListener('click', () => {
       washiMode = !washiMode;
       syncWashiToggle();
       showLabelBriefly(tapeToggle);
+      if (isMobileHint) {
+        showHint(washiMode ? 'Washi On \u00B7 Scroll Disabled' : 'Washi Off', washiMode);
+      }
     });
 
     clearTapeBtn?.addEventListener('click', () => {
       clearAllTape();
       showLabelBriefly(clearTapeBtn);
+      if (isMobileHint) showHint('Tape Cleared', false);
     });
 
     handToggleBtn?.addEventListener('click', () => {
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
+      if (isMobileHint) {
+        showHint(handMode ? 'Hand On \u00B7 Scroll Disabled' : 'Hand Off', handMode);
+      }
     });
 
     const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement | null;
-    resetBtn?.addEventListener('click', () => resetToDefault());
+    resetBtn?.addEventListener('click', () => {
+      resetToDefault();
+      if (isMobileHint) showHint('Reset', false);
+    });
 
     syncWashiToggle();
     syncControlLabels();
@@ -1824,9 +1823,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let cutHintTimer: ReturnType<typeof setTimeout> | null = null;
 
     function showCutHint() {
-      modeHintReady = true;
-      syncModeHint();
-
       // Always show on first visit (cleared localStorage key)
       if (sessionStorage.getItem('aw-hint-shown')) return;
       sessionStorage.setItem('aw-hint-shown', '1');
@@ -2974,7 +2970,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function startWashiStroke(clientX: number, clientY: number) {
-        dismissModeHint();
+        dismissHint();
         washiDrawing = true;
         washiStartX = clientX;
         washiStartY = clientY;
@@ -3291,7 +3287,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const piece = findPieceByEl(e.target as HTMLElement);
         if (!piece) return;
 
-        dismissModeHint();
+        dismissHint();
         activeHandPointerId = e.pointerId;
         handDragging = true;
         handDragPiece = piece;
@@ -3407,7 +3403,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function startTear(cx: number, cy: number) {
         if (washiMode || handMode) return;
         if (!canCutDuringPrint()) return;
-        dismissModeHint();
+        dismissHint();
         sounds.prepareTearGesture();
         tearStartX = cx;
         tearStartY = cy;
