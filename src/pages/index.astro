@@ -1305,9 +1305,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     function syncHandToggle() {
       if (handToggleBtn) handToggleBtn.classList.toggle('active', handMode);
       document.body.classList.toggle('hand-mode', handMode);
-      // Toggle pointer-events on all existing piece elements
+      // Toggle pointer-events on clipEl (first child) — clip-path limits the hit area
       const pe = handMode ? 'auto' : 'none';
-      document.querySelectorAll<HTMLElement>('.receipt-piece').forEach(el => { el.style.pointerEvents = pe; });
+      document.querySelectorAll<HTMLElement>('.receipt-piece').forEach(el => {
+        const clipChild = el.firstElementChild as HTMLElement | null;
+        if (clipChild) clipChild.style.pointerEvents = pe;
+      });
       syncControlLabels();
     }
 
@@ -2284,7 +2287,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         clone.removeAttribute('id');
         const p = { top, bottom, offsetX, offsetY, rotation: rot, topEdge, bottomEdge, printables: [] } as TearPiece;
 
-        // Inner element: clipped receipt content
+        // Inner element: clipped receipt content (pointer-events here so clip-path limits hit area)
         Object.assign(clone.style, {
           position: 'relative',
           width: '100%',
@@ -2296,6 +2299,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           contain: 'layout paint style',
           overflow: 'hidden',
           willChange: 'clip-path',
+          pointerEvents: handMode ? 'auto' : 'none',
         });
 
         if (topEdge) addEdgeGrain(clone, top, 'bottom');
@@ -2313,7 +2317,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           transformOrigin: 'center center',
           backfaceVisibility: 'hidden',
           willChange: 'transform',
-          pointerEvents: handMode ? 'auto' : 'none',
+          pointerEvents: 'none',
           zIndex: '10',
           transition: 'none',
         });
