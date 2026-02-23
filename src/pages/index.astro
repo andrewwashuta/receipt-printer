@@ -752,39 +752,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
-      background: linear-gradient(
-        90deg,
-        rgba(245, 240, 232, 0.35) 0%,
-        rgba(245, 240, 232, 0.7) 40%,
-        rgba(245, 240, 232, 0.7) 60%,
-        rgba(245, 240, 232, 0.35) 100%
-      );
-      background-size: 200% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shimmer 3s ease-in-out infinite;
       padding: 6px 14px;
-    }
-
-    .mode-hint::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(20, 18, 15, 0.6);
-      border-radius: 10px;
-      z-index: -1;
+      background: rgba(30, 28, 24, 0.85);
+      border: 1px solid rgba(245, 240, 232, 0.12);
+      color: rgba(245, 240, 232, 0.5);
     }
 
     .mode-hint.visible {
       display: block;
       opacity: 1;
+      animation: shimmer-text 3s ease-in-out infinite;
     }
   }
 
-  @keyframes shimmer {
-    0% { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
+  @keyframes shimmer-text {
+    0%, 100% { color: rgba(245, 240, 232, 0.35); }
+    50% { color: rgba(245, 240, 232, 0.7); }
   }
 
   :global(.washi-preview),
