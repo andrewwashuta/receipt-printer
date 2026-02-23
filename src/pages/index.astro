@@ -3076,9 +3076,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function handPhysicsTick() {
         const parentRect = receipt!.parentElement!.getBoundingClientRect();
         const baseCX = parentRect.left + parentRect.width / 2;
+        const halfW = receipt!.offsetWidth / 2;
         const rr = receipt!.getBoundingClientRect();
-        const minOX = HAND_EDGE_PADDING - baseCX;
-        const maxOX = window.innerWidth - HAND_EDGE_PADDING - baseCX;
+        const rh = rr.height;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
 
         for (let i = physicsQueue.length - 1; i >= 0; i--) {
           const pp = physicsQueue[i];
@@ -3086,13 +3088,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           pp.piece.offsetY += pp.vy;
           pp.piece.rotation += pp.vRot;
 
-          // Clamp to viewport, kill velocity at edges
+          // Edge-based clamping: keep at least HAND_EDGE_PADDING px of piece visible
+          // Horizontal: right edge >= padding, left edge <= vw - padding
+          const minOX = HAND_EDGE_PADDING - baseCX - halfW;
+          const maxOX = vw - HAND_EDGE_PADDING - baseCX + halfW;
           if (pp.piece.offsetX < minOX) { pp.piece.offsetX = minOX; pp.vx = 0; }
           else if (pp.piece.offsetX > maxOX) { pp.piece.offsetX = maxOX; pp.vx = 0; }
 
-          const baseCY = rr.top + ((pp.piece.top + pp.piece.bottom) / 200) * rr.height;
-          const minOY = HAND_EDGE_PADDING - baseCY;
-          const maxOY = window.innerHeight - HAND_EDGE_PADDING - baseCY;
+          // Vertical: bottom edge >= padding, top edge <= vh - padding
+          const pieceTop0 = rr.top + (pp.piece.top / 100) * rh;
+          const pieceBot0 = rr.top + (pp.piece.bottom / 100) * rh;
+          const minOY = HAND_EDGE_PADDING - pieceBot0;
+          const maxOY = vh - HAND_EDGE_PADDING - pieceTop0;
           if (pp.piece.offsetY < minOY) { pp.piece.offsetY = minOY; pp.vy = 0; }
           else if (pp.piece.offsetY > maxOY) { pp.piece.offsetY = maxOY; pp.vy = 0; }
 
