@@ -34,6 +34,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     </button>
   </div>
 
+  <!-- Mobile mode hint (shimmer text above toolbar) -->
+  <div class="mode-hint" id="modeHint" aria-live="polite"></div>
+
   <!-- Inverse cursor dot (desktop only) -->
   <div class="cursor-dot" id="cursorDot"></div>
 
@@ -728,6 +731,53 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
   }
 
+  /* Mobile mode hint — shimmer text above toolbar */
+  .mode-hint {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .mode-hint {
+      display: none;
+      position: fixed;
+      left: 50%;
+      bottom: calc(64px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      transform: translateX(-50%);
+      z-index: 10099;
+      font-family: 'MD Thermochrome 0.4', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(245, 240, 232, 0.5);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      background: linear-gradient(
+        90deg,
+        rgba(245, 240, 232, 0.35) 0%,
+        rgba(245, 240, 232, 0.7) 40%,
+        rgba(245, 240, 232, 0.7) 60%,
+        rgba(245, 240, 232, 0.35) 100%
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    .mode-hint.visible {
+      display: block;
+      opacity: 1;
+    }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
   :global(.washi-preview),
   :global(.washi-strip) {
     border: none;
@@ -1293,11 +1343,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let resetToDefault = () => {};
     const handToggleBtn = document.getElementById('handToggle') as HTMLButtonElement | null;
     const handLabel = document.getElementById('handLabel') as HTMLElement | null;
+    const modeHint = document.getElementById('modeHint') as HTMLElement | null;
 
     function syncControlLabels() {
       if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound On' : 'Sound Off';
       if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi On' : 'Washi Off';
       if (handLabel) handLabel.textContent = handMode ? 'Hand On' : 'Hand Off';
+      syncModeHint();
+    }
+
+    function syncModeHint() {
+      if (!modeHint) return;
+      if (washiMode) {
+        modeHint.textContent = '\u2728 Tape anywhere \u00B7 scroll disabled \u2728';
+        modeHint.classList.add('visible');
+      } else if (handMode) {
+        modeHint.textContent = '\u2728 Drag pieces \u00B7 scroll disabled \u2728';
+        modeHint.classList.add('visible');
+      } else {
+        modeHint.classList.remove('visible');
+      }
     }
 
     function syncWashiToggle() {
