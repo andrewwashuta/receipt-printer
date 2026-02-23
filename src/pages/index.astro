@@ -3039,8 +3039,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let handDragOrigOffsetX = 0;
       let handDragOrigOffsetY = 0;
       let activeHandPointerId: number | null = null;
-      let handDragBaseCenterX = 0;
-      let handDragBaseCenterY = 0;
       const HAND_EDGE_PADDING = 20;
 
       const HAND_VELOCITY_SAMPLES = 5;
@@ -3129,11 +3127,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         handDragOrigOffsetX = piece.offsetX;
         handDragOrigOffsetY = piece.offsetY;
 
-        const parentRect = receipt!.parentElement!.getBoundingClientRect();
-        handDragBaseCenterX = parentRect.left + parentRect.width / 2;
-        const rr = receipt!.getBoundingClientRect();
-        handDragBaseCenterY = rr.top + ((piece.top + piece.bottom) / 200) * rr.height;
-
         handZCounter++;
         piece.el.style.zIndex = String(handZCounter);
         piece.el.style.transition = 'none';
@@ -3150,14 +3143,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!handMode || !handDragging || activeHandPointerId !== e.pointerId) return;
         if (!handDragPiece) return;
 
-        const rawOffsetX = handDragOrigOffsetX + (e.clientX - handDragStartX);
-        const rawOffsetY = handDragOrigOffsetY + (e.clientY - handDragStartY);
-        const minOX = HAND_EDGE_PADDING - handDragBaseCenterX;
-        const maxOX = window.innerWidth - HAND_EDGE_PADDING - handDragBaseCenterX;
-        const minOY = HAND_EDGE_PADDING - handDragBaseCenterY;
-        const maxOY = window.innerHeight - HAND_EDGE_PADDING - handDragBaseCenterY;
-        handDragPiece.offsetX = Math.max(minOX, Math.min(maxOX, rawOffsetX));
-        handDragPiece.offsetY = Math.max(minOY, Math.min(maxOY, rawOffsetY));
+        handDragPiece.offsetX = handDragOrigOffsetX + (e.clientX - handDragStartX);
+        handDragPiece.offsetY = handDragOrigOffsetY + (e.clientY - handDragStartY);
         handDragPiece.el.style.transform = transformFor(handDragPiece);
 
         handVelocitySamples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
