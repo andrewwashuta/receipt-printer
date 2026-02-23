@@ -3039,7 +3039,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let handDragOrigOffsetX = 0;
       let handDragOrigOffsetY = 0;
       let activeHandPointerId: number | null = null;
-      const HAND_EDGE_PADDING = 20;
+      const HAND_EDGE_PADDING = 50;
 
       const HAND_VELOCITY_SAMPLES = 5;
       let handVelocitySamples: { x: number; y: number; t: number }[] = [];
@@ -3071,6 +3071,34 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           vx: ((newest.x - oldest.x) / dt) * frameTime,
           vy: ((newest.y - oldest.y) / dt) * frameTime,
         };
+      }
+
+      function snapPieceIntoBounds(piece: TearPiece) {
+        const parentRect = receipt!.parentElement!.getBoundingClientRect();
+        const baseCX = parentRect.left + parentRect.width / 2;
+        const halfW = receipt!.offsetWidth / 2;
+        const rr = receipt!.getBoundingClientRect();
+        const rh = rr.height;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        let corrected = false;
+        const minOX = HAND_EDGE_PADDING - baseCX - halfW;
+        const maxOX = vw - HAND_EDGE_PADDING - baseCX + halfW;
+        if (piece.offsetX < minOX) { piece.offsetX = minOX; corrected = true; }
+        else if (piece.offsetX > maxOX) { piece.offsetX = maxOX; corrected = true; }
+
+        const pieceBot0 = rr.top + (piece.bottom / 100) * rh;
+        const pieceTop0 = rr.top + (piece.top / 100) * rh;
+        const minOY = HAND_EDGE_PADDING - pieceBot0;
+        const maxOY = vh - HAND_EDGE_PADDING - pieceTop0;
+        if (piece.offsetY < minOY) { piece.offsetY = minOY; corrected = true; }
+        else if (piece.offsetY > maxOY) { piece.offsetY = maxOY; corrected = true; }
+
+        if (corrected) {
+          piece.el.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          piece.el.style.transform = transformFor(piece);
+        }
       }
 
       function handPhysicsTick() {
@@ -3166,15 +3194,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           return;
         }
 
+        const releasedPiece = handDragPiece;
         const { vx, vy } = computeReleaseVelocity();
         const rotDelta = Math.max(-HAND_MAX_ROTATION_DELTA, Math.min(HAND_MAX_ROTATION_DELTA, vx * HAND_ROTATION_FACTOR));
 
         if (Math.abs(vx) > HAND_MIN_VELOCITY || Math.abs(vy) > HAND_MIN_VELOCITY) {
-          physicsQueue.push({ piece: handDragPiece, vx, vy, vRot: rotDelta * 0.1 });
+          physicsQueue.push({ piece: releasedPiece, vx, vy, vRot: rotDelta * 0.1 });
           if (!handPhysicsActive) {
             handPhysicsActive = true;
             requestAnimationFrame(handPhysicsTick);
           }
+        } else {
+          // No fling — snap back if piece was dropped outside viewport
+          snapPieceIntoBounds(releasedPiece);
         }
 
         document.body.classList.remove('hand-dragging');
@@ -3185,6 +3217,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       document.addEventListener('pointercancel', (e: PointerEvent) => {
         if (activeHandPointerId !== e.pointerId) return;
+        if (handDragPiece) snapPieceIntoBounds(handDragPiece);
         document.body.classList.remove('hand-dragging');
         handDragging = false;
         handDragPiece = null;
