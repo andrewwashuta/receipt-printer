@@ -2930,7 +2930,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function endWashiStroke() {
         if (!washiDrawing) return;
-        document.documentElement.style.touchAction = '';
+        if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
         const scrollDX = window.scrollX - washiStartScrollX;
         const scrollDY = window.scrollY - washiStartScrollY;
         const stroke: TapeStroke = {
@@ -3388,7 +3388,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         tearDecided = false;
         tearIsHorizontal = false;
         tearReady = false;
-        document.documentElement.style.touchAction = '';
+        if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
       }
 
       // Touch (swipe gesture stays the same for mobile)
