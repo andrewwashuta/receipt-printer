@@ -697,7 +697,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       background: rgba(48, 40, 26, 0.88);
     }
 
-    .toolbar-label {
+    .toolbar-label,
+    .toolbar-key {
       display: none;
     }
 
@@ -736,11 +737,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       letter-spacing: 1px;
       white-space: nowrap;
       pointer-events: none;
-      background: rgba(48, 40, 26, 0.78);
       padding: 3px 8px;
       color: rgba(244, 236, 215, 0.86);
       opacity: 0;
       transition: opacity 0.4s ease;
+    }
+
+    .mode-hint::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(48, 40, 26, 0.78);
+      z-index: -1;
     }
 
     .mode-hint.visible {
@@ -748,13 +756,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .mode-hint.shimmer {
+      background: linear-gradient(
+        90deg,
+        rgba(244, 236, 215, 0.5) 0%,
+        rgba(244, 236, 215, 1) 50%,
+        rgba(244, 236, 215, 0.5) 100%
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
       animation: hintShimmer 2.5s ease-in-out infinite;
     }
   }
 
   @keyframes hintShimmer {
-    0%, 100% { color: rgba(244, 236, 215, 0.45); }
-    50% { color: rgba(244, 236, 215, 0.95); }
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
   }
 
   :global(.washi-preview),
