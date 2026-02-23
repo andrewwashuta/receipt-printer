@@ -679,6 +679,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       left: 50%;
       transform: translateX(-50%);
       flex-direction: row;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: rgba(30, 28, 24, 0.92);
     }
 
     .toolbar-btn + .toolbar-btn {
@@ -936,7 +939,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     opacity: 0;
     transition: opacity 0.15s, width 0.18s ease-out, height 0.18s ease-out;
     transform: translate(-50%, -50%);
-    will-change: left, top, width, height;
   }
 
   /* Hide on touch devices and small screens */
@@ -949,6 +951,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   /* Hide OS cursor on desktop */
   @media (pointer: fine) {
+    .cursor-dot {
+      will-change: left, top, width, height;
+    }
     *, *::before, *::after {
       cursor: none !important;
     }
@@ -980,9 +985,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       transform: rotate(0deg);
       padding: 20px 16px;
       width: 100%;
-      box-shadow:
-        0 1px 4px rgba(0,0,0,0.2),
-        0 4px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      filter: none;
+    }
+
+    .receipt::after {
+      display: none;
     }
 
     .receipt-line {
@@ -2103,7 +2111,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return `translateX(-50%) translateX(${p.offsetX}px) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
       }
 
-      const PIECE_SHADOW = 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))';
+      const PIECE_SHADOW = desktopFinePointer
+        ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))'
+        : 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))';
 
       // Lazily set up the piece system on the first tear
       function initTearSystem() {
