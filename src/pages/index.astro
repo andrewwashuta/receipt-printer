@@ -1308,6 +1308,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         handMode = false;
         syncHandToggle();
       }
+      // Block scrolling while washi mode is active on mobile
+      if (washiMode) {
+        document.documentElement.style.touchAction = 'none';
+      } else if (!handMode) {
+        document.documentElement.style.touchAction = '';
+      }
       syncControlLabels();
     }
 
@@ -1320,6 +1326,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const clipChild = el.firstElementChild as HTMLElement | null;
         if (clipChild) clipChild.style.pointerEvents = pe;
       });
+      // Block scrolling while hand mode is active on mobile
+      if (handMode) {
+        document.documentElement.style.touchAction = 'none';
+      } else if (!washiMode) {
+        document.documentElement.style.touchAction = '';
+      }
       syncControlLabels();
     }
 
