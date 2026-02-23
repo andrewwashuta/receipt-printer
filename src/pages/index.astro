@@ -3040,8 +3040,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let handDragOrigOffsetY = 0;
       let activeHandPointerId: number | null = null;
       let handDragBaseCenterX = 0;
-      let handDragHalfW = 0;
-      const HAND_EDGE_MIN_VISIBLE = 50;
+      const HAND_EDGE_PADDING = 20;
 
       const HAND_VELOCITY_SAMPLES = 5;
       let handVelocitySamples: { x: number; y: number; t: number }[] = [];
@@ -3078,9 +3077,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function handPhysicsTick() {
         const parentRect = receipt!.parentElement!.getBoundingClientRect();
         const baseCX = parentRect.left + parentRect.width / 2;
-        const halfW = receipt!.offsetWidth / 2;
-        const minOX = HAND_EDGE_MIN_VISIBLE - baseCX - halfW;
-        const maxOX = window.innerWidth - HAND_EDGE_MIN_VISIBLE - baseCX + halfW;
+        const minOX = HAND_EDGE_PADDING - baseCX;
+        const maxOX = window.innerWidth - HAND_EDGE_PADDING - baseCX;
 
         for (let i = physicsQueue.length - 1; i >= 0; i--) {
           const pp = physicsQueue[i];
@@ -3125,7 +3123,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         const parentRect = receipt!.parentElement!.getBoundingClientRect();
         handDragBaseCenterX = parentRect.left + parentRect.width / 2;
-        handDragHalfW = receipt!.offsetWidth / 2;
 
         handZCounter++;
         piece.el.style.zIndex = String(handZCounter);
@@ -3144,8 +3141,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!handDragPiece) return;
 
         const rawOffsetX = handDragOrigOffsetX + (e.clientX - handDragStartX);
-        const minOX = HAND_EDGE_MIN_VISIBLE - handDragBaseCenterX - handDragHalfW;
-        const maxOX = window.innerWidth - HAND_EDGE_MIN_VISIBLE - handDragBaseCenterX + handDragHalfW;
+        const minOX = HAND_EDGE_PADDING - handDragBaseCenterX;
+        const maxOX = window.innerWidth - HAND_EDGE_PADDING - handDragBaseCenterX;
         handDragPiece.offsetX = Math.max(minOX, Math.min(maxOX, rawOffsetX));
         handDragPiece.offsetY = handDragOrigOffsetY + (e.clientY - handDragStartY);
         handDragPiece.el.style.transform = transformFor(handDragPiece);
