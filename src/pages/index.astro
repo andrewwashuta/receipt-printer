@@ -2471,12 +2471,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function getSeamGeometry(topPiece: TearPiece, bottomPiece: TearPiece) {
         const rr = receipt!.getBoundingClientRect();
         const rh = rr.height;
+        const parentRect = receipt!.parentElement!.getBoundingClientRect();
+        const baseCX = parentRect.left + parentRect.width / 2;
+        const halfW = receipt!.offsetWidth / 2;
+
         const topVisibleBottom = rr.top + (topPiece.bottom / 100) * rh + topPiece.offsetY;
         const bottomVisibleTop = rr.top + (bottomPiece.top / 100) * rh + bottomPiece.offsetY;
+
+        // Use actual piece positions for horizontal bounds (overlap of the two pieces)
+        const topLeft = baseCX + topPiece.offsetX - halfW;
+        const topRight = baseCX + topPiece.offsetX + halfW;
+        const bottomLeft = baseCX + bottomPiece.offsetX - halfW;
+        const bottomRight = baseCX + bottomPiece.offsetX + halfW;
+
         return {
           seamY: (topVisibleBottom + bottomVisibleTop) / 2,
-          seamLeft: rr.left - 20,
-          seamRight: rr.right + 20,
+          seamGap: Math.abs(bottomVisibleTop - topVisibleBottom),
+          seamLeft: Math.max(topLeft, bottomLeft) - 20,
+          seamRight: Math.min(topRight, bottomRight) + 20,
         };
       }
 
@@ -2495,8 +2507,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           const topPiece = pieces[i];
           const bottomPiece = pieces[i + 1];
 
-          const { seamY, seamLeft, seamRight } = getSeamGeometry(topPiece, bottomPiece);
-          if (seamRight <= seamLeft) continue;
+          const { seamY, seamGap, seamLeft, seamRight } = getSeamGeometry(topPiece, bottomPiece);
+          if (seamRight <= seamLeft) continue; // no horizontal overlap
+          if (seamGap > 200) continue; // pieces too far apart vertically
           if (!strokeIntersectsSeamBand(stroke, seamY, seamLeft, seamRight)) continue;
 
           const probeX = clampPct(midX, seamLeft, seamRight);
@@ -2539,15 +2552,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function findNearestSeamByMidpoint(stroke: TapeStroke): number {
         if (!tearSystemReady || pieces.length < 2) return -1;
-        const midX = (stroke.startX + stroke.endX) / 2;
         const midY = (stroke.startY + stroke.endY) / 2;
-        const rr = receipt!.getBoundingClientRect();
-        if (midX < rr.left - 90 || midX > rr.right + 90) return -1;
 
         let bestIdx = -1;
         let bestDist = Infinity;
         for (let i = 0; i < pieces.length - 1; i++) {
-          const { seamY } = getSeamGeometry(pieces[i], pieces[i + 1]);
+          const { seamY, seamGap, seamLeft, seamRight } = getSeamGeometry(pieces[i], pieces[i + 1]);
+          if (seamRight <= seamLeft) continue; // no horizontal overlap
+          if (seamGap > 200) continue; // pieces too far apart
           const dist = Math.abs(midY - seamY);
           if (dist < bestDist) {
             bestDist = dist;
