@@ -23,13 +23,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       <span class="toolbar-icon">&#x1F5D1;</span>
       <span class="toolbar-key">C</span>
     </button>
+    <button class="toolbar-btn" id="handToggle" aria-label="Toggle hand mode" title="Toggle hand mode">
+      <span class="toolbar-label" id="handLabel">Hand Off</span>
+      <span class="toolbar-icon">&#x261A;</span>
+      <span class="toolbar-key">H</span>
+    </button>
+    <button class="toolbar-btn" id="resetBtn" aria-label="Reset receipt" title="Reset receipt">
+      <span class="toolbar-label">Reset</span>
+      <span class="toolbar-icon">&#128257;</span>
+    </button>
   </div>
 
   <!-- Inverse cursor dot (desktop only) -->
-  <div class="cursor-dot" id="cursorDot">
-    <div class="cursor-half cursor-half-top"></div>
-    <div class="cursor-half cursor-half-bottom"></div>
-  </div>
+  <div class="cursor-dot" id="cursorDot"></div>
 
   <div class="receipt-wrapper">
     <div class="receipt" id="receipt">
@@ -872,9 +878,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     transition: width 0.04s ease-out;
   }
 
-  /* Pieces after tear */
+  /* Pieces after tear — wrapper allows washi overflow */
   .receipt-piece {
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   /* Swipe affordance hint (matches sound-toggle vibe) */
@@ -920,33 +926,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   .cursor-dot {
     position: fixed;
-    width: 0;
-    height: 0;
+    width: var(--dot-size, 8px);
+    height: var(--dot-size, 8px);
+    border-radius: 50%;
+    background: white;
     pointer-events: none;
     z-index: 10200;
     mix-blend-mode: difference;
     opacity: 0;
-    transition: opacity 0.15s;
-    will-change: left, top;
-  }
-
-  .cursor-half {
-    position: absolute;
-    width: var(--dot-size, 8px);
-    height: calc(var(--dot-size, 8px) / 2);
-    background: white;
-    pointer-events: none;
-    transition: width 0.18s ease-out, height 0.18s ease-out, transform 0.18s ease-out;
-  }
-
-  .cursor-half-top {
-    border-radius: calc(var(--dot-size, 8px) / 2) calc(var(--dot-size, 8px) / 2) 0 0;
-    transform: translate(-50%, calc(-1 * var(--dot-size, 8px) / 2 + var(--split-offset, 0px)));
-  }
-
-  .cursor-half-bottom {
-    border-radius: 0 0 calc(var(--dot-size, 8px) / 2) calc(var(--dot-size, 8px) / 2);
-    transform: translate(-50%, calc(var(--split-offset-inv, 0px)));
+    transition: opacity 0.15s, width 0.18s ease-out, height 0.18s ease-out;
+    transform: translate(-50%, -50%);
+    will-change: left, top, width, height;
   }
 
   /* Hide on touch devices and small screens */
@@ -965,6 +955,19 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     :global(body.washi-mode) *, :global(body.washi-mode) *::before, :global(body.washi-mode) *::after {
       cursor: crosshair !important;
     }
+    :global(body.hand-mode) *, :global(body.hand-mode) *::before, :global(body.hand-mode) *::after {
+      cursor: grab !important;
+    }
+    :global(body.hand-mode.hand-dragging) *, :global(body.hand-mode.hand-dragging) *::before, :global(body.hand-mode.hand-dragging) *::after {
+      cursor: grabbing !important;
+    }
+  }
+
+  :global(body.hand-mode) .cursor-dot {
+    display: none;
+  }
+  :global(body.hand-mode) .receipt-piece {
+    touch-action: none;
   }
 
   /* ============================================ */
@@ -1276,17 +1279,46 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     soundIcon.textContent = initialEnabled ? '\u{1F50A}' : '\u{1F507}';
     soundToggle.classList.toggle('active', initialEnabled);
     let washiMode = false;
+    let handMode = false;
+    let cleanupWashiStroke = () => {};
+    let resetToDefault = () => {};
+    const handToggleBtn = document.getElementById('handToggle') as HTMLButtonElement | null;
+    const handLabel = document.getElementById('handLabel') as HTMLElement | null;
 
     function syncControlLabels() {
       if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound On' : 'Sound Off';
       if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi On' : 'Washi Off';
+      if (handLabel) handLabel.textContent = handMode ? 'Hand On' : 'Hand Off';
     }
 
     function syncWashiToggle() {
       if (!tapeToggle) return;
       tapeToggle.classList.toggle('active', washiMode);
       document.body.classList.toggle('washi-mode', washiMode);
+      if (washiMode && handMode) {
+        handMode = false;
+        syncHandToggle();
+      }
       syncControlLabels();
+    }
+
+    function syncHandToggle() {
+      if (handToggleBtn) handToggleBtn.classList.toggle('active', handMode);
+      document.body.classList.toggle('hand-mode', handMode);
+      // Toggle pointer-events on all existing piece elements
+      const pe = handMode ? 'auto' : 'none';
+      document.querySelectorAll<HTMLElement>('.receipt-piece').forEach(el => { el.style.pointerEvents = pe; });
+      syncControlLabels();
+    }
+
+    function toggleHandMode() {
+      handMode = !handMode;
+      if (handMode && washiMode) {
+        washiMode = false;
+        cleanupWashiStroke();
+        syncWashiToggle();
+      }
+      syncHandToggle();
     }
 
     function toggleSound() {
@@ -1373,6 +1405,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       clearAllTape();
       showLabelBriefly(clearTapeBtn);
     });
+
+    handToggleBtn?.addEventListener('click', () => {
+      toggleHandMode();
+      showLabelBriefly(handToggleBtn);
+    });
+
+    const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement | null;
+    resetBtn?.addEventListener('click', () => resetToDefault());
 
     syncWashiToggle();
     syncControlLabels();
@@ -1766,8 +1806,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     //     with lerp/inertia for trailing lag
     // ========================================
     const cursorDot = document.getElementById('cursorDot');
-    const cursorHalfTop = cursorDot?.querySelector('.cursor-half-top') as HTMLElement | null;
-    const cursorHalfBottom = cursorDot?.querySelector('.cursor-half-bottom') as HTMLElement | null;
     let dotTargetX = 0;
     let dotTargetY = 0;
     let dotCurrentX = 0;
@@ -1778,7 +1816,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const DOT_SIZE_MIN = 8;
     const DOT_SIZE_MAX = 16;
     const PROXIMITY_RANGE = 80;
-    const SPLIT_GAP = 1;
     const CUT_EDGE_SAFETY = 10;
     const CUT_EDGE_PADDING = 30;
 
@@ -1843,10 +1880,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       type JaggedEdge = number[]; // y-offset values in px, evenly spaced across width
 
       type TearPiece = {
-        el: HTMLElement;
+        el: HTMLElement;              // wrapper div (positioned, draggable, washi goes here)
+        clipEl: HTMLElement;          // inner div (clipped receipt content)
         top: number;      // 0-100% content start
         bottom: number;   // 0-100% content end
-        offsetY: number;  // accumulated px offset
+        offsetX: number;  // accumulated horizontal px offset
+        offsetY: number;  // accumulated vertical px offset
         rotation: number; // accumulated rotation offset (degrees)
         topEdge: JaggedEdge | null;    // jagged tear data (null = straight)
         bottomEdge: JaggedEdge | null; // jagged tear data (null = straight)
@@ -1926,6 +1965,43 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         washiPreview.style.display = 'none';
         washiPreview.style.width = '0';
       }
+
+      cleanupWashiStroke = () => {
+        if (washiDrawing) {
+          activeWashiPointerId = null;
+          washiDrawing = false;
+          hideWashiPreview();
+        }
+      };
+
+      resetToDefault = () => {
+        pieces.forEach(p => p.el.remove());
+        pieces = [];
+        tearSystemReady = false;
+        baseRotation = 0;
+        receiptH = 0;
+
+        receipt!.style.visibility = '';
+        receipt!.style.boxShadow = '';
+        receipt!.style.filter = '';
+        receipt!.parentElement!.style.paddingBottom = '';
+
+        washiDrawing = false;
+        activeWashiPointerId = null;
+        hideWashiPreview();
+
+        document.querySelectorAll('.washi-strip, .tape-seam').forEach(el => el.remove());
+
+        physicsQueue = [];
+        handPhysicsActive = false;
+        handDragging = false;
+        handDragPiece = null;
+        activeHandPointerId = null;
+        handZCounter = 20;
+
+        if (washiMode) { washiMode = false; syncWashiToggle(); }
+        if (handMode) { handMode = false; syncHandToggle(); }
+      };
 
       function updateWashiPreview() {
         const scrollDX = window.scrollX - washiStartScrollX;
@@ -2020,7 +2096,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function transformFor(p: TearPiece): string {
-        return `translateX(-50%) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
+        return `translateX(-50%) translateX(${p.offsetX}px) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
       }
 
       const PIECE_SHADOW = 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))';
@@ -2039,9 +2115,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         receiptH = receipt!.offsetHeight;
 
         // Create the initial full-receipt piece
-        const { el, printables } = makePieceEl(0, 100, 0, 0, null, null);
+        const { el, clipEl, printables } = makePieceEl(0, 100, 0, 0, 0, null, null);
         wrapper.appendChild(el);
-        pieces.push({ el, top: 0, bottom: 100, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null, printables });
+        pieces.push({ el, clipEl, top: 0, bottom: 100, offsetX: 0, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null, printables });
 
         // Hide the original (it stays in flow for layout height)
         receipt!.style.visibility = 'hidden';
@@ -2203,37 +2279,48 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         parent.appendChild(tint);
       }
 
-      function makePieceEl(top: number, bottom: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): { el: HTMLElement; printables: HTMLElement[] } {
+      function makePieceEl(top: number, bottom: number, offsetX: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): { el: HTMLElement; clipEl: HTMLElement; printables: HTMLElement[] } {
         const clone = receipt!.cloneNode(true) as HTMLElement;
         clone.removeAttribute('id');
-        clone.classList.add('receipt-piece');
-        const p = { top, bottom, offsetY, rotation: rot, topEdge, bottomEdge, printables: [] } as TearPiece;
+        const p = { top, bottom, offsetX, offsetY, rotation: rot, topEdge, bottomEdge, printables: [] } as TearPiece;
+
+        // Inner element: clipped receipt content
         Object.assign(clone.style, {
-          position: 'absolute',
-          top: '0',
-          left: '50%',
-          width: receipt!.offsetWidth + 'px',
+          position: 'relative',
+          width: '100%',
           margin: '0',
           visibility: 'visible',
           clipPath: clipFor(p),
           boxShadow: 'none',
           filter: PIECE_SHADOW,
           contain: 'layout paint style',
-          backfaceVisibility: 'hidden',
-          willChange: 'clip-path, transform',
-          transform: transformFor(p),
-          transformOrigin: 'center center',
-          pointerEvents: 'none',
-          zIndex: '10',
           overflow: 'hidden',
-          transition: 'none',
+          willChange: 'clip-path',
         });
 
         if (topEdge) addEdgeGrain(clone, top, 'bottom');
         if (bottomEdge) addEdgeGrain(clone, bottom, 'top');
 
+        // Wrapper: positioned container, washi/seam traces go here (outside clip)
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('receipt-piece');
+        Object.assign(wrapper.style, {
+          position: 'absolute',
+          top: '0',
+          left: '50%',
+          width: receipt!.offsetWidth + 'px',
+          transform: transformFor(p),
+          transformOrigin: 'center center',
+          backfaceVisibility: 'hidden',
+          willChange: 'transform',
+          pointerEvents: handMode ? 'auto' : 'none',
+          zIndex: '10',
+          transition: 'none',
+        });
+        wrapper.appendChild(clone);
+
         const printables = Array.from(clone.querySelectorAll('[data-print]')) as HTMLElement[];
-        return { el: clone, printables };
+        return { el: wrapper, clipEl: clone, printables };
       }
 
       function seamClipPath(edge: JaggedEdge, basePct: number): string {
@@ -2477,14 +2564,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const mergedTop = topPiece.top;
         const mergedBottom = bottomPiece.bottom;
         const seamYPct = (topPiece.bottom + bottomPiece.top) / 2;
+        const mergedOffsetX = (topPiece.offsetX + bottomPiece.offsetX) / 2;
         const mergedOffsetY = topPiece.offsetY;
         const mergedRotation = (topPiece.rotation + bottomPiece.rotation) / 2;
         const mergedTopEdge = topPiece.topEdge;
         const mergedBottomEdge = bottomPiece.bottomEdge;
 
-        const { el: mergedEl, printables: mergedPrintables } = makePieceEl(
+        const { el: mergedEl, clipEl: mergedClipEl, printables: mergedPrintables } = makePieceEl(
           mergedTop,
           mergedBottom,
+          mergedOffsetX,
           mergedOffsetY,
           mergedRotation,
           mergedTopEdge,
@@ -2510,8 +2599,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         const mergedPiece: TearPiece = {
           el: mergedEl,
+          clipEl: mergedClipEl,
           top: mergedTop,
           bottom: mergedBottom,
+          offsetX: mergedOffsetX,
           offsetY: mergedOffsetY,
           rotation: mergedRotation,
           topEdge: mergedTopEdge,
@@ -2521,15 +2612,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         pieces.splice(topIdx, 2, mergedPiece);
 
-        for (let i = topIdx + 1; i < pieces.length; i++) {
-          pieces[i].offsetY = Math.max(0, pieces[i].offsetY - TEAR_GAP);
-          pieces[i].rotation += (Math.random() - 0.5) * 0.35;
-          animatePiece(pieces[i]);
-        }
-
         animatePiece(mergedPiece);
 
-        const maxOff = pieces.length > 0 ? pieces[pieces.length - 1].offsetY : 0;
+        const maxOff = pieces.length > 0 ? Math.max(...pieces.map(p => p.offsetY)) : 0;
         wrapper.style.paddingBottom = `${maxOff + 40}px`;
         return true;
       }
@@ -2540,39 +2625,48 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         transition: string = 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1)',
       ) {
         p.el.style.transition = transition;
-        p.el.style.clipPath = clipFor(p);
+        p.clipEl.style.clipPath = clipFor(p);
         p.el.style.transform = transformFor(p);
         p.el.style.opacity = '1';
       }
 
-      function executeTear(swipeY: number): boolean {
+      function executeTear(swipeX: number, swipeY: number): boolean {
         initTearSystem();
 
         const rr = receipt!.getBoundingClientRect();
         const rh = rr.height;
 
-        // Find which piece the swipe Y falls within
-        let target: TearPiece | null = null;
-        let targetIdx = -1;
-        let tearPct = 0;
+        // Find which piece the swipe falls within — pick the topmost (highest z-index)
+        let candidates: { piece: TearPiece; idx: number; pct: number }[] = [];
 
         for (let i = 0; i < pieces.length; i++) {
           const p = pieces[i];
+          const pieceRect = p.el.getBoundingClientRect();
+
+          // Check horizontal overlap (skip pieces that aren't under the swipe X)
+          if (swipeX < pieceRect.left - CUT_EDGE_PADDING || swipeX > pieceRect.right + CUT_EDGE_PADDING) continue;
+
+          // Use manual Y calculation for precise tear percentage (bounding rect is affected by rotation)
           const vTop = rr.top + (p.top / 100) * rh + p.offsetY;
           const vBot = rr.top + (p.bottom / 100) * rh + p.offsetY;
           const safeTop = vTop + CUT_EDGE_SAFETY;
           const safeBot = vBot - CUT_EDGE_SAFETY;
-          // Accept clicks within piece OR within padding outside, then clamp
           if (swipeY >= safeTop - CUT_EDGE_PADDING && swipeY <= safeBot + CUT_EDGE_PADDING) {
-            target = p;
-            targetIdx = i;
             const clampedY = Math.max(safeTop, Math.min(safeBot, swipeY));
-            tearPct = ((clampedY - rr.top - p.offsetY) / rh) * 100;
-            break;
+            const pct = ((clampedY - rr.top - p.offsetY) / rh) * 100;
+            candidates.push({ piece: p, idx: i, pct });
           }
         }
 
-        if (!target) return false;
+        if (candidates.length === 0) return false;
+
+        // Pick the visually topmost piece (highest z-index)
+        if (candidates.length > 1) {
+          candidates.sort((a, b) => (parseInt(b.piece.el.style.zIndex) || 0) - (parseInt(a.piece.el.style.zIndex) || 0));
+        }
+        const target = candidates[0].piece;
+        const targetIdx = candidates[0].idx;
+        const tearPct = candidates[0].pct;
 
         sounds.tearSound();
         dismissCutHint();
@@ -2589,13 +2683,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         target.rotation += (Math.random() - 0.5) * 0.6;
 
         // Add grain texture to the top piece's newly torn bottom edge
-        addEdgeGrain(target.el, tearPct, 'top');
+        addEdgeGrain(target.clipEl, tearPct, 'top');
 
         animatePiece(target);
 
         // Create new piece for bottom portion (jagged top, inherits old bottom edge)
         const wrapper = receipt!.parentElement!;
-        const { el: newEl, printables: newPrintables } = makePieceEl(tearPct, origBottom, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
+        const { el: newEl, clipEl: newClipEl, printables: newPrintables } = makePieceEl(tearPct, origBottom, target.offsetX, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
         wrapper.appendChild(newEl);
 
         // Transfer seam traces and washi strips that fall below the tear to the new piece
@@ -2608,8 +2702,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         const newPiece: TearPiece = {
           el: newEl,
+          clipEl: newClipEl,
           top: tearPct,
           bottom: origBottom,
+          offsetX: target.offsetX,
           offsetY: target.offsetY,
           rotation: target.rotation,
           topEdge: jaggedEdge,
@@ -2665,7 +2761,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }
         } else {
           // Use each piece's actual bounding rect (accounts for rotation/transforms)
+          // When pieces overlap, prefer the topmost (highest z-index)
           distX = Infinity;
+          let bestInsideZ = -1;
           for (const p of pieces) {
             const pieceRect = p.el.getBoundingClientRect();
 
@@ -2677,11 +2775,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             const innerTop = pieceRect.top + CUT_EDGE_SAFETY;
             const innerBot = pieceRect.bottom - CUT_EDGE_SAFETY;
             if (mouseY >= innerTop && mouseY <= innerBot) {
-              insideTearable = true;
-              minDistY = 0;
-              distX = pdx;
-              break;
+              const z = parseInt(p.el.style.zIndex) || 0;
+              if (z > bestInsideZ) {
+                bestInsideZ = z;
+                insideTearable = true;
+                minDistY = 0;
+                distX = pdx;
+              }
+              continue;
             }
+            if (insideTearable) continue; // already found an exact hit, skip proximity-only pieces
             let d = Infinity;
             if (mouseY < innerTop) d = innerTop - mouseY;
             else if (mouseY > innerBot) d = mouseY - innerBot;
@@ -2712,11 +2815,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           size = DOT_SIZE_MIN + (DOT_SIZE_MAX - DOT_SIZE_MIN) * proximity;
         }
 
-        const splitOffset = (canCut && !isTearing) ? SPLIT_GAP : 0;
-
         cursorDot.style.setProperty('--dot-size', size + 'px');
-        cursorDot.style.setProperty('--split-offset', (-splitOffset) + 'px');
-        cursorDot.style.setProperty('--split-offset-inv', splitOffset + 'px');
       }
 
       function checkEdgeProximity(mouseX: number, mouseY: number) {
@@ -2831,6 +2930,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         let desktopTearDecided = false;
 
         document.addEventListener('mousemove', (e: MouseEvent) => {
+          if (handMode) return;
           if (washiDrawing && (!usePointerWashi || activeWashiPointerId === null)) {
             washiCurrentX = e.clientX;
             washiCurrentY = e.clientY;
@@ -2843,6 +2943,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
 
         document.addEventListener('mousedown', (e: MouseEvent) => {
+          if (handMode) return;
           if ((e.target as HTMLElement).closest('button')) return;
           if ((e.target as HTMLElement).closest('a')) return;
 
@@ -2900,7 +3001,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           pageCutLine.style.width = `${progress * 100}%`;
 
           if (progress >= 1) {
-            executeTear(desktopTearStartY);
+            executeTear(desktopTearStartX, desktopTearStartY);
             endDesktopTear();
           }
         });
@@ -2924,6 +3025,142 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
       }
 
+      // ---- Hand mode: piece dragging with physics ----
+
+      let handDragging = false;
+      let handDragPiece: TearPiece | null = null;
+      let handDragStartX = 0;
+      let handDragStartY = 0;
+      let handDragOrigOffsetX = 0;
+      let handDragOrigOffsetY = 0;
+      let activeHandPointerId: number | null = null;
+
+      const HAND_VELOCITY_SAMPLES = 5;
+      let handVelocitySamples: { x: number; y: number; t: number }[] = [];
+
+      const HAND_FRICTION = 0.92;
+      const HAND_MIN_VELOCITY = 0.5;
+      const HAND_ROTATION_FACTOR = 0.08;
+      const HAND_MAX_ROTATION_DELTA = 15;
+
+      let handPhysicsActive = false;
+      type PhysicsPiece = { piece: TearPiece; vx: number; vy: number; vRot: number };
+      let physicsQueue: PhysicsPiece[] = [];
+      let handZCounter = 20;
+
+      function findPieceByEl(el: HTMLElement): TearPiece | null {
+        const pieceEl = el.closest('.receipt-piece') as HTMLElement | null;
+        if (!pieceEl) return null;
+        return pieces.find(p => p.el === pieceEl) || null;
+      }
+
+      function computeReleaseVelocity(): { vx: number; vy: number } {
+        if (handVelocitySamples.length < 2) return { vx: 0, vy: 0 };
+        const newest = handVelocitySamples[handVelocitySamples.length - 1];
+        const oldest = handVelocitySamples[0];
+        const dt = (newest.t - oldest.t) / 1000;
+        if (dt < 0.001) return { vx: 0, vy: 0 };
+        const frameTime = 1 / 60;
+        return {
+          vx: ((newest.x - oldest.x) / dt) * frameTime,
+          vy: ((newest.y - oldest.y) / dt) * frameTime,
+        };
+      }
+
+      function handPhysicsTick() {
+        for (let i = physicsQueue.length - 1; i >= 0; i--) {
+          const pp = physicsQueue[i];
+          pp.piece.offsetX += pp.vx;
+          pp.piece.offsetY += pp.vy;
+          pp.piece.rotation += pp.vRot;
+          pp.vx *= HAND_FRICTION;
+          pp.vy *= HAND_FRICTION;
+          pp.vRot *= HAND_FRICTION;
+          pp.piece.el.style.transition = 'none';
+          pp.piece.el.style.transform = transformFor(pp.piece);
+          if (Math.abs(pp.vx) < HAND_MIN_VELOCITY && Math.abs(pp.vy) < HAND_MIN_VELOCITY && Math.abs(pp.vRot) < 0.01) {
+            physicsQueue.splice(i, 1);
+          }
+        }
+        if (physicsQueue.length > 0) {
+          requestAnimationFrame(handPhysicsTick);
+        } else {
+          handPhysicsActive = false;
+        }
+      }
+
+      document.addEventListener('pointerdown', (e: PointerEvent) => {
+        if (!handMode || !e.isPrimary) return;
+        if ((e.target as HTMLElement).closest('button, a')) return;
+        if (handDragging) return;
+        const piece = findPieceByEl(e.target as HTMLElement);
+        if (!piece) return;
+
+        activeHandPointerId = e.pointerId;
+        handDragging = true;
+        handDragPiece = piece;
+        handDragStartX = e.clientX;
+        handDragStartY = e.clientY;
+        handDragOrigOffsetX = piece.offsetX;
+        handDragOrigOffsetY = piece.offsetY;
+
+        handZCounter++;
+        piece.el.style.zIndex = String(handZCounter);
+        piece.el.style.transition = 'none';
+
+        // Remove from physics queue if mid-fling
+        physicsQueue = physicsQueue.filter(pq => pq.piece !== piece);
+
+        handVelocitySamples = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+        document.body.classList.add('hand-dragging');
+        e.preventDefault();
+      });
+
+      document.addEventListener('pointermove', (e: PointerEvent) => {
+        if (!handMode || !handDragging || activeHandPointerId !== e.pointerId) return;
+        if (!handDragPiece) return;
+
+        handDragPiece.offsetX = handDragOrigOffsetX + (e.clientX - handDragStartX);
+        handDragPiece.offsetY = handDragOrigOffsetY + (e.clientY - handDragStartY);
+        handDragPiece.el.style.transform = transformFor(handDragPiece);
+
+        handVelocitySamples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+        if (handVelocitySamples.length > HAND_VELOCITY_SAMPLES) handVelocitySamples.shift();
+        e.preventDefault();
+      });
+
+      document.addEventListener('pointerup', (e: PointerEvent) => {
+        if (activeHandPointerId !== e.pointerId) return;
+        if (!handDragging || !handDragPiece) {
+          activeHandPointerId = null;
+          return;
+        }
+
+        const { vx, vy } = computeReleaseVelocity();
+        const rotDelta = Math.max(-HAND_MAX_ROTATION_DELTA, Math.min(HAND_MAX_ROTATION_DELTA, vx * HAND_ROTATION_FACTOR));
+
+        if (Math.abs(vx) > HAND_MIN_VELOCITY || Math.abs(vy) > HAND_MIN_VELOCITY) {
+          physicsQueue.push({ piece: handDragPiece, vx, vy, vRot: rotDelta * 0.1 });
+          if (!handPhysicsActive) {
+            handPhysicsActive = true;
+            requestAnimationFrame(handPhysicsTick);
+          }
+        }
+
+        document.body.classList.remove('hand-dragging');
+        handDragging = false;
+        handDragPiece = null;
+        activeHandPointerId = null;
+      });
+
+      document.addEventListener('pointercancel', (e: PointerEvent) => {
+        if (activeHandPointerId !== e.pointerId) return;
+        document.body.classList.remove('hand-dragging');
+        handDragging = false;
+        handDragPiece = null;
+        activeHandPointerId = null;
+      });
+
       document.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.repeat) return;
         const key = e.key.toLowerCase();
@@ -2936,11 +3173,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
         if (key === 'w') {
           washiMode = !washiMode;
-          if (!washiMode && washiDrawing) {
-            activeWashiPointerId = null;
-            washiDrawing = false;
-            hideWashiPreview();
-          }
+          if (!washiMode) cleanupWashiStroke();
           syncWashiToggle();
           flashButton(tapeToggle);
           e.preventDefault();
@@ -2951,6 +3184,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         } else if (key === 's') {
           toggleSound();
           flashButton(soundToggle);
+          e.preventDefault();
+        } else if (key === 'h') {
+          toggleHandMode();
+          flashButton(handToggleBtn);
           e.preventDefault();
         }
       });
@@ -2967,7 +3204,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let tearReady = false;
 
       function startTear(cx: number, cy: number) {
-        if (washiMode) return;
+        if (washiMode || handMode) return;
         if (!canCutDuringPrint()) return;
         sounds.prepareTearGesture();
         tearStartX = cx;
@@ -3021,6 +3258,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       // Touch (swipe gesture stays the same for mobile)
       document.addEventListener('touchstart', (e: TouchEvent) => {
+        if (handMode) return;
         if ((e.target as HTMLElement).closest('button')) return;
         if ((e.target as HTMLElement).closest('a')) return;
         if (washiMode) {
@@ -3033,6 +3271,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         startTear(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: true });
       document.addEventListener('touchmove', (e: TouchEvent) => {
+        if (handMode) return;
         if (washiMode && washiDrawing) {
           if (activeWashiPointerId === null && e.touches.length > 0) {
             updateWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
@@ -3047,6 +3286,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         }
       }, { passive: false });
       document.addEventListener('touchend', (e: TouchEvent) => {
+        if (handMode) return;
         if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true)) {
           endWashiStroke();
           return;
@@ -3059,9 +3299,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const finalDy = Math.abs(tearLastY - tearStartY);
         const finalHorizontal = finalDx > 12 && finalDx > finalDy * 1.2;
         if (isTearing && tearReady) {
-          executeTear(tearStartY);
+          executeTear(tearStartX, tearStartY);
         } else if (isTearing && finalHorizontal) {
-          executeTear(tearStartY);
+          executeTear(tearStartX, tearStartY);
         }
         if (isTearing) endTear();
       });
