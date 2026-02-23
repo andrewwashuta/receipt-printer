@@ -728,7 +728,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       display: block;
       position: fixed;
       left: 50%;
-      bottom: calc(80px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       transform: translateX(-50%);
       z-index: 10100;
       font-family: var(--font-receipt);
@@ -1826,6 +1826,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Always show on first visit (cleared localStorage key)
       if (sessionStorage.getItem('aw-hint-shown')) return;
       sessionStorage.setItem('aw-hint-shown', '1');
+
+      if (isMobileHint) {
+        showHint('Swipe to Tear', true);
+        return;
+      }
 
       cutHintEl = document.createElement('div');
       cutHintEl.className = 'cut-hint';
