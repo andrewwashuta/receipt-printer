@@ -731,17 +731,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
   }
 
-  /* Mobile mode hint — shimmer text above toolbar */
+  /* Mobile mode hint */
   .mode-hint {
     display: none;
   }
 
   @media (max-width: 600px) {
     .mode-hint {
-      display: none;
+      display: block;
       position: fixed;
       left: 50%;
-      bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      bottom: calc(90px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       transform: translateX(-50%);
       z-index: 10099;
       font-family: 'MD Thermochrome 0.4', monospace;
@@ -750,35 +750,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       text-transform: uppercase;
       white-space: nowrap;
       pointer-events: none;
+      color: white;
+      mix-blend-mode: difference;
       opacity: 0;
-      transition: opacity 0.3s ease;
-      background: linear-gradient(
-        90deg,
-        #8a8478 0%,
-        #f5f0e8 45%,
-        #f5f0e8 55%,
-        #8a8478 100%
-      );
-      background-size: 200% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shimmer 3s ease-in-out infinite;
+      transition: opacity 0.5s ease;
     }
 
     .mode-hint.visible {
-      display: block;
       opacity: 1;
     }
-
-    .mode-hint.label-active {
-      opacity: 0;
-    }
-  }
-
-  @keyframes shimmer {
-    0% { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
   }
 
   :global(.washi-preview),
@@ -1490,12 +1470,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       });
       btn.classList.add('toolbar-btn--label-show');
       activeLabelBtn = btn;
-      modeHint?.classList.add('label-active');
       labelTimer = setTimeout(() => {
         btn.classList.remove('toolbar-btn--label-show');
         if (activeLabelBtn === btn) activeLabelBtn = null;
         labelTimer = null;
-        modeHint?.classList.remove('label-active');
       }, 900);
     }
 
