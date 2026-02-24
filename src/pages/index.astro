@@ -1564,7 +1564,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
       localStorage.setItem('aw-theme', name);
       if (themeLabel) themeLabel.textContent = name.charAt(0).toUpperCase() + name.slice(1);
-      refreshCanvasElements();
     }
 
     function cycleTheme() {
@@ -1574,7 +1573,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       const next = THEMES[nextIdx];
 
       const btn = themeToggleBtn;
-      if (!btn) { applyTheme(next); return; }
+      if (!btn) { applyTheme(next); refreshCanvasElements(); return; }
 
       const rect = btn.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
@@ -1586,8 +1585,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       if (!document.startViewTransition) {
         applyTheme(next);
+        refreshCanvasElements();
         return;
       }
+
+      document.documentElement.classList.add('theme-transitioning');
 
       const transition = document.startViewTransition(() => {
         applyTheme(next);
@@ -1596,7 +1598,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       transition.ready.then(() => {
         const feather = 80;
         const frames: Keyframe[] = [];
-        const steps = 60;
+        const steps = 20;
         for (let i = 0; i <= steps; i++) {
           const t = i / steps;
           const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -1612,6 +1614,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           easing: 'linear',
           pseudoElement: '::view-transition-new(root)',
         });
+      });
+
+      transition.finished.then(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+        refreshCanvasElements();
       });
     }
 
@@ -2541,7 +2548,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           boxShadow: 'none',
           filter: PIECE_SHADOW,
           overflow: 'hidden',
-          willChange: 'clip-path',
           pointerEvents: handMode ? 'auto' : 'none',
         });
 

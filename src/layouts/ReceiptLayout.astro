@@ -281,6 +281,11 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
   ::view-transition-old(root) { z-index: 1; }
   ::view-transition-new(root) { z-index: 9999; }
 
+  /* Suppress expensive drop-shadows on torn pieces during theme transition */
+  html.theme-transitioning .receipt-piece > * {
+    filter: none !important;
+  }
+
   body {
     touch-action: pan-y;
     background: var(--color-bg);
