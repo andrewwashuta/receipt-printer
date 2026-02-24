@@ -19,10 +19,10 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={pageDescription} />
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    
+
     <!-- OpenGraph tags -->
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
@@ -35,18 +35,18 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <meta property="og:image:alt" content={pageTitle} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="en_US" />
-    
+
     <!-- Twitter Card tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={`${siteUrl}${pageImage}`} />
-    
+
     <!-- Additional meta tags -->
     <meta name="author" content={siteName} />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={currentUrl} />
-    
+
     <!-- Berkeley Mono for all text, VT323 fallback -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,8 +55,11 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
     <link rel="preload" href="/fonts/MDThermochrome0.4-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/sounds/Tear-1.mp3" as="audio" type="audio/mpeg">
     <link rel="preload" href="/sounds/Tear-2.mp3" as="audio" type="audio/mpeg">
-    
+
     <title>{pageTitle}</title>
+    <script is:inline>
+      (function(){var t=localStorage.getItem('aw-theme');if(t&&t!=='parchment')document.documentElement.dataset.theme=t})();
+    </script>
   </head>
   <body>
     <slot />
@@ -110,13 +113,179 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
   :root {
     --font-receipt: 'Berkeley Mono', 'VT323', ui-monospace, 'SF Mono', 'Roboto Mono', monospace;
     --font-thermo: 'MD Thermochrome', sans-serif;
+
+    --color-bg: #1a1a1a;
+    --color-bg-elevated: #252525;
+    --color-paper: #ede7d9;
+    --color-paper-aging-top: rgba(160,120,60,0.04);
+    --color-paper-aging-bottom: rgba(160,120,60,0.02);
+    --color-ink: #1a1a1a;
+    --color-ink-bold: #000;
+    --color-ink-divider: #444;
+    --color-ink-faded: #888;
+    --color-ink-dotleader: #bbb;
+    --color-link-underline: #999;
+    --color-link-hover: #555;
+    --color-toolbar-bg: rgba(30, 28, 24, 0.92);
+    --color-toolbar-border: rgba(245, 240, 232, 0.12);
+    --color-btn-default: rgba(245, 240, 232, 0.5);
+    --color-btn-active-text: rgba(244, 236, 215, 0.86);
+    --color-btn-active-bg: rgba(48, 40, 26, 0.88);
+    --color-btn-hover: rgba(245, 240, 232, 0.7);
+    --color-label-bg: #30281a;
+    --color-label-text: #f4ecd7;
+    --color-hint-bg: rgba(30, 28, 24, 0.85);
+    --color-selection-bg: #333;
+    --color-selection-text: #f5f0e8;
+    --color-tear-tint: rgba(140,110,70,0.15);
+    --color-fiber-r: 80;
+    --color-fiber-g: 65;
+    --color-fiber-b: 50;
+    --receipt-filter: sepia(0.08) saturate(0.95);
   }
+
+  /* Midnight — late-night diner receipt */
+  [data-theme="midnight"] {
+    --color-bg: oklch(0.15 0.03 260);
+    --color-bg-elevated: oklch(0.19 0.03 260);
+    --color-paper: oklch(0.93 0.015 240);
+    --color-paper-aging-top: oklch(0.85 0.04 240 / 0.04);
+    --color-paper-aging-bottom: oklch(0.85 0.04 240 / 0.02);
+    --color-ink: oklch(0.18 0.02 260);
+    --color-ink-bold: oklch(0.08 0.03 260);
+    --color-ink-divider: oklch(0.35 0.02 250);
+    --color-ink-faded: oklch(0.58 0.02 250);
+    --color-ink-dotleader: oklch(0.78 0.01 240);
+    --color-link-underline: oklch(0.65 0.02 250);
+    --color-link-hover: oklch(0.42 0.02 250);
+    --color-toolbar-bg: oklch(0.16 0.03 260 / 0.92);
+    --color-toolbar-border: oklch(0.92 0.015 240 / 0.12);
+    --color-btn-default: oklch(0.92 0.015 240 / 0.5);
+    --color-btn-active-text: oklch(0.90 0.02 240 / 0.86);
+    --color-btn-active-bg: oklch(0.22 0.04 260 / 0.88);
+    --color-btn-hover: oklch(0.92 0.015 240 / 0.7);
+    --color-label-bg: oklch(0.18 0.04 260);
+    --color-label-text: oklch(0.92 0.02 240);
+    --color-hint-bg: oklch(0.16 0.03 260 / 0.85);
+    --color-selection-bg: oklch(0.30 0.04 260);
+    --color-selection-text: oklch(0.93 0.015 240);
+    --color-tear-tint: oklch(0.55 0.04 240 / 0.15);
+    --color-fiber-r: 60;
+    --color-fiber-g: 70;
+    --color-fiber-b: 100;
+    --receipt-filter: none;
+  }
+
+  /* Carbon — modern monochrome thermal */
+  [data-theme="carbon"] {
+    --color-bg: oklch(0.11 0 0);
+    --color-bg-elevated: oklch(0.15 0 0);
+    --color-paper: oklch(0.96 0.003 90);
+    --color-paper-aging-top: oklch(0.90 0.005 90 / 0.03);
+    --color-paper-aging-bottom: oklch(0.90 0.005 90 / 0.015);
+    --color-ink: oklch(0.13 0 0);
+    --color-ink-bold: oklch(0 0 0);
+    --color-ink-divider: oklch(0.38 0 0);
+    --color-ink-faded: oklch(0.60 0 0);
+    --color-ink-dotleader: oklch(0.80 0 0);
+    --color-link-underline: oklch(0.66 0 0);
+    --color-link-hover: oklch(0.42 0 0);
+    --color-toolbar-bg: oklch(0.13 0 0 / 0.92);
+    --color-toolbar-border: oklch(0.96 0 0 / 0.12);
+    --color-btn-default: oklch(0.96 0 0 / 0.5);
+    --color-btn-active-text: oklch(0.94 0 0 / 0.86);
+    --color-btn-active-bg: oklch(0.22 0 0 / 0.88);
+    --color-btn-hover: oklch(0.96 0 0 / 0.7);
+    --color-label-bg: oklch(0.15 0 0);
+    --color-label-text: oklch(0.94 0 0);
+    --color-hint-bg: oklch(0.13 0 0 / 0.85);
+    --color-selection-bg: oklch(0.30 0 0);
+    --color-selection-text: oklch(0.95 0 0);
+    --color-tear-tint: oklch(0.50 0 0 / 0.12);
+    --color-fiber-r: 70;
+    --color-fiber-g: 70;
+    --color-fiber-b: 70;
+    --receipt-filter: none;
+  }
+
+  /* Terracotta — desert sun-faded receipt */
+  [data-theme="terracotta"] {
+    --color-bg: oklch(0.14 0.04 45);
+    --color-bg-elevated: oklch(0.18 0.04 45);
+    --color-paper: oklch(0.91 0.04 65);
+    --color-paper-aging-top: oklch(0.82 0.06 55 / 0.05);
+    --color-paper-aging-bottom: oklch(0.82 0.06 55 / 0.025);
+    --color-ink: oklch(0.20 0.03 40);
+    --color-ink-bold: oklch(0.10 0.04 35);
+    --color-ink-divider: oklch(0.38 0.03 45);
+    --color-ink-faded: oklch(0.58 0.03 50);
+    --color-ink-dotleader: oklch(0.78 0.02 55);
+    --color-link-underline: oklch(0.65 0.03 50);
+    --color-link-hover: oklch(0.42 0.03 45);
+    --color-toolbar-bg: oklch(0.16 0.04 45 / 0.92);
+    --color-toolbar-border: oklch(0.91 0.03 65 / 0.12);
+    --color-btn-default: oklch(0.91 0.03 65 / 0.5);
+    --color-btn-active-text: oklch(0.89 0.04 60 / 0.86);
+    --color-btn-active-bg: oklch(0.22 0.05 45 / 0.88);
+    --color-btn-hover: oklch(0.91 0.03 65 / 0.7);
+    --color-label-bg: oklch(0.18 0.05 45);
+    --color-label-text: oklch(0.91 0.04 60);
+    --color-hint-bg: oklch(0.16 0.04 45 / 0.85);
+    --color-selection-bg: oklch(0.30 0.04 45);
+    --color-selection-text: oklch(0.92 0.03 65);
+    --color-tear-tint: oklch(0.55 0.06 50 / 0.18);
+    --color-fiber-r: 100;
+    --color-fiber-g: 70;
+    --color-fiber-b: 45;
+    --receipt-filter: none;
+  }
+
+  /* Forest — mountain lodge receipt */
+  [data-theme="forest"] {
+    --color-bg: oklch(0.13 0.03 155);
+    --color-bg-elevated: oklch(0.17 0.03 155);
+    --color-paper: oklch(0.93 0.02 130);
+    --color-paper-aging-top: oklch(0.85 0.03 140 / 0.04);
+    --color-paper-aging-bottom: oklch(0.85 0.03 140 / 0.02);
+    --color-ink: oklch(0.18 0.02 155);
+    --color-ink-bold: oklch(0.10 0.03 155);
+    --color-ink-divider: oklch(0.36 0.02 150);
+    --color-ink-faded: oklch(0.58 0.02 145);
+    --color-ink-dotleader: oklch(0.78 0.015 135);
+    --color-link-underline: oklch(0.65 0.02 145);
+    --color-link-hover: oklch(0.42 0.02 150);
+    --color-toolbar-bg: oklch(0.15 0.03 155 / 0.92);
+    --color-toolbar-border: oklch(0.93 0.015 130 / 0.12);
+    --color-btn-default: oklch(0.93 0.015 130 / 0.5);
+    --color-btn-active-text: oklch(0.91 0.02 130 / 0.86);
+    --color-btn-active-bg: oklch(0.20 0.04 155 / 0.88);
+    --color-btn-hover: oklch(0.93 0.015 130 / 0.7);
+    --color-label-bg: oklch(0.17 0.04 155);
+    --color-label-text: oklch(0.92 0.02 130);
+    --color-hint-bg: oklch(0.15 0.03 155 / 0.85);
+    --color-selection-bg: oklch(0.28 0.03 155);
+    --color-selection-text: oklch(0.93 0.015 130);
+    --color-tear-tint: oklch(0.55 0.04 140 / 0.15);
+    --color-fiber-r: 55;
+    --color-fiber-g: 80;
+    --color-fiber-b: 55;
+    --receipt-filter: none;
+  }
+
+  /* View Transition */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-old(root) { z-index: 1; }
+  ::view-transition-new(root) { z-index: 9999; }
 
   body {
     touch-action: pan-y;
-    background: #1a1a1a;
-    background-image: 
-      radial-gradient(ellipse at 50% 0%, #252525 0%, #1a1a1a 60%),
+    background: var(--color-bg);
+    background-image:
+      radial-gradient(ellipse at 50% 0%, var(--color-bg-elevated) 0%, var(--color-bg) 60%),
       repeating-linear-gradient(
         0deg,
         transparent,
@@ -134,7 +303,7 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
   }
 
   ::selection {
-    background-color: #333;
-    color: #f5f0e8;
+    background-color: var(--color-selection-bg);
+    color: var(--color-selection-text);
   }
 </style>
