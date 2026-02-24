@@ -1582,14 +1582,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (themeLabel) themeLabel.textContent = name.charAt(0).toUpperCase() + name.slice(1);
     }
 
-    function cycleTheme() {
+    function cycleTheme(onDone?: () => void) {
       const current = getCurrentTheme();
       const currentIdx = THEMES.indexOf(current as typeof THEMES[number]);
       const nextIdx = (currentIdx + 1) % THEMES.length;
       const next = THEMES[nextIdx];
 
       const btn = themeToggleBtn;
-      if (!btn) { applyTheme(next); refreshCanvasElements(); return; }
+      if (!btn) { applyTheme(next); refreshCanvasElements(); onDone?.(); return; }
 
       const rect = btn.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
@@ -1602,6 +1602,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (!document.startViewTransition) {
         applyTheme(next);
         refreshCanvasElements();
+        onDone?.();
         return;
       }
 
@@ -1635,6 +1636,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       transition.finished.then(() => {
         document.documentElement.classList.remove('theme-transitioning');
         refreshCanvasElements();
+        onDone?.();
       });
     }
 
@@ -1667,15 +1669,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let themeLabelTimer: ReturnType<typeof setTimeout> | null = null;
 
     themeToggleBtn?.addEventListener('click', () => {
-      cycleTheme();
-      if (isMobileHint && themeToggleBtn) {
-        if (themeLabelTimer) clearTimeout(themeLabelTimer);
-        themeToggleBtn.classList.add('theme-btn--label-show');
+      if (themeLabelTimer) { clearTimeout(themeLabelTimer); themeLabelTimer = null; }
+      themeToggleBtn?.classList.remove('theme-btn--label-show');
+
+      const showLabel = (isMobileHint && themeToggleBtn) ? () => {
+        themeToggleBtn!.classList.add('theme-btn--label-show');
         themeLabelTimer = setTimeout(() => {
-          themeToggleBtn.classList.remove('theme-btn--label-show');
+          themeToggleBtn!.classList.remove('theme-btn--label-show');
           themeLabelTimer = null;
         }, 1200);
-      }
+      } : undefined;
+
+      cycleTheme(showLabel);
     });
 
     // Initialize theme label from stored preference
