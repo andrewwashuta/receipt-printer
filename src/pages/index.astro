@@ -738,7 +738,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       white-space: nowrap;
       pointer-events: none;
       padding: 3px 8px;
-      border-radius: 6px;
       background: #30281a;
       color: #f4ecd7;
       opacity: 0;
@@ -2284,8 +2283,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       // Pre-generate a few textures to avoid re-creating per tear
-      const _texW = desktopFinePointer ? 400 : 200;
-      const _texH = desktopFinePointer ? 24 : 16;
+      const _texW = 400;
+      const _texH = 24;
       let tearTextureCache: string[] = [];
       function getTearTexture(seed: number): string {
         const idx = seed % 6;
