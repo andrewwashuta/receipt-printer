@@ -35,6 +35,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     </button>
   </div>
 
+  <!-- Theme cycle button -->
+  <button class="theme-btn" id="themeToggle" aria-label="Cycle color theme" title="Cycle color theme">
+    <span class="theme-btn-dot"></span>
+    <span class="toolbar-label" id="themeLabel">Parchment</span>
+  </button>
+
   <!-- Mobile mode hint (shimmer text above toolbar) -->
   <div class="mode-hint" id="modeHint" aria-live="polite"></div>
 
@@ -243,14 +249,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
-    background: #ede7d9;
+    background: var(--color-paper);
     background-image:
       linear-gradient(
         180deg,
-        rgba(160,120,60,0.04) 0%,
+        var(--color-paper-aging-top) 0%,
         transparent 3%,
         transparent 50%,
-        rgba(160,120,60,0.02) 80%,
+        var(--color-paper-aging-bottom) 80%,
         rgba(0,0,0,0.04) 100%
       );
     padding: 32px 24px;
@@ -261,7 +267,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       0 4px 16px rgba(0,0,0,0.15),
       0 12px 48px rgba(0,0,0,0.1);
     overflow: hidden;
-    filter: sepia(0.08) saturate(0.95);
+    filter: var(--receipt-filter);
   }
 
   .receipt * {
@@ -307,7 +313,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     left: 0;
     right: 0;
     height: 8px;
-    background: #ede7d9;
+    background: var(--color-paper);
     clip-path: polygon(
       0% 100%, 2% 40%, 4% 100%, 6% 50%, 8% 100%, 10% 30%, 
       12% 100%, 14% 60%, 16% 100%, 18% 40%, 20% 100%, 22% 50%,
@@ -329,7 +335,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     left: 0;
     right: 0;
     height: 10px;
-    background: #ede7d9;
+    background: var(--color-paper);
     clip-path: polygon(
       0% 0%, 3% 70%, 5% 0%, 8% 60%, 11% 0%, 13% 80%, 
       16% 0%, 19% 50%, 21% 0%, 24% 70%, 27% 0%, 29% 60%,
@@ -356,7 +362,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     font-size: 13px;
     line-height: 1.5;
     letter-spacing: 0.04em;
-    color: #1a1a1a;
+    color: var(--color-ink);
     white-space: pre;
     margin: 0;
     padding: 0;
@@ -392,7 +398,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   .receipt-line.bold {
-    color: #000;
+    color: var(--color-ink-bold);
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -400,11 +406,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   .receipt-line.divider {
     font-weight: 400;
-    color: #444;
+    color: var(--color-ink-divider);
   }
 
   .receipt-line.faded {
-    color: #888;
+    color: var(--color-ink-faded);
   }
 
   .receipt-line.small {
@@ -458,7 +464,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     content: "";
     order: 2;
     flex: 1;
-    border-bottom: 1px dotted #bbb;
+    border-bottom: 1px dotted var(--color-ink-dotleader);
     margin: 0 4px;
     margin-bottom: 5px;
     min-width: 8px;
@@ -471,20 +477,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   /* Links in receipt */
   .receipt-line :global(a) {
-    color: #1a1a1a;
+    color: var(--color-ink);
     text-decoration: underline;
     text-decoration-style: dashed;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;
-    text-decoration-color: #999;
+    text-decoration-color: var(--color-link-underline);
     transition: color 0.15s, text-decoration-color 0.15s;
     pointer-events: auto;
     cursor: pointer;
   }
 
   .receipt-line :global(a:hover) {
-    color: #555;
-    text-decoration-color: #555;
+    color: var(--color-link-hover);
+    text-decoration-color: var(--color-link-hover);
   }
 
   /* Barcode */
@@ -547,7 +553,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   .receipt-line.printing:not(.row):not(.dotleader):not(.spacer)::after {
     content: "█";
     animation: blink 0.4s step-end infinite;
-    color: #1a1a1a;
+    color: var(--color-ink);
   }
 
   @keyframes blink {
@@ -561,13 +567,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   .toolbar {
     position: fixed;
-    top: 20px;
+    top: 54px;
     right: 20px;
     z-index: 10100;
     display: flex;
     flex-direction: column;
-    background: rgba(30, 28, 24, 0.92);
-    border: 1px solid rgba(245, 240, 232, 0.12);
+    background: var(--color-toolbar-bg);
+    border: 1px solid var(--color-toolbar-border);
+    border-radius: 12px;
     padding: 4px;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -582,7 +589,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     height: 36px;
     background: transparent;
     border: none;
-    color: rgba(245, 240, 232, 0.5);
+    border-radius: 8px;
+    color: var(--color-btn-default);
     cursor: pointer;
     transition: color 0.2s, background 0.2s;
     padding: 0;
@@ -597,12 +605,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   .toolbar-btn.active {
-    color: rgba(244, 236, 215, 0.86);
-    background: rgba(48, 40, 26, 0.88);
+    color: var(--color-btn-active-text);
+    background: var(--color-btn-active-bg);
   }
 
   .toolbar-btn:hover {
-    color: rgba(245, 240, 232, 0.7);
+    color: var(--color-btn-hover);
+    background: var(--color-btn-active-bg);
   }
 
   .toolbar-icon {
@@ -624,17 +633,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   .toolbar-label {
     position: absolute;
-    right: calc(100% + 8px);
+    right: calc(100% + 13px);
     top: 50%;
     transform: translateY(-50%) translateX(4px);
     white-space: nowrap;
     font-family: var(--font-receipt);
     font-size: 9px;
     letter-spacing: 1px;
-    background: #30281a;
+    background: var(--color-label-bg);
     padding: 3px 8px;
-    border: 1px solid rgba(245, 240, 232, 0.12);
-    color: #f4ecd7;
+    border: 1px solid var(--color-toolbar-border);
+    color: var(--color-label-text);
     opacity: 0;
     pointer-events: none;
     filter: blur(3px);
@@ -662,7 +671,58 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   .toolbar-btn--pressed {
-    color: rgba(245, 240, 232, 0.7);
+    color: var(--color-btn-hover);
+  }
+
+  /* ============================================ */
+  /* THEME BUTTON                                  */
+  /* ============================================ */
+
+  .theme-btn {
+    position: fixed;
+    top: 20px;
+    right: 28px;
+    z-index: 10100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-toolbar-bg);
+    border: 1px solid var(--color-toolbar-border);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform 0.2s ease;
+  }
+
+  .theme-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .theme-btn .toolbar-label {
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%) translateX(4px);
+  }
+
+  .theme-btn:hover .toolbar-label {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    filter: blur(0);
+  }
+
+  .theme-btn-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-paper);
+    transition: background 0.3s ease;
   }
 
   @media (max-width: 600px) {
@@ -675,8 +735,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       flex-direction: row;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
-      background: rgba(30, 28, 24, 0.92);
-      border: 1px solid rgba(245, 240, 232, 0.12);
+      background: var(--color-toolbar-bg);
+      border: 1px solid var(--color-toolbar-border);
     }
 
     .toolbar-btn + .toolbar-btn {
@@ -685,8 +745,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .toolbar-btn.active {
-      color: rgba(244, 236, 215, 0.86);
-      background: rgba(48, 40, 26, 0.88);
+      color: var(--color-btn-active-text);
+      background: var(--color-btn-active-bg);
     }
 
     .toolbar-label,
@@ -709,6 +769,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       margin-top: 0;
       opacity: 1;
     }
+
+    .theme-btn {
+      top: auto;
+      right: auto;
+      left: 50%;
+      bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      transform: translateX(-50%);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .theme-btn:hover {
+      transform: translateX(-50%) scale(1.1);
+    }
+
+    .theme-btn .toolbar-label {
+      display: none;
+    }
   }
 
   /* Mobile unified label (replaces per-button toolbar labels) */
@@ -730,9 +808,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       white-space: nowrap;
       pointer-events: none;
       padding: 3px 8px;
-      background: #30281a;
-      border: 1px solid rgba(245, 240, 232, 0.12);
-      color: #f4ecd7;
+      background: var(--color-label-bg);
+      border: 1px solid var(--color-toolbar-border);
+      color: var(--color-label-text);
       opacity: 0;
       transition: opacity 0.4s ease;
     }
@@ -909,12 +987,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
     font-family: var(--font-receipt);
     font-size: 10px;
-    color: rgba(245, 240, 232, 0.5);
+    color: var(--color-btn-default);
     letter-spacing: 1px;
     padding: 6px 14px;
-    border: 1px solid rgba(245, 240, 232, 0.12);
+    border: 1px solid var(--color-toolbar-border);
     border-radius: 0;
-    background: rgba(30, 28, 24, 0.85);
+    background: var(--color-hint-bg);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     pointer-events: none;
@@ -1467,6 +1545,118 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     syncControlLabels();
 
     // ========================================
+    // 2a. COLOR THEME CYCLING
+    // ========================================
+    let tearTextureCache: string[] = [];
+    const THEMES = ['parchment', 'midnight', 'carbon', 'terracotta', 'forest'] as const;
+    const themeToggleBtn = document.getElementById('themeToggle') as HTMLButtonElement | null;
+    const themeLabel = document.getElementById('themeLabel') as HTMLElement | null;
+
+    function getCurrentTheme(): string {
+      return document.documentElement.dataset.theme || 'parchment';
+    }
+
+    function applyTheme(name: string) {
+      if (name === 'parchment') {
+        delete document.documentElement.dataset.theme;
+      } else {
+        document.documentElement.dataset.theme = name;
+      }
+      localStorage.setItem('aw-theme', name);
+      if (themeLabel) themeLabel.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    function cycleTheme() {
+      const current = getCurrentTheme();
+      const currentIdx = THEMES.indexOf(current as typeof THEMES[number]);
+      const nextIdx = (currentIdx + 1) % THEMES.length;
+      const next = THEMES[nextIdx];
+
+      const btn = themeToggleBtn;
+      if (!btn) { applyTheme(next); refreshCanvasElements(); return; }
+
+      const rect = btn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const maxRadius = Math.hypot(
+        Math.max(cx, window.innerWidth - cx),
+        Math.max(cy, window.innerHeight - cy)
+      );
+
+      if (!document.startViewTransition) {
+        applyTheme(next);
+        refreshCanvasElements();
+        return;
+      }
+
+      document.documentElement.classList.add('theme-transitioning');
+
+      const transition = document.startViewTransition(() => {
+        applyTheme(next);
+      });
+
+      transition.ready.then(() => {
+        const feather = 80;
+        const frames: Keyframe[] = [];
+        const steps = 20;
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+          const r = eased * (maxRadius + feather);
+          const inner = Math.max(0, r - feather);
+          frames.push({
+            maskImage: `radial-gradient(circle at ${cx}px ${cy}px, black ${inner}px, transparent ${r}px)`,
+            offset: t,
+          });
+        }
+        document.documentElement.animate(frames, {
+          duration: 650,
+          easing: 'linear',
+          pseudoElement: '::view-transition-new(root)',
+        });
+      });
+
+      transition.finished.then(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+        refreshCanvasElements();
+      });
+    }
+
+    function getThemeColor(prop: string): string {
+      return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+    }
+
+    function refreshCanvasElements() {
+      const paperColor = getThemeColor('--color-paper');
+      const inkColor = getThemeColor('--color-ink');
+
+      // Re-generate barcode with new theme colors
+      const barcodeImg = document.querySelector('#barcodeCanvas') as HTMLImageElement | null;
+      if (barcodeImg && barcodeImg.tagName === 'IMG') {
+        const tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = 200;
+        tmpCanvas.height = 50;
+        generateBarcode(tmpCanvas, daysAlive, paperColor, inkColor);
+        barcodeImg.src = tmpCanvas.toDataURL('image/png');
+
+        // Update barcode in any torn pieces
+        document.querySelectorAll<HTMLImageElement>('.receipt-piece img.barcode-img, .receipt-piece [id="barcodeCanvas"]')
+          .forEach(img => { img.src = barcodeImg.src; });
+      }
+
+      // Clear tear texture cache so future tears use new theme colors
+      tearTextureCache = [];
+    }
+
+    themeToggleBtn?.addEventListener('click', () => {
+      cycleTheme();
+    });
+
+    // Initialize theme label from stored preference
+    const storedTheme = localStorage.getItem('aw-theme') || 'parchment';
+    if (themeLabel) themeLabel.textContent = storedTheme.charAt(0).toUpperCase() + storedTheme.slice(1);
+
+    // ========================================
     // 2b. DYNAMIC DATE & ORDER NUMBER
     // ========================================
     const now = new Date();
@@ -1591,9 +1781,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         // Fallback: just show a placeholder
         canvas.width = 160;
         canvas.height = 160;
-        ctx.fillStyle = '#ede7d9';
+        ctx.fillStyle = getThemeColor('--color-paper');
         ctx.fillRect(0, 0, 160, 160);
-        ctx.fillStyle = '#1a1a1a';
+        ctx.fillStyle = getThemeColor('--color-ink');
         ctx.font = '14px monospace';
         ctx.textAlign = 'center';
         ctx.fillText('[PORTRAIT]', 80, 80);
@@ -1617,12 +1807,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // ========================================
     // 3b. BARCODE GENERATION
     // ========================================
-    function generateBarcode(canvas: HTMLCanvasElement, value: number) {
+    function generateBarcode(canvas: HTMLCanvasElement, value: number, bgColor?: string, fgColor?: string) {
       const ctx = canvas.getContext('2d')!;
       const w = canvas.width;
       const h = canvas.height;
 
-      ctx.fillStyle = '#ede7d9';
+      ctx.fillStyle = bgColor || getThemeColor('--color-paper');
       ctx.fillRect(0, 0, w, h);
 
       // Calculate total barcode width first to center it
@@ -1646,7 +1836,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       const startY = 5;
       let x = (w - totalWidth) / 2; // center the barcode
 
-      ctx.fillStyle = '#1a1a1a';
+      ctx.fillStyle = fgColor || getThemeColor('--color-ink');
 
       // Start guard pattern
       for (let g = 0; g < 3; g++) {
@@ -2240,7 +2430,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           const fw = 1 + rand() * 4;
           const fh = 1 + rand() * 2;
           const fAlpha = 0.15 + rand() * 0.35;
-          ctx.fillStyle = `rgba(${50 + rand() * 60}, ${40 + rand() * 50}, ${30 + rand() * 40}, ${fAlpha})`;
+          const fR = parseFloat(getThemeColor('--color-fiber-r')) || 80;
+          const fG = parseFloat(getThemeColor('--color-fiber-g')) || 65;
+          const fB = parseFloat(getThemeColor('--color-fiber-b')) || 50;
+          ctx.fillStyle = `rgba(${fR - 30 + rand() * 60}, ${fG - 25 + rand() * 50}, ${fB - 20 + rand() * 40}, ${fAlpha})`;
           ctx.fillRect(fx, fy, fw, fh);
         }
 
@@ -2250,7 +2443,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Pre-generate a few textures to avoid re-creating per tear
       const _texW = 400;
       const _texH = 24;
-      let tearTextureCache: string[] = [];
       function getTearTexture(seed: number): string {
         const idx = seed % 6;
         if (!tearTextureCache[idx]) {
@@ -2324,7 +2516,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
         parent.appendChild(depth);
 
-        // Layer 3: Color-tinted edge line — warm brown tint at tear
+        // Layer 3: Color-tinted edge line — theme-aware tint at tear
+        const tearTint = getThemeColor('--color-tear-tint') || 'rgba(140,110,70,0.15)';
         const tint = document.createElement('div');
         Object.assign(tint.style, {
           position: 'absolute',
@@ -2333,7 +2526,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           top: `${yPct}%`,
           height: '3px',
           transform: 'translateY(-50%)',
-          background: 'linear-gradient(90deg, transparent, rgba(140,110,70,0.12) 20%, rgba(160,130,80,0.18) 50%, rgba(140,110,70,0.12) 80%, transparent)',
+          background: `linear-gradient(90deg, transparent, ${tearTint} 20%, ${tearTint} 50%, ${tearTint} 80%, transparent)`,
           pointerEvents: 'none',
           zIndex: '101',
         });
@@ -2355,7 +2548,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           boxShadow: 'none',
           filter: PIECE_SHADOW,
           overflow: 'hidden',
-          willChange: 'clip-path',
           pointerEvents: handMode ? 'auto' : 'none',
         });
 

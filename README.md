@@ -1,6 +1,6 @@
 # Receipt Printer Portfolio
 
-A portfolio website styled as a thermal receipt printer, built with Astro. Features an animated line-by-line printing effect, tearable receipt pieces, washi tape, drag mode for repositioning pieces, and authentic printer sound effects.
+A portfolio website styled as a thermal receipt printer, built with Astro. Features an animated line-by-line printing effect, tearable receipt pieces, washi tape, drag mode for repositioning pieces, authentic printer sound effects, and five OKLCH color themes with animated transitions.
 
 ## Getting Started
 
@@ -40,14 +40,15 @@ npm run preview
 - **Thermal Portrait**: Dithered image using Canvas API for authentic thermal printer look
 - **Cursor Dot**: Inverse blend-mode cursor with proximity-based sizing near tear edges (desktop)
 - **Mobile Optimized**: Passive touch events, reduced GPU layers, single-layer grain textures, layout caching
-- **Toolbar**: Desktop (top-right, vertical) and mobile (bottom-center, horizontal) with hover labels and mode hints
+- **Color Themes**: Five OKLCH-based themes (Parchment, Midnight, Carbon, Terracotta, Forest) with a circular View Transition reveal animation and feathered edge. Theme persists via localStorage
+- **Toolbar**: Desktop (top-right, vertical) and mobile (bottom-center, horizontal) with hover labels, mode hints, and a theme toggle dot
 
 ## Project Structure
 
 ```
 src/
   layouts/
-    ReceiptLayout.astro     # Layout with meta tags and global styles
+    ReceiptLayout.astro     # Layout with meta tags, global styles, CSS custom properties, and theme definitions
   pages/
     index.astro             # Entire app (markup, styles, ~3400 lines of JS)
   assets/
