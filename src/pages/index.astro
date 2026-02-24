@@ -1159,7 +1159,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           this.decodeRequested[idx] = true;
           this.audioCtx!.decodeAudioData(this.rawBuffers[idx]!.slice(0))
             .then(decoded => { this.tearBuffers[idx] = decoded; })
-            .catch((err: any) => { console.warn(`[ReceiptSounds] decode buffer ${idx}:`, err); })
+            .catch(err => { console.warn(`[ReceiptSounds] decode buffer ${idx}:`, err); })
             .finally(() => {
               if (!this.tearBuffers[idx]) this.decodeRequested[idx] = false;
             });
@@ -1203,7 +1203,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         try { audio.currentTime = 0; } catch {}
         audio.volume = 0.5;
-        audio.play().catch((err: any) => {
+        audio.play().catch(err => {
           console.warn(`[ReceiptSounds] fallback play ${tearIdx}:`, err.message);
           if (!allowAlternate) {
             this._scheduleTearRetry(tearIdx);
@@ -1526,17 +1526,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       img.src = imageSrc;
 
       img.onload = () => {
-        // Target width for dithering (low-res for receipt look)
         const ditherWidth = 160;
         const ditherHeight = Math.round((img.height / img.width) * ditherWidth);
 
         canvas.width = ditherWidth;
         canvas.height = ditherHeight;
 
-        // Draw source image scaled down
         ctx.drawImage(img, 0, 0, ditherWidth, ditherHeight);
-
-        // Get image data
         const imageData = ctx.getImageData(0, 0, ditherWidth, ditherHeight);
         const data = imageData.data;
 
@@ -1578,7 +1574,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }
         }
 
-        // Put dithered data back
         ctx.putImageData(imageData, 0, 0);
 
         // Convert canvas to <img> so cloneNode preserves the rendered image
@@ -1626,7 +1621,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       const w = canvas.width;
       const h = canvas.height;
 
-      // Clear with paper color
       ctx.fillStyle = '#ede7d9';
       ctx.fillRect(0, 0, w, h);
 
