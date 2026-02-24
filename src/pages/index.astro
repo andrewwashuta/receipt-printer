@@ -738,41 +738,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       white-space: nowrap;
       pointer-events: none;
       padding: 3px 8px;
-      color: rgba(244, 236, 215, 0.86);
+      border-radius: 6px;
+      background: #30281a;
+      color: #f4ecd7;
       opacity: 0;
       transition: opacity 0.4s ease;
-    }
-
-    .mode-hint::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(48, 40, 26, 0.78);
-      z-index: -1;
     }
 
     .mode-hint.visible {
       opacity: 1;
     }
 
-    .mode-hint.shimmer {
-      background: linear-gradient(
-        90deg,
-        rgba(244, 236, 215, 0.5) 0%,
-        rgba(244, 236, 215, 1) 50%,
-        rgba(244, 236, 215, 0.5) 100%
-      );
-      background-size: 200% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: hintShimmer 2.5s ease-in-out infinite;
-    }
-  }
-
-  @keyframes hintShimmer {
-    0% { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
   }
 
   :global(.washi-preview),
@@ -1355,11 +1331,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
       modeHint.textContent = text;
       modeHint.classList.add('visible');
-      modeHint.classList.toggle('shimmer', persistent);
       hintPersistent = persistent;
       if (!persistent) {
         hintTimer = setTimeout(() => {
-          modeHint.classList.remove('visible', 'shimmer');
+          modeHint.classList.remove('visible');
           hintTimer = null;
         }, 1500);
       }
@@ -1368,7 +1343,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     function dismissHint() {
       if (!modeHint || !hintPersistent) return;
       hintPersistent = false;
-      modeHint.classList.remove('visible', 'shimmer');
+      modeHint.classList.remove('visible');
     }
 
     function syncWashiToggle() {
