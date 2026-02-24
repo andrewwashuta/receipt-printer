@@ -968,7 +968,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     .cursor-dot {
       will-change: left, top, width, height;
     }
-    *, *::before, *::after {
+    :global(*), :global(*::before), :global(*::after) {
       cursor: none !important;
     }
     :global(body.washi-mode) *, :global(body.washi-mode) *::before, :global(body.washi-mode) *::after {
