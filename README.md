@@ -1,92 +1,79 @@
 # Receipt Printer Portfolio
 
-A unique portfolio website styled as a thermal receipt printer, built with Astro. Features an animated printing effect, authentic receipt typography, and printer sound effects.
+A portfolio website styled as a thermal receipt printer, built with Astro. Features an animated line-by-line printing effect, tearable receipt pieces, washi tape, hand mode for dragging pieces, and authentic printer sound effects.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (version 18 or higher)
-- npm
+- npm or bun
 
 ### Installation
 ```bash
-# Clone the repository
 git clone https://github.com/andrewwashuta/receipt-printer.git
 cd receipt-printer
 
-# Install dependencies
 npm install
 ```
 
 ### Development
 ```bash
-# Start development server
 npm run dev
-
-# Build for production
 npm run build
-
-# Preview production build
 npm run preview
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Framework**: [Astro](https://astro.build/) - Static site generator
-- **Styling**: Inline CSS with receipt printer aesthetic
+- **Framework**: [Astro](https://astro.build/)
 - **Deployment**: Vercel
-- **Fonts**: VT323 (receipt-style monospace), Geist Pixel (headers/accents)
-- **Analytics**: Vercel Analytics
+- **Fonts**: VT323 (receipt monospace), MD Thermochrome (toolbar icons), Geist Pixel (headers)
+- **Audio**: Web Audio API with HTMLAudio fallback for tear sounds
 
-## 🎨 Features
+## Features
 
-- **Animated Printing Effect**: Line-by-line printing animation that simulates a thermal receipt printer
-- **Printer Sounds**: Authentic printer startup and printing sound effects (toggleable)
-- **Thermal Portrait**: Dithered image conversion using Canvas API for authentic thermal printer look
-- **Receipt Typography**: Monospace font styling with proper receipt formatting
-- **Dynamic Content**: Auto-generated date and order number
-- **Cursor Effect**: Inverse cursor dot for desktop users
-- **Print Functionality**: Browser print dialog integration for physical printing
+- **Printing Animation**: Line-by-line thermal printing with cursor blink and sound
+- **Tearable Receipt**: Swipe across the receipt to tear it into pieces with jagged edges and canvas-generated fiber grain textures
+- **Washi Tape**: Draw decorative tape strips across torn pieces to tape them back together (toggle with W key)
+- **Hand Mode**: Drag and fling torn receipt pieces with physics-based momentum and viewport clamping (toggle with H key)
+- **Sound Effects**: Tear sounds with multiple variations, audio context unlock for mobile Safari
+- **Thermal Portrait**: Dithered image using Canvas API for authentic thermal printer look
+- **Cursor Dot**: Inverse blend-mode cursor with proximity-based sizing near tear edges (desktop)
+- **Mobile Optimized**: Passive touch events, reduced GPU layers, single-layer grain textures, layout caching
+- **Toolbar**: Desktop (top-right, vertical) and mobile (bottom-center, horizontal) with hover labels and mode hints
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
-├── layouts/
-│   └── ReceiptLayout.astro    # Main layout with meta tags and global styles
-├── pages/
-│   └── index.astro             # Receipt printer page
-└── assets/
-    └── index/
-        └── images/
-            └── andrewwashuta.png  # Portrait image for thermal dithering
+  layouts/
+    ReceiptLayout.astro     # Layout with meta tags and global styles
+  pages/
+    index.astro             # Entire app (markup, styles, ~3400 lines of JS)
+  assets/
+    index/images/
+      andrewwashuta.png     # Portrait for thermal dithering
 
 public/
-├── fonts/                      # Geist Pixel font variants
-├── sounds/                     # Printer sound effects
-└── favicon.svg
+  fonts/                    # MD Thermochrome, Geist Pixel, MDIO, Banana Grotesk
+  sounds/                   # Tear-1.mp3 through Tear-4.mp3
+  favicon.svg
 ```
 
-## 🔊 Sound Effects
+## Keyboard Shortcuts
 
-The receipt printer includes authentic sound effects:
-- `printer-startup.mp3` - Plays when printing begins
-- `printing.mp3` - Continuous printing sound
-- `Tear-*.mp3` - Receipt tear sounds
+| Key | Action |
+|-----|--------|
+| S   | Toggle sound |
+| W   | Toggle washi tape mode |
+| C   | Clear all tape |
+| H   | Toggle hand mode |
+| R   | Reset receipt |
 
-Sounds can be toggled on/off via the `[ AUDIO: ON/OFF ]` button.
+## Deployment
 
-## 🖨️ Print Functionality
+Deployed on Vercel via `@astrojs/vercel` adapter. Static pages are prerendered at build time.
 
-The receipt is optimized for printing:
-- Use browser print dialog (Cmd/Ctrl + P)
-- Receipt styling is preserved in print view
-- Thermal printer aesthetic maintained on paper
-
-## 🚀 Deployment
-
-This project is deployed on Vercel. The build process generates static files optimized for performance.
-
-## 📝 License
+## License
 
 This project is for personal use and portfolio purposes.

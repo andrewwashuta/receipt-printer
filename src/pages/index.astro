@@ -1098,8 +1098,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             .catch(() => {});
         });
 
-        // Persistent unlock listeners are more reliable on iOS than one-shot unlock.
-        // Keep them attached so audio can recover after Safari background/foreground transitions.
+        // Persistent unlock listeners for iOS background/foreground recovery
         const unlockFromGesture = () => {
           this._unlocked = true;
           this._attemptUnlock(false);
@@ -1270,7 +1269,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         this.tearSequenceIdx++;
         let tearIdx = preferredIdx;
 
-        // During initial load, prefer whichever source is actually ready so early cuts still make sound.
+        // Prefer ready source on initial load
         if (!this.tearBuffers[tearIdx]) {
           const readyBufferIdx = active.find((idx) => !!this.tearBuffers[idx]);
           if (readyBufferIdx !== undefined) {
@@ -2787,9 +2786,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         animatePiece(target);
 
-        // Add grain texture to the top piece's newly torn bottom edge
-        // (must be after animatePiece so clip-path is set before blend-mode children are added —
-        // mobile Safari doesn't repaint blend-mode layers when parent clip-path changes after)
+        // Add grain after animatePiece (Safari blend-mode repaint issue)
         addEdgeGrain(target.clipEl, tearPct, 'top');
 
         // Create new piece for bottom portion (jagged top, inherits old bottom edge)
@@ -3354,13 +3351,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       document.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.repeat) return;
         const key = e.key.toLowerCase();
-        const active = document.activeElement as HTMLElement | null;
-        if (
-          active &&
-          (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)
-        ) {
-          return;
-        }
+        const el = document.activeElement as HTMLElement;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
         if (key === 'w') {
           washiMode = !washiMode;
           if (!washiMode) cleanupWashiStroke();
@@ -3477,7 +3469,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }, { passive: true });
       document.addEventListener('touchend', (e: TouchEvent) => {
         if (handMode) return;
-        if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true)) {
+        if (washiMode && washiDrawing && (!usePointerWashi || activeWashiPointerId === null)) {
           endWashiStroke();
           return;
         }
