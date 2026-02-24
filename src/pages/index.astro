@@ -790,7 +790,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .theme-btn .toolbar-label {
-      display: none;
+      display: block;
+      right: auto;
+      top: auto;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+    }
+
+    .theme-btn.theme-btn--label-show .toolbar-label {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      filter: blur(0);
     }
   }
 
@@ -1653,8 +1664,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       tearTextureCache = [];
     }
 
+    let themeLabelTimer: ReturnType<typeof setTimeout> | null = null;
+
     themeToggleBtn?.addEventListener('click', () => {
       cycleTheme();
+      if (isMobileHint && themeToggleBtn) {
+        if (themeLabelTimer) clearTimeout(themeLabelTimer);
+        themeToggleBtn.classList.add('theme-btn--label-show');
+        themeLabelTimer = setTimeout(() => {
+          themeToggleBtn.classList.remove('theme-btn--label-show');
+          themeLabelTimer = null;
+        }, 1200);
+      }
     });
 
     // Initialize theme label from stored preference
