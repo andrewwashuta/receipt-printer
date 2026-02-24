@@ -1,6 +1,6 @@
 # Receipt Printer Portfolio
 
-A portfolio website styled as a thermal receipt printer, built with Astro. Features an animated line-by-line printing effect, tearable receipt pieces, washi tape, hand mode for dragging pieces, and authentic printer sound effects.
+A portfolio website styled as a thermal receipt printer, built with Astro. Features an animated line-by-line printing effect, tearable receipt pieces, washi tape, drag mode for repositioning pieces, and authentic printer sound effects.
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ npm run preview
 
 - **Framework**: [Astro](https://astro.build/)
 - **Deployment**: Vercel
-- **Fonts**: VT323 (receipt monospace), MD Thermochrome (toolbar icons), Geist Pixel (headers)
+- **Fonts**: Berkeley Mono (receipt monospace), MD Thermochrome (toolbar icons)
 - **Audio**: Web Audio API with HTMLAudio fallback for tear sounds
 
 ## Features
@@ -35,7 +35,7 @@ npm run preview
 - **Printing Animation**: Line-by-line thermal printing with cursor blink and sound
 - **Tearable Receipt**: Swipe across the receipt to tear it into pieces with jagged edges and canvas-generated fiber grain textures
 - **Washi Tape**: Draw decorative tape strips across torn pieces to tape them back together (toggle with W key)
-- **Hand Mode**: Drag and fling torn receipt pieces with physics-based momentum and viewport clamping (toggle with H key)
+- **Drag Mode**: Drag and fling torn receipt pieces with physics-based momentum and viewport clamping (toggle with H key)
 - **Sound Effects**: Tear sounds with multiple variations, audio context unlock for mobile Safari
 - **Thermal Portrait**: Dithered image using Canvas API for authentic thermal printer look
 - **Cursor Dot**: Inverse blend-mode cursor with proximity-based sizing near tear edges (desktop)
@@ -55,7 +55,7 @@ src/
       andrewwashuta.png     # Portrait for thermal dithering
 
 public/
-  fonts/                    # MD Thermochrome, Geist Pixel, MDIO, Banana Grotesk
+  fonts/                    # Berkeley Mono, MD Thermochrome
   sounds/                   # Tear-1.mp3 through Tear-4.mp3
   favicon.svg
 ```
@@ -67,7 +67,7 @@ public/
 | S   | Toggle sound |
 | W   | Toggle washi tape mode |
 | C   | Clear all tape |
-| H   | Toggle hand mode |
+| H   | Toggle drag mode |
 | R   | Reset receipt |
 
 ## Deployment
