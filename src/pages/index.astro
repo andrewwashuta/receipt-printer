@@ -23,14 +23,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       <span class="toolbar-icon">&#x1F5D1;</span>
       <span class="toolbar-key">C</span>
     </button>
-    <button class="toolbar-btn" id="handToggle" aria-label="Toggle hand mode" title="Toggle hand mode">
-      <span class="toolbar-label" id="handLabel">Hand Off</span>
+    <button class="toolbar-btn" id="handToggle" aria-label="Toggle drag mode" title="Toggle drag mode">
+      <span class="toolbar-label" id="handLabel">Drag Off</span>
       <span class="toolbar-icon">&#x261A;</span>
       <span class="toolbar-key">H</span>
     </button>
     <button class="toolbar-btn" id="resetBtn" aria-label="Reset receipt" title="Reset receipt">
       <span class="toolbar-label">Reset</span>
       <span class="toolbar-icon">&#128257;</span>
+      <span class="toolbar-key">R</span>
     </button>
   </div>
 
@@ -1292,7 +1293,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     function syncControlLabels() {
       if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound On' : 'Sound Off';
       if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi On' : 'Washi Off';
-      if (handLabel) handLabel.textContent = handMode ? 'Hand On' : 'Hand Off';
+      if (handLabel) handLabel.textContent = handMode ? 'Drag On' : 'Drag Off';
     }
 
     function showHint(text: string, persistent: boolean) {
@@ -1452,7 +1453,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
       if (isMobileHint) {
-        showHint(handMode ? 'Hand On \u00B7 Scroll Disabled' : 'Hand Off', handMode);
+        showHint(handMode ? 'Drag On \u00B7 Scroll Disabled' : 'Drag Off', handMode);
       }
     });
 
@@ -3340,6 +3341,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         } else if (key === 'h') {
           toggleHandMode();
           flashButton(handToggleBtn);
+          e.preventDefault();
+        } else if (key === 'r') {
+          resetToDefault();
+          flashButton(resetBtn);
           e.preventDefault();
         }
       });
