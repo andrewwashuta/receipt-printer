@@ -773,11 +773,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     .theme-btn {
       top: auto;
       right: auto;
-      left: 20px;
-      bottom: calc(20px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      left: calc(50% - 120px);
+      bottom: calc(28px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       transform: none;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
+      transition: transform 0.2s ease, left 0.25s ease;
+    }
+
+    :global(body.washi-mode) .theme-btn {
+      left: calc(50% - 139px);
     }
 
     .theme-btn:hover {
