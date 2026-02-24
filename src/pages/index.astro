@@ -34,6 +34,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     </button>
   </div>
 
+  <!-- Mobile mode hint (shimmer text above toolbar) -->
+  <div class="mode-hint" id="modeHint" aria-live="polite"></div>
+
   <!-- Inverse cursor dot (desktop only) -->
   <div class="cursor-dot" id="cursorDot"></div>
 
@@ -565,7 +568,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     z-index: 10100;
     display: flex;
     flex-direction: column;
-    background: rgba(30, 28, 24, 0.85);
+    background: rgba(30, 28, 24, 0.92);
     border: 1px solid rgba(245, 240, 232, 0.12);
     padding: 4px;
     backdrop-filter: blur(4px);
@@ -630,21 +633,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     font-family: var(--font-receipt);
     font-size: 12px;
     letter-spacing: 1px;
-    background: rgba(48, 40, 26, 0.78);
+    background: #30281a;
     padding: 3px 8px;
-    border: none;
-    color: rgba(244, 236, 215, 0.86);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(245, 240, 232, 0.12);
+    color: #f4ecd7;
     opacity: 0;
     pointer-events: none;
     filter: blur(3px);
     transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
-  }
-
-  .toolbar-btn.active .toolbar-label {
-    background: rgba(48, 40, 26, 0.9);
-    color: rgba(244, 236, 215, 0.92);
   }
 
   .toolbar-btn:hover .toolbar-label {
@@ -679,6 +675,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       left: 50%;
       transform: translateX(-50%);
       flex-direction: row;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: rgba(30, 28, 24, 0.92);
+      border: 1px solid rgba(245, 240, 232, 0.12);
     }
 
     .toolbar-btn + .toolbar-btn {
@@ -691,21 +691,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       background: rgba(48, 40, 26, 0.88);
     }
 
-    .toolbar-label {
-      right: auto;
-      top: auto;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%) translateY(4px);
-      filter: blur(3px);
-    }
-
-    .toolbar-btn:hover .toolbar-label,
-    .toolbar-btn:active .toolbar-label,
-    .toolbar-btn.toolbar-btn--label-show .toolbar-label {
-      transform: translateX(-50%) translateY(0);
-      filter: blur(0);
-      opacity: 1;
+    .toolbar-label,
+    .toolbar-key {
+      display: none;
     }
 
     .toolbar-btn--washi-only {
@@ -723,6 +711,38 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       margin-top: 0;
       opacity: 1;
     }
+  }
+
+  /* Mobile unified label (replaces per-button toolbar labels) */
+  .mode-hint {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .mode-hint {
+      display: block;
+      position: fixed;
+      left: 50%;
+      bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      transform: translateX(-50%);
+      z-index: 10100;
+      font-family: var(--font-receipt);
+      font-size: 12px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      pointer-events: none;
+      padding: 3px 8px;
+      background: #30281a;
+      border: 1px solid rgba(245, 240, 232, 0.12);
+      color: #f4ecd7;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .mode-hint.visible {
+      opacity: 1;
+    }
+
   }
 
   :global(.washi-preview),
@@ -936,7 +956,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     opacity: 0;
     transition: opacity 0.15s, width 0.18s ease-out, height 0.18s ease-out;
     transform: translate(-50%, -50%);
-    will-change: left, top, width, height;
   }
 
   /* Hide on touch devices and small screens */
@@ -949,6 +968,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   /* Hide OS cursor on desktop */
   @media (pointer: fine) {
+    .cursor-dot {
+      will-change: left, top, width, height;
+    }
     *, *::before, *::after {
       cursor: none !important;
     }
@@ -980,9 +1002,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       transform: rotate(0deg);
       padding: 20px 16px;
       width: 100%;
-      box-shadow:
-        0 1px 4px rgba(0,0,0,0.2),
-        0 4px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      filter: none;
+    }
+
+    .receipt::after {
+      display: none;
     }
 
     .receipt-line {
@@ -1073,8 +1098,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             .catch(() => {});
         });
 
-        // Persistent unlock listeners are more reliable on iOS than one-shot unlock.
-        // Keep them attached so audio can recover after Safari background/foreground transitions.
+        // Persistent unlock listeners for iOS background/foreground recovery
         const unlockFromGesture = () => {
           this._unlocked = true;
           this._attemptUnlock(false);
@@ -1245,7 +1269,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         this.tearSequenceIdx++;
         let tearIdx = preferredIdx;
 
-        // During initial load, prefer whichever source is actually ready so early cuts still make sound.
+        // Prefer ready source on initial load
         if (!this.tearBuffers[tearIdx]) {
           const readyBufferIdx = active.find((idx) => !!this.tearBuffers[idx]);
           if (readyBufferIdx !== undefined) {
@@ -1285,11 +1309,34 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let resetToDefault = () => {};
     const handToggleBtn = document.getElementById('handToggle') as HTMLButtonElement | null;
     const handLabel = document.getElementById('handLabel') as HTMLElement | null;
+    const modeHint = document.getElementById('modeHint') as HTMLElement | null;
+    let hintTimer: ReturnType<typeof setTimeout> | null = null;
+    let hintPersistent = false;
 
     function syncControlLabels() {
       if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound On' : 'Sound Off';
       if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi On' : 'Washi Off';
       if (handLabel) handLabel.textContent = handMode ? 'Hand On' : 'Hand Off';
+    }
+
+    function showHint(text: string, persistent: boolean) {
+      if (!modeHint) return;
+      if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
+      modeHint.textContent = text;
+      modeHint.classList.add('visible');
+      hintPersistent = persistent;
+      if (!persistent) {
+        hintTimer = setTimeout(() => {
+          modeHint.classList.remove('visible');
+          hintTimer = null;
+        }, 1500);
+      }
+    }
+
+    function dismissHint() {
+      if (!modeHint || !hintPersistent) return;
+      hintPersistent = false;
+      modeHint.classList.remove('visible');
     }
 
     function syncWashiToggle() {
@@ -1299,6 +1346,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (washiMode && handMode) {
         handMode = false;
         syncHandToggle();
+      }
+      // Block scrolling while washi mode is active on mobile
+      if (washiMode) {
+        document.documentElement.style.touchAction = 'none';
+      } else if (!handMode) {
+        document.documentElement.style.touchAction = '';
       }
       syncControlLabels();
     }
@@ -1312,6 +1365,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const clipChild = el.firstElementChild as HTMLElement | null;
         if (clipChild) clipChild.style.pointerEvents = pe;
       });
+      // Block scrolling while hand mode is active on mobile
+      if (handMode) {
+        document.documentElement.style.touchAction = 'none';
+      } else if (!washiMode) {
+        document.documentElement.style.touchAction = '';
+      }
       syncControlLabels();
     }
 
@@ -1372,13 +1431,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
     let activeLabelBtn: HTMLElement | null = null;
+    const isMobileHint = window.matchMedia('(max-width: 600px)').matches;
 
     function showLabelBriefly(btn: HTMLElement | null) {
-      if (!btn) return;
-      if (labelTimer) {
-        clearTimeout(labelTimer);
-        labelTimer = null;
-      }
+      if (!btn || isMobileHint) return;
+      if (labelTimer) { clearTimeout(labelTimer); labelTimer = null; }
       if (activeLabelBtn && activeLabelBtn !== btn) {
         activeLabelBtn.classList.remove('toolbar-btn--label-show');
       }
@@ -1397,26 +1454,37 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     soundToggle.addEventListener('click', () => {
       toggleSound();
       showLabelBriefly(soundToggle);
+      if (isMobileHint) showHint(sounds.isEnabled ? 'Sound On' : 'Sound Off', false);
     });
 
     tapeToggle?.addEventListener('click', () => {
       washiMode = !washiMode;
       syncWashiToggle();
       showLabelBriefly(tapeToggle);
+      if (isMobileHint) {
+        showHint(washiMode ? 'Washi On \u00B7 Scroll Disabled' : 'Washi Off', washiMode);
+      }
     });
 
     clearTapeBtn?.addEventListener('click', () => {
       clearAllTape();
       showLabelBriefly(clearTapeBtn);
+      if (isMobileHint) showHint('Tape Cleared', false);
     });
 
     handToggleBtn?.addEventListener('click', () => {
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
+      if (isMobileHint) {
+        showHint(handMode ? 'Hand On \u00B7 Scroll Disabled' : 'Hand Off', handMode);
+      }
     });
 
     const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement | null;
-    resetBtn?.addEventListener('click', () => resetToDefault());
+    resetBtn?.addEventListener('click', () => {
+      resetToDefault();
+      if (isMobileHint) showHint('Reset', false);
+    });
 
     syncWashiToggle();
     syncControlLabels();
@@ -1744,6 +1812,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Always show on first visit (cleared localStorage key)
       if (sessionStorage.getItem('aw-hint-shown')) return;
       sessionStorage.setItem('aw-hint-shown', '1');
+
+      if (isMobileHint) {
+        showHint('Swipe to Tear', true);
+        return;
+      }
 
       cutHintEl = document.createElement('div');
       cutHintEl.className = 'cut-hint';
@@ -2103,7 +2176,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return `translateX(-50%) translateX(${p.offsetX}px) rotate(${baseRotation + p.rotation}deg) translateY(${p.offsetY}px)`;
       }
 
-      const PIECE_SHADOW = 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))';
+      const PIECE_SHADOW = desktopFinePointer
+        ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.1)) drop-shadow(0 4px 12px rgba(0,0,0,0.12))'
+        : 'drop-shadow(0 2px 6px rgba(0,0,0,0.15))';
 
       // Lazily set up the piece system on the first tear
       function initTearSystem() {
@@ -2202,13 +2277,21 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       // Pre-generate a few textures to avoid re-creating per tear
+      const _texW = 400;
+      const _texH = 24;
       let tearTextureCache: string[] = [];
       function getTearTexture(seed: number): string {
         const idx = seed % 6;
         if (!tearTextureCache[idx]) {
-          tearTextureCache[idx] = generateFiberTexture(400, 24, seed * 7919 + idx * 1301);
+          tearTextureCache[idx] = generateFiberTexture(_texW, _texH, seed * 7919 + idx * 1301);
         }
         return tearTextureCache[idx];
+      }
+      // Pre-warm texture cache during idle time
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => { for (let i = 0; i < 6; i++) getTearTexture(i); }, { timeout: 5000 });
+      } else {
+        setTimeout(() => { for (let i = 0; i < 6; i++) getTearTexture(i); }, 3000);
       }
       let tearCounter = 0;
 
@@ -2235,7 +2318,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           height: '20px',
           transform: 'translateY(-50%)',
           backgroundImage: `url(${tex1})`,
-          backgroundSize: '400px 24px',
+          backgroundSize: `${_texW}px ${_texH}px`,
           backgroundRepeat: 'repeat-x',
           mixBlendMode: 'multiply',
           opacity: '0.6',
@@ -2245,6 +2328,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           maskImage: maskTop,
         });
         parent.appendChild(grain);
+
+        // Skip extra blend-mode layers on mobile for GPU savings
+        if (!desktopFinePointer) return;
 
         // Layer 2: Offset texture for depth — darken blend, shifted
         const depth = document.createElement('div');
@@ -2297,7 +2383,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           clipPath: clipFor(p),
           boxShadow: 'none',
           filter: PIECE_SHADOW,
-          contain: 'layout paint style',
           overflow: 'hidden',
           willChange: 'clip-path',
           pointerEvents: handMode ? 'auto' : 'none',
@@ -2699,10 +2784,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         target.bottomEdge = jaggedEdge;
         target.rotation += (Math.random() - 0.5) * 0.6;
 
-        // Add grain texture to the top piece's newly torn bottom edge
-        addEdgeGrain(target.clipEl, tearPct, 'top');
-
         animatePiece(target);
+
+        // Add grain after animatePiece (Safari blend-mode repaint issue)
+        addEdgeGrain(target.clipEl, tearPct, 'top');
 
         // Create new piece for bottom portion (jagged top, inherits old bottom edge)
         const wrapper = receipt!.parentElement!;
@@ -2731,20 +2816,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         };
         pieces.splice(targetIdx + 1, 0, newPiece);
 
-        // Force reflow so the transition animates from the start position
-        newEl.getBoundingClientRect();
-
-        // Shift the new piece and everything below it down
+        // Prepare shift offsets synchronously (data only, no DOM writes)
         for (let i = targetIdx + 1; i < pieces.length; i++) {
           pieces[i].offsetY += TEAR_GAP;
           pieces[i].rotation += (Math.random() - 0.5) * 1.2;
-          animatePiece(pieces[i]);
         }
+
+        // Use double-rAF to let browser paint initial state, then animate
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            for (let i = targetIdx + 1; i < pieces.length; i++) {
+              animatePiece(pieces[i]);
+            }
+          });
+        });
 
         // Grow wrapper so page is scrollable to see all pieces
         const maxOff = pieces[pieces.length - 1].offsetY;
         wrapper.style.paddingBottom = (maxOff + 40) + 'px';
 
+        invalidateLayoutCache();
         return true;
       }
 
@@ -2754,6 +2845,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function getCursorProximity(mouseX: number, mouseY: number): { proximity: number; canCut: boolean } {
         if (!canCutDuringPrint()) return { proximity: 0, canCut: false };
+        if (handMode || washiMode) return { proximity: 0, canCut: false };
 
         let distX = 0;
         let minDistY = Infinity;
@@ -2868,6 +2960,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function startWashiStroke(clientX: number, clientY: number) {
+        dismissHint();
         washiDrawing = true;
         washiStartX = clientX;
         washiStartY = clientY;
@@ -2890,7 +2983,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function endWashiStroke() {
         if (!washiDrawing) return;
-        document.documentElement.style.touchAction = '';
+        if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
         const scrollDX = window.scrollX - washiStartScrollX;
         const scrollDY = window.scrollY - washiStartScrollY;
         const stroke: TapeStroke = {
@@ -3064,6 +3157,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let handPhysicsActive = false;
       type PhysicsPiece = { piece: TearPiece; vx: number; vy: number; vRot: number };
       let physicsQueue: PhysicsPiece[] = [];
+
+      // Cached layout measurements to avoid per-frame getBoundingClientRect
+      let _layoutDirty = true;
+      let _cachedParentRect: DOMRect | null = null;
+      let _cachedReceiptRect: DOMRect | null = null;
+      let _cachedHalfW = 0;
+      function invalidateLayoutCache() { _layoutDirty = true; }
+      window.addEventListener('resize', invalidateLayoutCache);
+      window.addEventListener('orientationchange', invalidateLayoutCache);
+      function refreshLayoutCache() {
+        if (!_layoutDirty && _cachedParentRect) return;
+        _cachedParentRect = receipt!.parentElement!.getBoundingClientRect();
+        _cachedReceiptRect = receipt!.getBoundingClientRect();
+        _cachedHalfW = receipt!.offsetWidth / 2;
+        _layoutDirty = false;
+      }
       let handZCounter = 20;
 
       function findPieceByEl(el: HTMLElement): TearPiece | null {
@@ -3086,10 +3195,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function snapPieceIntoBounds(piece: TearPiece) {
-        const parentRect = receipt!.parentElement!.getBoundingClientRect();
+        refreshLayoutCache();
+        const parentRect = _cachedParentRect!;
         const baseCX = parentRect.left + parentRect.width / 2;
-        const halfW = receipt!.offsetWidth / 2;
-        const rr = receipt!.getBoundingClientRect();
+        const halfW = _cachedHalfW;
+        const rr = _cachedReceiptRect!;
         const rh = rr.height;
         const vw = window.innerWidth;
         const vh = window.innerHeight;
@@ -3114,10 +3224,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function handPhysicsTick() {
-        const parentRect = receipt!.parentElement!.getBoundingClientRect();
+        refreshLayoutCache();
+        const parentRect = _cachedParentRect!;
         const baseCX = parentRect.left + parentRect.width / 2;
-        const halfW = receipt!.offsetWidth / 2;
-        const rr = receipt!.getBoundingClientRect();
+        const halfW = _cachedHalfW;
+        const rr = _cachedReceiptRect!;
         const rh = rr.height;
         const vw = window.innerWidth;
         const vh = window.innerHeight;
@@ -3166,6 +3277,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const piece = findPieceByEl(e.target as HTMLElement);
         if (!piece) return;
 
+        dismissHint();
         activeHandPointerId = e.pointerId;
         handDragging = true;
         handDragPiece = piece;
@@ -3239,13 +3351,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       document.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.repeat) return;
         const key = e.key.toLowerCase();
-        const active = document.activeElement as HTMLElement | null;
-        if (
-          active &&
-          (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)
-        ) {
-          return;
-        }
+        const el = document.activeElement as HTMLElement;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
         if (key === 'w') {
           washiMode = !washiMode;
           if (!washiMode) cleanupWashiStroke();
@@ -3281,6 +3388,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function startTear(cx: number, cy: number) {
         if (washiMode || handMode) return;
         if (!canCutDuringPrint()) return;
+        dismissHint();
         sounds.prepareTearGesture();
         tearStartX = cx;
         tearStartY = cy;
@@ -3303,6 +3411,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           tearDecided = true;
           tearIsHorizontal = dx > dy * 1.2;
           if (tearIsHorizontal) {
+            document.documentElement.style.touchAction = 'none';
             pageCutLine.style.top = `${tearStartY}px`;
             pageCutLine.style.display = 'block';
             pageCutLine.style.width = '0';
@@ -3329,6 +3438,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         tearDecided = false;
         tearIsHorizontal = false;
         tearReady = false;
+        if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
       }
 
       // Touch (swipe gesture stays the same for mobile)
@@ -3351,18 +3461,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (activeWashiPointerId === null && e.touches.length > 0) {
             updateWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
           }
-          e.preventDefault();
           return;
         }
         if (isTearing && e.touches.length > 0) {
           moveTear(e.touches[0].clientX, e.touches[0].clientY);
-          // Prevent browser back/forward navigation gesture during horizontal tear
-          if (tearIsHorizontal) e.preventDefault();
         }
-      }, { passive: false });
+      }, { passive: true });
       document.addEventListener('touchend', (e: TouchEvent) => {
         if (handMode) return;
-        if (washiMode && washiDrawing && (usePointerWashi ? activeWashiPointerId === null : true)) {
+        if (washiMode && washiDrawing && (!usePointerWashi || activeWashiPointerId === null)) {
           endWashiStroke();
           return;
         }
