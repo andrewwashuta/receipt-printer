@@ -1366,6 +1366,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const handLabel = document.getElementById('handLabel') as HTMLElement | null;
     const modeHint = document.getElementById('modeHint') as HTMLElement | null;
     let hintTimer: ReturnType<typeof setTimeout> | null = null;
+    let fadeInTimer: ReturnType<typeof setTimeout> | null = null;
     let hintPersistent = false;
 
     function syncControlLabels() {
@@ -1377,19 +1378,39 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     function showHint(text: string, persistent: boolean) {
       if (!modeHint) return;
       if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
-      modeHint.textContent = text;
-      modeHint.classList.add('visible');
-      hintPersistent = persistent;
-      if (!persistent) {
-        hintTimer = setTimeout(() => {
-          modeHint.classList.remove('visible');
-          hintTimer = null;
-        }, 1500);
+      if (fadeInTimer) { clearTimeout(fadeInTimer); fadeInTimer = null; }
+
+      const scheduleAutoHide = () => {
+        hintPersistent = persistent;
+        if (!persistent) {
+          hintTimer = setTimeout(() => {
+            modeHint.classList.remove('visible');
+            hintTimer = null;
+          }, 1500);
+        }
+      };
+
+      if (modeHint.classList.contains('visible')) {
+        // Cross-fade visible hint text to preserve a clear fade-in on updates.
+        modeHint.classList.remove('visible');
+        fadeInTimer = setTimeout(() => {
+          modeHint.textContent = text;
+          modeHint.getBoundingClientRect(); // Force reflow so opacity transition restarts.
+          modeHint.classList.add('visible');
+          fadeInTimer = null;
+          scheduleAutoHide();
+        }, 120);
+      } else {
+        modeHint.textContent = text;
+        modeHint.getBoundingClientRect(); // Force reflow so opacity transition starts from 0.
+        modeHint.classList.add('visible');
+        scheduleAutoHide();
       }
     }
 
     function dismissHint() {
       if (!modeHint || !hintPersistent) return;
+      if (fadeInTimer) { clearTimeout(fadeInTimer); fadeInTimer = null; }
       hintPersistent = false;
       modeHint.classList.remove('visible');
     }
@@ -1650,6 +1671,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     themeToggleBtn?.addEventListener('click', () => {
       cycleTheme();
+      if (isMobileHint) {
+        const name = getCurrentTheme();
+        showHint(name.charAt(0).toUpperCase() + name.slice(1), false);
+      }
     });
 
     // Initialize theme label from stored preference
