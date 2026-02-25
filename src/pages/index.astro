@@ -1731,11 +1731,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (themeTransitionInFlight) return;
 
       const nextTheme = getNextThemeName();
-      if (isMobileHint) {
-        showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false, 'theme', false, 'restart');
-      }
-
       cycleTheme(nextTheme);
+      if (isMobileHint) {
+        // Let View Transition capture old/new states first, then fade the label in.
+        requestAnimationFrame(() => {
+          showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false, 'theme', false, 'restart');
+        });
+      }
     });
 
     // Initialize theme label from stored preference
