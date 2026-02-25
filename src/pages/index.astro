@@ -1580,6 +1580,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // ========================================
     let tearTextureCache: string[] = [];
     const THEMES = ['parchment', 'midnight', 'carbon', 'terracotta', 'forest'] as const;
+    let themeTransitionInFlight = false;
     const themeToggleBtn = document.getElementById('themeToggle') as HTMLButtonElement | null;
     const themeLabel = document.getElementById('themeLabel') as HTMLElement | null;
 
@@ -1597,14 +1598,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (themeLabel) themeLabel.textContent = name.charAt(0).toUpperCase() + name.slice(1);
     }
 
-    function cycleTheme(onDone?: () => void) {
-      const current = getCurrentTheme();
+    function getNextThemeName(current = getCurrentTheme()): string {
       const currentIdx = THEMES.indexOf(current as typeof THEMES[number]);
       const nextIdx = (currentIdx + 1) % THEMES.length;
-      const next = THEMES[nextIdx];
+      return THEMES[nextIdx];
+    }
+
+    function cycleTheme(next = getNextThemeName()) {
+      const finishTransition = () => {
+        themeTransitionInFlight = false;
+      };
+
+      themeTransitionInFlight = true;
 
       const btn = themeToggleBtn;
-      if (!btn) { applyTheme(next); refreshCanvasElements(); onDone?.(); return; }
+      if (!btn) {
+        applyTheme(next);
+        refreshCanvasElements();
+        finishTransition();
+        return;
+      }
 
       const rect = btn.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
@@ -1613,46 +1626,62 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         Math.max(cx, window.innerWidth - cx),
         Math.max(cy, window.innerHeight - cy)
       );
+      const useSimpleTransition = window.matchMedia(
+        '(max-width: 600px), (pointer: coarse), (prefers-reduced-motion: reduce)'
+      ).matches;
 
       if (!document.startViewTransition) {
         applyTheme(next);
         refreshCanvasElements();
-        onDone?.();
+        finishTransition();
         return;
       }
 
       document.documentElement.classList.add('theme-transitioning');
 
-      const transition = document.startViewTransition(() => {
+      let transition: any;
+      try {
+        transition = document.startViewTransition(() => {
+          applyTheme(next);
+        });
+      } catch {
+        document.documentElement.classList.remove('theme-transitioning');
         applyTheme(next);
-      });
+        refreshCanvasElements();
+        finishTransition();
+        return;
+      }
 
       transition.ready.then(() => {
-        const feather = 80;
-        const frames: Keyframe[] = [];
-        const steps = 20;
-        for (let i = 0; i <= steps; i++) {
-          const t = i / steps;
-          const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-          const r = eased * (maxRadius + feather);
-          const inner = Math.max(0, r - feather);
-          frames.push({
-            maskImage: `radial-gradient(circle at ${cx}px ${cy}px, black ${inner}px, transparent ${r}px)`,
-            offset: t,
-          });
+        if (useSimpleTransition) return;
+        try {
+          document.documentElement.animate(
+            {
+              clipPath: [
+                `circle(0px at ${cx}px ${cy}px)`,
+                `circle(${maxRadius}px at ${cx}px ${cy}px)`,
+              ],
+            },
+            {
+              duration: 500,
+              easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+              pseudoElement: '::view-transition-new(root)',
+            },
+          );
+        } catch {
+          // If pseudo-element animation fails, fall back to the default transition.
         }
-        document.documentElement.animate(frames, {
-          duration: 650,
-          easing: 'linear',
-          pseudoElement: '::view-transition-new(root)',
-        });
       });
 
-      transition.finished.then(() => {
-        document.documentElement.classList.remove('theme-transitioning');
-        refreshCanvasElements();
-        onDone?.();
-      });
+      transition.finished
+        .catch(() => {
+          // Ignore transition rejections and run shared cleanup below.
+        })
+        .finally(() => {
+          document.documentElement.classList.remove('theme-transitioning');
+          refreshCanvasElements();
+          finishTransition();
+        });
     }
 
     function getThemeColor(prop: string): string {
@@ -1682,13 +1711,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     themeToggleBtn?.addEventListener('click', () => {
-      const onDone = isMobileHint ? () => {
-        const name = getCurrentTheme();
-        showHint(name.charAt(0).toUpperCase() + name.slice(1), false);
-        modeHint?.classList.add('mode-hint--theme');
-      } : undefined;
+      if (themeTransitionInFlight) return;
 
-      cycleTheme(onDone);
+      const nextTheme = getNextThemeName();
+      if (isMobileHint) {
+        showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false);
+        modeHint?.classList.add('mode-hint--theme');
+      }
+
+      cycleTheme(nextTheme);
     });
 
     // Initialize theme label from stored preference
