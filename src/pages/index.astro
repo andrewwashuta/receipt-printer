@@ -1389,6 +1389,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       persistent: boolean,
       kind: 'default' | 'theme' = 'default',
       instant = false,
+      updateMode: 'crossfade' | 'restart' = 'crossfade',
     ) {
       if (!modeHint) return;
       if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
@@ -1413,6 +1414,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       if (modeHint.classList.contains('visible')) {
+        if (updateMode === 'restart') {
+          modeHint.classList.remove('visible');
+          modeHint.textContent = text;
+          modeHint.getBoundingClientRect(); // Force reflow so opacity transition restarts.
+          modeHint.classList.add('visible');
+          scheduleAutoHide();
+          return;
+        }
         // Cross-fade visible hint text to preserve a clear fade-in on updates.
         modeHint.classList.remove('visible');
         fadeInTimer = setTimeout(() => {
@@ -1723,7 +1732,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       const nextTheme = getNextThemeName();
       if (isMobileHint) {
-        showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false, 'theme');
+        showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false, 'theme', false, 'restart');
       }
 
       cycleTheme(nextTheme);
