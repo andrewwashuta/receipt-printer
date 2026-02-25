@@ -790,18 +790,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .theme-btn .toolbar-label {
-      display: block;
-      right: auto;
-      top: auto;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      filter: none;
-      transition: opacity 0.4s ease;
-    }
-
-    .theme-btn.theme-btn--label-show .toolbar-label {
-      opacity: 1;
+      display: none;
     }
   }
 
@@ -1666,21 +1655,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       tearTextureCache = [];
     }
 
-    let themeLabelTimer: ReturnType<typeof setTimeout> | null = null;
-
     themeToggleBtn?.addEventListener('click', () => {
-      if (themeLabelTimer) { clearTimeout(themeLabelTimer); themeLabelTimer = null; }
-      themeToggleBtn?.classList.remove('theme-btn--label-show');
-
-      const showLabel = (isMobileHint && themeToggleBtn) ? () => {
-        themeToggleBtn!.classList.add('theme-btn--label-show');
-        themeLabelTimer = setTimeout(() => {
-          themeToggleBtn!.classList.remove('theme-btn--label-show');
-          themeLabelTimer = null;
-        }, 1200);
+      const onDone = isMobileHint ? () => {
+        const name = getCurrentTheme();
+        showHint(name.charAt(0).toUpperCase() + name.slice(1), false);
       } : undefined;
 
-      cycleTheme(showLabel);
+      cycleTheme(onDone);
     });
 
     // Initialize theme label from stored preference
