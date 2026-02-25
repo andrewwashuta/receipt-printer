@@ -1384,11 +1384,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (handLabel) handLabel.textContent = handMode ? 'Drag On' : 'Drag Off';
     }
 
-    function showHint(text: string, persistent: boolean) {
+    function showHint(
+      text: string,
+      persistent: boolean,
+      kind: 'default' | 'theme' = 'default',
+      instant = false,
+    ) {
       if (!modeHint) return;
       if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
       if (fadeInTimer) { clearTimeout(fadeInTimer); fadeInTimer = null; }
-      modeHint.classList.remove('mode-hint--theme');
+      modeHint.classList.toggle('mode-hint--theme', kind === 'theme');
 
       const scheduleAutoHide = () => {
         hintPersistent = persistent;
@@ -1399,6 +1404,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           }, 1500);
         }
       };
+
+      if (instant) {
+        modeHint.textContent = text;
+        modeHint.classList.add('visible');
+        scheduleAutoHide();
+        return;
+      }
 
       if (modeHint.classList.contains('visible')) {
         // Cross-fade visible hint text to preserve a clear fade-in on updates.
@@ -1626,10 +1638,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         Math.max(cx, window.innerWidth - cx),
         Math.max(cy, window.innerHeight - cy)
       );
-      const useSimpleTransition = window.matchMedia(
-        '(max-width: 600px), (pointer: coarse), (prefers-reduced-motion: reduce)'
-      ).matches;
-
       if (!document.startViewTransition) {
         applyTheme(next);
         refreshCanvasElements();
@@ -1653,24 +1661,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       transition.ready.then(() => {
-        if (useSimpleTransition) return;
-        try {
-          document.documentElement.animate(
-            {
-              clipPath: [
-                `circle(0px at ${cx}px ${cy}px)`,
-                `circle(${maxRadius}px at ${cx}px ${cy}px)`,
-              ],
-            },
-            {
-              duration: 500,
-              easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-              pseudoElement: '::view-transition-new(root)',
-            },
-          );
-        } catch {
-          // If pseudo-element animation fails, fall back to the default transition.
+        const feather = 80;
+        const frames: Keyframe[] = [];
+        const steps = 20;
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+          const r = eased * (maxRadius + feather);
+          const inner = Math.max(0, r - feather);
+          frames.push({
+            maskImage: `radial-gradient(circle at ${cx}px ${cy}px, black ${inner}px, transparent ${r}px)`,
+            offset: t,
+          });
         }
+        document.documentElement.animate(frames, {
+          duration: 650,
+          easing: 'linear',
+          pseudoElement: '::view-transition-new(root)',
+        });
       });
 
       transition.finished
@@ -1715,8 +1723,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       const nextTheme = getNextThemeName();
       if (isMobileHint) {
-        showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false);
-        modeHint?.classList.add('mode-hint--theme');
+        showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false, 'theme', true);
       }
 
       cycleTheme(nextTheme);
