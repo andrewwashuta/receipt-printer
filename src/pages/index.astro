@@ -788,10 +788,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     .theme-btn:hover {
       transform: scale(1.1);
     }
-
-    .theme-btn .toolbar-label {
-      display: none;
-    }
   }
 
   /* Mobile unified label (replaces per-button toolbar labels) */
@@ -822,6 +818,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     .mode-hint.visible {
       opacity: 1;
+    }
+
+    .mode-hint.mode-hint--theme {
+      left: calc(50% - 105px);
+    }
+
+    :global(body.washi-mode) .mode-hint.mode-hint--theme {
+      left: calc(50% - 124px);
     }
 
   }
@@ -1382,6 +1386,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     function showHint(text: string, persistent: boolean) {
       if (!modeHint) return;
       if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
+      modeHint.classList.remove('mode-hint--theme');
       modeHint.textContent = text;
       modeHint.classList.add('visible');
       hintPersistent = persistent;
@@ -1659,6 +1664,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       const onDone = isMobileHint ? () => {
         const name = getCurrentTheme();
         showHint(name.charAt(0).toUpperCase() + name.slice(1), false);
+        modeHint?.classList.add('mode-hint--theme');
       } : undefined;
 
       cycleTheme(onDone);
