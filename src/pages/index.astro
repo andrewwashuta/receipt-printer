@@ -9,12 +9,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   <!-- Toolbar -->
   <div class="toolbar" id="toolbar">
     <button class="toolbar-btn active" id="soundToggle" aria-label="Toggle sounds" title="Toggle sounds">
-      <span class="toolbar-label" id="soundLabel">Sound &bull; On</span>
+      <span class="toolbar-label" id="soundLabel">Sound &middot; On</span>
       <span class="toolbar-icon" id="soundIcon">&#x1F50A;</span>
       <span class="toolbar-key">S</span>
     </button>
     <button class="toolbar-btn" id="tapeToggle" aria-label="Toggle washi tape" title="Toggle washi tape">
-      <span class="toolbar-label" id="tapeLabel">Washi &bull; Off</span>
+      <span class="toolbar-label" id="tapeLabel">Washi &middot; Off</span>
       <span class="toolbar-icon" id="tapeIcon">&#x1F517;</span>
       <span class="toolbar-key">W</span>
     </button>
@@ -24,12 +24,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       <span class="toolbar-key">C</span>
     </button>
     <button class="toolbar-btn" id="cutToggle" aria-label="Toggle draw-to-cut mode" title="Toggle draw-to-cut mode">
-      <span class="toolbar-label" id="cutLabel">Draw to Cut &bull; Off</span>
+      <span class="toolbar-label" id="cutLabel">Draw to Cut &middot; Off</span>
       <span class="toolbar-icon">&#x270F;</span>
       <span class="toolbar-key">X</span>
     </button>
     <button class="toolbar-btn" id="handToggle" aria-label="Toggle drag mode" title="Toggle drag mode">
-      <span class="toolbar-label" id="handLabel">Drag &bull; Off</span>
+      <span class="toolbar-label" id="handLabel">Drag &middot; Off</span>
       <span class="toolbar-icon">&#x261A;</span>
       <span class="toolbar-key">H</span>
     </button>
@@ -1400,10 +1400,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     let hintPersistent = false;
 
     function syncControlLabels() {
-      if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound \u2022 On' : 'Sound \u2022 Off';
-      if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi \u2022 On' : 'Washi \u2022 Off';
-      if (handLabel) handLabel.textContent = handMode ? 'Drag \u2022 On' : 'Drag \u2022 Off';
-      if (cutLabel) cutLabel.textContent = cutMode ? 'Draw to Cut \u2022 On' : 'Draw to Cut \u2022 Off';
+      if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound \u00B7 On' : 'Sound \u00B7 Off';
+      if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi \u00B7 On' : 'Washi \u00B7 Off';
+      if (handLabel) handLabel.textContent = handMode ? 'Drag \u00B7 On' : 'Drag \u00B7 Off';
+      if (cutLabel) cutLabel.textContent = cutMode ? 'Draw to Cut \u00B7 On' : 'Draw to Cut \u00B7 Off';
     }
 
     function showHint(
@@ -1619,7 +1619,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     soundToggle.addEventListener('click', () => {
       toggleSound();
       showLabelBriefly(soundToggle);
-      if (isMobileHint) showHint(sounds.isEnabled ? 'Sound \u2022 On' : 'Sound \u2022 Off', false);
+      if (isMobileHint) showHint(sounds.isEnabled ? 'Sound \u00B7 On' : 'Sound \u00B7 Off', false);
     });
 
     tapeToggle?.addEventListener('click', () => {
@@ -1627,7 +1627,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       syncWashiToggle();
       showLabelBriefly(tapeToggle);
       if (isMobileHint) {
-        showHint(washiMode ? 'Washi \u2022 On \u2022 Scroll Disabled' : 'Washi \u2022 Off', washiMode);
+        showHint(washiMode ? 'Washi \u00B7 On \u00B7 Scroll Disabled' : 'Washi \u00B7 Off', washiMode);
       }
     });
 
@@ -1641,7 +1641,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
       if (isMobileHint) {
-        showHint(handMode ? 'Drag \u2022 On \u2022 Scroll Disabled' : 'Drag \u2022 Off', handMode);
+        showHint(handMode ? 'Drag \u00B7 On \u00B7 Scroll Disabled' : 'Drag \u00B7 Off', handMode);
       }
     });
 
@@ -1649,7 +1649,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggleCutMode();
       showLabelBriefly(cutToggleBtn);
       if (isMobileHint) {
-        showHint(cutMode ? 'Draw to Cut \u2022 On \u2022 Scroll Disabled' : 'Draw to Cut \u2022 Off', cutMode);
+        showHint(cutMode ? 'Draw to Cut \u00B7 On \u00B7 Scroll Disabled' : 'Draw to Cut \u00B7 Off', cutMode);
       }
     });
 
