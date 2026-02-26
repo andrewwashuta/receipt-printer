@@ -778,7 +778,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     .theme-btn {
       top: auto;
       right: auto;
-      left: calc(50% - 133px);
+      left: calc(50% - 135px);
       bottom: calc(28px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       transform: none;
       backdrop-filter: none;
@@ -787,7 +787,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     :global(body.washi-mode) .theme-btn {
-      left: calc(50% - 152px);
+      left: calc(50% - 154px);
     }
 
     .theme-btn:hover {
@@ -1627,7 +1627,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       syncWashiToggle();
       showLabelBriefly(tapeToggle);
       if (isMobileHint) {
-        showHint(washiMode ? 'Washi \u2022 On \u00B7 Scroll Disabled' : 'Washi \u2022 Off', washiMode);
+        showHint(washiMode ? 'Washi \u2022 On \u2022 Scroll Disabled' : 'Washi \u2022 Off', washiMode);
       }
     });
 
@@ -1641,7 +1641,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
       if (isMobileHint) {
-        showHint(handMode ? 'Drag \u2022 On \u00B7 Scroll Disabled' : 'Drag \u2022 Off', handMode);
+        showHint(handMode ? 'Drag \u2022 On \u2022 Scroll Disabled' : 'Drag \u2022 Off', handMode);
       }
     });
 
@@ -1649,7 +1649,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggleCutMode();
       showLabelBriefly(cutToggleBtn);
       if (isMobileHint) {
-        showHint(cutMode ? 'Draw to Cut \u2022 On \u00B7 Scroll Disabled' : 'Draw to Cut \u2022 Off', cutMode);
+        showHint(cutMode ? 'Draw to Cut \u2022 On \u2022 Scroll Disabled' : 'Draw to Cut \u2022 Off', cutMode);
       }
     });
 
@@ -4077,6 +4077,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if ((e.target as HTMLElement).closest('a')) return;
           if (!canCutDuringPrint()) return;
 
+          dismissHint();
           cutDrawing = true;
           cutPoints = [{ x: e.clientX, y: e.clientY }];
           cutSvg.style.display = '';
@@ -4443,6 +4444,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (cutMode) {
           if (e.touches.length === 0) return;
           if (!canCutDuringPrint()) return;
+          dismissHint();
           cutDrawing = true;
           cutPoints = [{ x: e.touches[0].clientX, y: e.touches[0].clientY }];
           cutSvg.style.display = '';
