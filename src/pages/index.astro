@@ -9,13 +9,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   <!-- Toolbar -->
   <div class="toolbar" id="toolbar">
     <button class="toolbar-btn active" id="soundToggle" aria-label="Toggle sounds" title="Toggle sounds">
-      <span class="toolbar-label" id="soundLabel">Sound On</span>
+      <span class="toolbar-label" id="soundLabel">Sound &middot; On</span>
       <span class="toolbar-icon" id="soundIcon">&#x1F50A;</span>
       <span class="toolbar-key">S</span>
     </button>
     <button class="toolbar-btn" id="tapeToggle" aria-label="Toggle washi tape" title="Toggle washi tape">
-      <span class="toolbar-label" id="tapeLabel">Washi Off</span>
-      <span class="toolbar-icon" id="tapeIcon">&#x270F;</span>
+      <span class="toolbar-label" id="tapeLabel">Washi &middot; Off</span>
+      <span class="toolbar-icon" id="tapeIcon">&#x1F517;</span>
       <span class="toolbar-key">W</span>
     </button>
     <button class="toolbar-btn toolbar-btn--washi-only" id="clearTape" aria-label="Clear tape" title="Clear tape">
@@ -23,8 +23,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       <span class="toolbar-icon">&#x1F5D1;</span>
       <span class="toolbar-key">C</span>
     </button>
+    <button class="toolbar-btn" id="cutToggle" aria-label="Toggle draw-to-cut mode" title="Toggle draw-to-cut mode">
+      <span class="toolbar-label" id="cutLabel">Draw to Cut &middot; Off</span>
+      <span class="toolbar-icon">&#x270F;</span>
+      <span class="toolbar-key">X</span>
+    </button>
     <button class="toolbar-btn" id="handToggle" aria-label="Toggle drag mode" title="Toggle drag mode">
-      <span class="toolbar-label" id="handLabel">Drag Off</span>
+      <span class="toolbar-label" id="handLabel">Drag &middot; Off</span>
       <span class="toolbar-icon">&#x261A;</span>
       <span class="toolbar-key">H</span>
     </button>
@@ -773,7 +778,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     .theme-btn {
       top: auto;
       right: auto;
-      left: calc(50% - 120px);
+      left: calc(50% - 135px);
       bottom: calc(28px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
       transform: none;
       backdrop-filter: none;
@@ -782,7 +787,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     :global(body.washi-mode) .theme-btn {
-      left: calc(50% - 139px);
+      left: calc(50% - 154px);
     }
 
     .theme-btn:hover {
@@ -821,11 +826,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     .mode-hint.mode-hint--theme {
-      left: calc(50% - 105px);
+      left: calc(50% - 118px);
     }
 
     :global(body.washi-mode) .mode-hint.mode-hint--theme {
-      left: calc(50% - 124px);
+      left: calc(50% - 137px);
     }
 
   }
@@ -1062,6 +1067,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     :global(body.washi-mode *), :global(body.washi-mode *::before), :global(body.washi-mode *::after) {
       cursor: crosshair !important;
     }
+    :global(body.cut-mode *), :global(body.cut-mode *::before), :global(body.cut-mode *::after) {
+      cursor: crosshair !important;
+    }
     :global(body.hand-mode *), :global(body.hand-mode *::before), :global(body.hand-mode *::after) {
       cursor: grab !important;
     }
@@ -1071,6 +1079,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   }
 
   :global(body.washi-mode) .cursor-dot,
+  :global(body.cut-mode) .cursor-dot,
   :global(body.hand-mode) .cursor-dot {
     display: none;
   }
@@ -1105,6 +1114,13 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     .receipt-line {
       font-size: 11px;
     }
+  }
+
+  @keyframes cut-shimmer {
+    to { stroke-dashoffset: -56; }
+  }
+  @keyframes cut-shimmer-mobile {
+    to { stroke-dashoffset: -40; }
   }
 </style>
 
@@ -1370,19 +1386,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     soundToggle.classList.toggle('active', initialEnabled);
     let washiMode = false;
     let handMode = false;
+    let cutMode = false;
     let cleanupWashiStroke = () => {};
+    let cleanupCutStroke = () => {};
     let resetToDefault = () => {};
     const handToggleBtn = document.getElementById('handToggle') as HTMLButtonElement | null;
     const handLabel = document.getElementById('handLabel') as HTMLElement | null;
+    const cutToggleBtn = document.getElementById('cutToggle') as HTMLButtonElement | null;
+    const cutLabel = document.getElementById('cutLabel') as HTMLElement | null;
     const modeHint = document.getElementById('modeHint') as HTMLElement | null;
     let hintTimer: ReturnType<typeof setTimeout> | null = null;
     let fadeInTimer: ReturnType<typeof setTimeout> | null = null;
     let hintPersistent = false;
 
     function syncControlLabels() {
-      if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound On' : 'Sound Off';
-      if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi On' : 'Washi Off';
-      if (handLabel) handLabel.textContent = handMode ? 'Drag On' : 'Drag Off';
+      if (soundLabel) soundLabel.textContent = sounds.isEnabled ? 'Sound \u00B7 On' : 'Sound \u00B7 Off';
+      if (tapeLabel) tapeLabel.textContent = washiMode ? 'Washi \u00B7 On' : 'Washi \u00B7 Off';
+      if (handLabel) handLabel.textContent = handMode ? 'Drag \u00B7 On' : 'Drag \u00B7 Off';
+      if (cutLabel) cutLabel.textContent = cutMode ? 'Draw to Cut \u00B7 On' : 'Draw to Cut \u00B7 Off';
     }
 
     function showHint(
@@ -1455,6 +1476,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         handMode = false;
         syncHandToggle();
       }
+      if (washiMode && cutMode) {
+        cutMode = false;
+        cleanupCutStroke();
+        syncCutToggle();
+      }
       // Block scrolling while washi mode is active on mobile
       if (washiMode) {
         document.documentElement.style.touchAction = 'none';
@@ -1489,7 +1515,38 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         cleanupWashiStroke();
         syncWashiToggle();
       }
+      if (handMode && cutMode) {
+        cutMode = false;
+        cleanupCutStroke();
+        syncCutToggle();
+      }
       syncHandToggle();
+    }
+
+    function syncCutToggle() {
+      if (cutToggleBtn) cutToggleBtn.classList.toggle('active', cutMode);
+      document.body.classList.toggle('cut-mode', cutMode);
+      if (cutMode && washiMode) {
+        washiMode = false;
+        cleanupWashiStroke();
+        syncWashiToggle();
+      }
+      if (cutMode && handMode) {
+        handMode = false;
+        syncHandToggle();
+      }
+      if (cutMode) {
+        document.documentElement.style.touchAction = 'none';
+      } else if (!washiMode && !handMode) {
+        document.documentElement.style.touchAction = '';
+      }
+      syncControlLabels();
+    }
+
+    function toggleCutMode() {
+      cutMode = !cutMode;
+      if (!cutMode) cleanupCutStroke();
+      syncCutToggle();
     }
 
     function toggleSound() {
@@ -1562,7 +1619,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     soundToggle.addEventListener('click', () => {
       toggleSound();
       showLabelBriefly(soundToggle);
-      if (isMobileHint) showHint(sounds.isEnabled ? 'Sound On' : 'Sound Off', false);
+      if (isMobileHint) showHint(sounds.isEnabled ? 'Sound \u00B7 On' : 'Sound \u00B7 Off', false);
     });
 
     tapeToggle?.addEventListener('click', () => {
@@ -1570,7 +1627,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       syncWashiToggle();
       showLabelBriefly(tapeToggle);
       if (isMobileHint) {
-        showHint(washiMode ? 'Washi On \u00B7 Scroll Disabled' : 'Washi Off', washiMode);
+        showHint(washiMode ? 'Washi \u00B7 On \u00B7 Scroll Disabled' : 'Washi \u00B7 Off', washiMode);
       }
     });
 
@@ -1584,7 +1641,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
       if (isMobileHint) {
-        showHint(handMode ? 'Drag On \u00B7 Scroll Disabled' : 'Drag Off', handMode);
+        showHint(handMode ? 'Drag \u00B7 On \u00B7 Scroll Disabled' : 'Drag \u00B7 Off', handMode);
+      }
+    });
+
+    cutToggleBtn?.addEventListener('click', () => {
+      toggleCutMode();
+      showLabelBriefly(cutToggleBtn);
+      if (isMobileHint) {
+        showHint(cutMode ? 'Draw to Cut \u00B7 On \u00B7 Scroll Disabled' : 'Draw to Cut \u00B7 Off', cutMode);
       }
     });
 
@@ -2203,21 +2268,25 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     if (receipt) {
       const TEAR_GAP = 22; // px of separation per tear
 
-      // Each piece tracks its clip bounds, offset, and torn edges
-      type JaggedEdge = number[]; // y-offset values in px, evenly spaced across width
+      // Each piece tracks its polygon clip shape, offset, and edge info
+      type JaggedEdge = number[]; // perpendicular offset values in px, evenly spaced along edge
+      type Point = { x: number; y: number }; // percentage coordinates (0-100) within receipt
+      type EdgeInfo = { jagged: JaggedEdge | null; source?: 'cut' | 'tear'; cutGen?: number };
+      let cutGeneration = 0;
 
       type TearPiece = {
         el: HTMLElement;              // wrapper div (positioned, draggable, washi goes here)
         clipEl: HTMLElement;          // inner div (clipped receipt content)
-        top: number;      // 0-100% content start
-        bottom: number;   // 0-100% content end
+        polygon: Point[];             // clockwise vertices in receipt percentage coords
+        edges: EdgeInfo[];            // edges[i] = edge from polygon[i] to polygon[(i+1) % n]
         offsetX: number;  // accumulated horizontal px offset
         offsetY: number;  // accumulated vertical px offset
         rotation: number; // accumulated rotation offset (degrees)
-        topEdge: JaggedEdge | null;    // jagged tear data (null = straight)
-        bottomEdge: JaggedEdge | null; // jagged tear data (null = straight)
         printables: HTMLElement[];     // cached [data-print] elements in this clone
       };
+
+      function polyTop(p: TearPiece): number { return Math.min(...p.polygon.map(v => v.y)); }
+      function polyBottom(p: TearPiece): number { return Math.max(...p.polygon.map(v => v.y)); }
 
       let pieces: TearPiece[] = [];
       let tearSystemReady = false;
@@ -2328,6 +2397,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         if (washiMode) { washiMode = false; syncWashiToggle(); }
         if (handMode) { handMode = false; syncHandToggle(); }
+        if (cutMode) { cutMode = false; cleanupCutStroke(); syncCutToggle(); }
       };
 
       function updateWashiPreview() {
@@ -2383,15 +2453,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return edge;
       }
 
-      // Convert jagged edge data to polygon point strings
-      function jaggedPoints(edge: JaggedEdge, basePct: number, reverse: boolean): string {
-        const pts = edge.map((yPx, i) => {
-          const x = (i / (edge.length - 1)) * 100;
-          const y = basePct + (yPx / receiptH) * 100;
+      // Convert jagged edge data to polygon point strings along an arbitrary edge
+      function jaggedEdgePoints(edge: JaggedEdge, from: Point, to: Point): string[] {
+        // For now, jagged offsets are applied perpendicular to the edge.
+        // For horizontal edges (the only kind in tear mode), perpendicular = vertical.
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const len = Math.hypot(dx, dy);
+        // Normal direction (perpendicular, rotated 90° clockwise)
+        const nx = len > 0 ? -dy / len : 0;
+        const ny = len > 0 ? dx / len : 1;
+
+        return edge.map((offsetPx, i) => {
+          const t = i / (edge.length - 1);
+          const x = from.x + dx * t + nx * (offsetPx / receiptH) * 100;
+          const y = from.y + dy * t + ny * (offsetPx / receiptH) * 100;
           return `${x.toFixed(2)}% ${y.toFixed(2)}%`;
         });
-        if (reverse) pts.reverse();
-        return pts.join(', ');
       }
 
       // Full-viewport cut line
@@ -2399,27 +2477,34 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       pageCutLine.className = 'page-cut-line';
       document.body.appendChild(pageCutLine);
 
-      // Build clip-path polygon for a piece, with jagged edges at tear points
+      // Format a polygon point, with overflow at receipt extremes to prevent subpixel gaps
+      function fmtClipPt(x: number, y: number): string {
+        if (y <= 0) y = -2;
+        if (y >= 100) y = 102;
+        return `${x.toFixed(2)}% ${y.toFixed(2)}%`;
+      }
+
+      // Build clip-path polygon for a piece by walking its polygon vertices + edges
       function clipFor(p: TearPiece): string {
-        // Top edge (left to right)
-        let topStr: string;
-        if (p.topEdge) {
-          topStr = jaggedPoints(p.topEdge, p.top, false);
-        } else {
-          const t = p.top === 0 ? -2 : p.top;
-          topStr = `0% ${t}%, 100% ${t}%`;
-        }
+        const points: string[] = [];
+        for (let i = 0; i < p.polygon.length; i++) {
+          const from = p.polygon[i];
+          const to = p.polygon[(i + 1) % p.polygon.length];
+          const edge = p.edges[i];
 
-        // Bottom edge (right to left)
-        let botStr: string;
-        if (p.bottomEdge) {
-          botStr = jaggedPoints(p.bottomEdge, p.bottom, true);
-        } else {
-          const b = p.bottom === 100 ? 102 : p.bottom;
-          botStr = `100% ${b}%, 0% ${b}%`;
+          if (edge.jagged) {
+            // Emit jagged points along this edge, excluding the last point
+            // (it's the start of the next edge)
+            const jpts = jaggedEdgePoints(edge.jagged, from, to);
+            for (let j = 0; j < jpts.length - 1; j++) {
+              points.push(jpts[j]);
+            }
+          } else {
+            // Clean edge: just emit the start vertex
+            points.push(fmtClipPt(from.x, from.y));
+          }
         }
-
-        return `polygon(${topStr}, ${botStr})`;
+        return `polygon(${points.join(', ')})`;
       }
 
       function transformFor(p: TearPiece): string {
@@ -2443,10 +2528,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         baseRotation = m ? parseFloat(m[1]) : 0;
         receiptH = receipt!.offsetHeight;
 
-        // Create the initial full-receipt piece
-        const { el, clipEl, printables } = makePieceEl(0, 100, 0, 0, 0, null, null);
+        // Create the initial full-receipt piece as a rectangle polygon
+        const initPoly: Point[] = [{x:0,y:0}, {x:100,y:0}, {x:100,y:100}, {x:0,y:100}];
+        const initEdges: EdgeInfo[] = [{jagged:null}, {jagged:null}, {jagged:null}, {jagged:null}];
+        const { el, clipEl, printables } = makePieceEl(initPoly, initEdges, 0, 0, 0);
         wrapper.appendChild(el);
-        pieces.push({ el, clipEl, top: 0, bottom: 100, offsetX: 0, offsetY: 0, rotation: 0, topEdge: null, bottomEdge: null, printables });
+        pieces.push({ el, clipEl, polygon: initPoly, edges: initEdges, offsetX: 0, offsetY: 0, rotation: 0, printables });
 
         // Hide the original (it stays in flow for layout height)
         receipt!.style.visibility = 'hidden';
@@ -2622,10 +2709,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         parent.appendChild(tint);
       }
 
-      function makePieceEl(top: number, bottom: number, offsetX: number, offsetY: number, rot: number, topEdge: JaggedEdge | null = null, bottomEdge: JaggedEdge | null = null): { el: HTMLElement; clipEl: HTMLElement; printables: HTMLElement[] } {
+      function makePieceEl(polygon: Point[], edges: EdgeInfo[], offsetX: number, offsetY: number, rot: number): { el: HTMLElement; clipEl: HTMLElement; printables: HTMLElement[] } {
         const clone = receipt!.cloneNode(true) as HTMLElement;
         clone.removeAttribute('id');
-        const p = { top, bottom, offsetX, offsetY, rotation: rot, topEdge, bottomEdge, printables: [] } as TearPiece;
+        const p = { polygon, edges, offsetX, offsetY, rotation: rot, printables: [] } as TearPiece;
 
         // Inner element: clipped receipt content (pointer-events here so clip-path limits hit area)
         Object.assign(clone.style, {
@@ -2640,8 +2727,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           pointerEvents: handMode ? 'auto' : 'none',
         });
 
-        if (topEdge) addEdgeGrain(clone, top, 'bottom');
-        if (bottomEdge) addEdgeGrain(clone, bottom, 'top');
+        // Add edge grain to torn edges (skip cut edges — they rely on piece drop-shadow)
+        const centroidY = polygon.reduce((s, v) => s + v.y, 0) / polygon.length;
+        for (let i = 0; i < edges.length; i++) {
+          if (!edges[i].jagged || edges[i].source === 'cut') continue;
+          const from = polygon[i];
+          const to = polygon[(i + 1) % polygon.length];
+          const edgeY = (from.y + to.y) / 2;
+          const side = centroidY < edgeY ? 'top' : 'bottom';
+          addEdgeGrain(clone, edgeY, side);
+        }
 
         // Wrapper: positioned container, washi/seam traces go here (outside clip)
         const wrapper = document.createElement('div');
@@ -2812,8 +2907,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const baseCX = parentRect.left + parentRect.width / 2;
         const halfW = receipt!.offsetWidth / 2;
 
-        const topVisibleBottom = rr.top + (topPiece.bottom / 100) * rh + topPiece.offsetY;
-        const bottomVisibleTop = rr.top + (bottomPiece.top / 100) * rh + bottomPiece.offsetY;
+        const topVisibleBottom = rr.top + (polyBottom(topPiece) / 100) * rh + topPiece.offsetY;
+        const bottomVisibleTop = rr.top + (polyTop(bottomPiece) / 100) * rh + bottomPiece.offsetY;
 
         // Use actual piece positions for horizontal bounds (overlap of the two pieces)
         const topLeft = baseCX + topPiece.offsetX - halfW;
@@ -2912,26 +3007,85 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         const topPiece = pieces[topIdx];
         const bottomPiece = pieces[topIdx + 1];
-        const seamEdge = topPiece.bottomEdge || bottomPiece.topEdge || generateJaggedEdge();
+
+        // Find the shared seam edge: look for a jagged edge at the boundary
+        // For horizontal tears, this is the bottom edge of topPiece or top edge of bottomPiece
+        let seamEdge: JaggedEdge | null = null;
+        for (let i = 0; i < topPiece.edges.length; i++) {
+          if (topPiece.edges[i].jagged) {
+            const from = topPiece.polygon[i];
+            const to = topPiece.polygon[(i + 1) % topPiece.polygon.length];
+            if (Math.abs(from.y - polyBottom(topPiece)) < 0.1 && Math.abs(to.y - polyBottom(topPiece)) < 0.1) {
+              seamEdge = topPiece.edges[i].jagged;
+              break;
+            }
+          }
+        }
+        if (!seamEdge) {
+          for (let i = 0; i < bottomPiece.edges.length; i++) {
+            if (bottomPiece.edges[i].jagged) {
+              const from = bottomPiece.polygon[i];
+              const to = bottomPiece.polygon[(i + 1) % bottomPiece.polygon.length];
+              if (Math.abs(from.y - polyTop(bottomPiece)) < 0.1 && Math.abs(to.y - polyTop(bottomPiece)) < 0.1) {
+                seamEdge = bottomPiece.edges[i].jagged;
+                break;
+              }
+            }
+          }
+        }
+        if (!seamEdge) seamEdge = generateJaggedEdge();
 
         const wrapper = receipt!.parentElement!;
-        const mergedTop = topPiece.top;
-        const mergedBottom = bottomPiece.bottom;
-        const seamYPct = (topPiece.bottom + bottomPiece.top) / 2;
+        const seamYPct = (polyBottom(topPiece) + polyTop(bottomPiece)) / 2;
         const mergedOffsetX = (topPiece.offsetX + bottomPiece.offsetX) / 2;
         const mergedOffsetY = topPiece.offsetY;
         const mergedRotation = (topPiece.rotation + bottomPiece.rotation) / 2;
-        const mergedTopEdge = topPiece.topEdge;
-        const mergedBottomEdge = bottomPiece.bottomEdge;
+
+        // Build merged polygon: take the outer boundary of the top piece (excluding tear edge)
+        // and the outer boundary of the bottom piece (excluding tear edge), joined at the seam.
+        // For horizontal tears this creates a rectangle from topPiece's top to bottomPiece's bottom.
+        const mergedPoly: Point[] = [
+          { x: 0, y: polyTop(topPiece) },
+          { x: 100, y: polyTop(topPiece) },
+          { x: 100, y: polyBottom(bottomPiece) },
+          { x: 0, y: polyBottom(bottomPiece) },
+        ];
+
+        // Find the top and bottom outer edges' jagged info from the original pieces
+        let mergedTopJagged: JaggedEdge | null = null;
+        let mergedBotJagged: JaggedEdge | null = null;
+        // Top edge of topPiece (the one going left-to-right at polyTop)
+        for (let i = 0; i < topPiece.edges.length; i++) {
+          const from = topPiece.polygon[i];
+          const to = topPiece.polygon[(i + 1) % topPiece.polygon.length];
+          if (Math.abs(from.y - polyTop(topPiece)) < 0.1 && Math.abs(to.y - polyTop(topPiece)) < 0.1 && from.x < to.x) {
+            mergedTopJagged = topPiece.edges[i].jagged;
+            break;
+          }
+        }
+        // Bottom edge of bottomPiece (the one going right-to-left at polyBottom)
+        for (let i = 0; i < bottomPiece.edges.length; i++) {
+          const from = bottomPiece.polygon[i];
+          const to = bottomPiece.polygon[(i + 1) % bottomPiece.polygon.length];
+          if (Math.abs(from.y - polyBottom(bottomPiece)) < 0.1 && Math.abs(to.y - polyBottom(bottomPiece)) < 0.1 && from.x > to.x) {
+            mergedBotJagged = bottomPiece.edges[i].jagged;
+            break;
+          }
+        }
+
+        const mergedEdges: EdgeInfo[] = [
+          { jagged: mergedTopJagged },  // top edge left→right
+          { jagged: null },              // right side
+          { jagged: mergedBotJagged },  // bottom edge right→left
+          { jagged: null },              // left side
+        ];
 
         const { el: mergedEl, clipEl: mergedClipEl, printables: mergedPrintables } = makePieceEl(
-          mergedTop,
-          mergedBottom,
+          mergedPoly,
+          mergedEdges,
           mergedOffsetX,
           mergedOffsetY,
           mergedRotation,
-          mergedTopEdge,
-          mergedBottomEdge,
         );
         const nextEl = pieces[topIdx + 2]?.el;
         if (nextEl) wrapper.insertBefore(mergedEl, nextEl);
@@ -2954,13 +3108,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const mergedPiece: TearPiece = {
           el: mergedEl,
           clipEl: mergedClipEl,
-          top: mergedTop,
-          bottom: mergedBottom,
+          polygon: mergedPoly,
+          edges: mergedEdges,
           offsetX: mergedOffsetX,
           offsetY: mergedOffsetY,
           rotation: mergedRotation,
-          topEdge: mergedTopEdge,
-          bottomEdge: mergedBottomEdge,
           printables: mergedPrintables,
         };
 
@@ -2984,6 +3136,388 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         p.el.style.opacity = '1';
       }
 
+      // ---- Freehand cut: path simplification + polygon splitting ----
+
+      function pointInPolygon(pt: Point, poly: Point[]): boolean {
+        let inside = false;
+        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+          const yi = poly[i].y, yj = poly[j].y;
+          const xi = poly[i].x, xj = poly[j].x;
+          if ((yi > pt.y) !== (yj > pt.y) && pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi) {
+            inside = !inside;
+          }
+        }
+        return inside;
+      }
+
+      function nearestEdgeProjection(pt: Point, poly: Point[]): { edgeIdx: number; pt: Point } {
+        let bestDist = Infinity;
+        let bestProj = { edgeIdx: 0, pt: { ...poly[0] } };
+        for (let i = 0; i < poly.length; i++) {
+          const a = poly[i], b = poly[(i + 1) % poly.length];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const lenSq = dx * dx + dy * dy;
+          const t = lenSq > 0 ? Math.max(0, Math.min(1, ((pt.x - a.x) * dx + (pt.y - a.y) * dy) / lenSq)) : 0;
+          const proj = { x: a.x + dx * t, y: a.y + dy * t };
+          const dist = Math.hypot(pt.x - proj.x, pt.y - proj.y);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestProj = { edgeIdx: i, pt: proj };
+          }
+        }
+        return bestProj;
+      }
+
+      function simplifyPath(pts: { x: number; y: number }[], tolerance: number): { x: number; y: number }[] {
+        if (pts.length <= 2) return pts;
+        let maxDist = 0;
+        let maxIdx = 0;
+        const first = pts[0];
+        const last = pts[pts.length - 1];
+        for (let i = 1; i < pts.length - 1; i++) {
+          const d = pointToLineDist(pts[i], first, last);
+          if (d > maxDist) { maxDist = d; maxIdx = i; }
+        }
+        if (maxDist > tolerance) {
+          const left = simplifyPath(pts.slice(0, maxIdx + 1), tolerance);
+          const right = simplifyPath(pts.slice(maxIdx), tolerance);
+          return [...left.slice(0, -1), ...right];
+        }
+        return [first, last];
+      }
+
+      function pointToLineDist(p: { x: number; y: number }, a: { x: number; y: number }, b: { x: number; y: number }): number {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const lenSq = dx * dx + dy * dy;
+        if (lenSq === 0) return Math.hypot(p.x - a.x, p.y - a.y);
+        return Math.abs(dx * (a.y - p.y) - dy * (a.x - p.x)) / Math.sqrt(lenSq);
+      }
+
+      function segSegIntersect(
+        a1: Point, a2: Point, b1: Point, b2: Point
+      ): { t: number; u: number; pt: Point } | null {
+        const d1x = a2.x - a1.x, d1y = a2.y - a1.y;
+        const d2x = b2.x - b1.x, d2y = b2.y - b1.y;
+        const denom = d1x * d2y - d1y * d2x;
+        if (Math.abs(denom) < 1e-10) return null;
+        const t = ((b1.x - a1.x) * d2y - (b1.y - a1.y) * d2x) / denom;
+        const u = ((b1.x - a1.x) * d1y - (b1.y - a1.y) * d1x) / denom;
+        if (t < 0 || t > 1 || u < 0 || u > 1) return null;
+        return { t, u, pt: { x: a1.x + d1x * t, y: a1.y + d1y * t } };
+      }
+
+      function polygonArea(poly: Point[]): number {
+        let area = 0;
+        for (let i = 0; i < poly.length; i++) {
+          const j = (i + 1) % poly.length;
+          area += poly[i].x * poly[j].y - poly[j].x * poly[i].y;
+        }
+        return Math.abs(area) / 2;
+      }
+
+      function executeCutAll(screenPoints: { x: number; y: number }[]) {
+        cutGeneration++;
+        // Capture piece offsets at stroke time so coordinate mapping stays consistent
+        // even after cuts shift pieces down with TEAR_GAP
+        const baseOffsets = new Map<TearPiece, number>();
+        for (const p of pieces) baseOffsets.set(p, p.offsetY);
+        const consumedRanges: [number, number][] = [];
+        for (let pass = 0; pass < 8; pass++) {
+          const range = executeCut(screenPoints, baseOffsets, consumedRanges);
+          if (!range) break;
+          consumedRanges.push(range);
+        }
+      }
+
+      function executeCut(screenPoints: { x: number; y: number }[], baseOffsets?: Map<TearPiece, number>, consumedRanges?: [number, number][]): [number, number] | null {
+        initTearSystem();
+        if (pieces.length === 0) return null;
+
+        const rr = receipt!.getBoundingClientRect();
+        const rh = rr.height;
+        const rw = rr.width;
+
+        // Convert screen coords to receipt percentage coords
+        const pctPoints: Point[] = screenPoints.map(sp => ({
+          x: ((sp.x - rr.left) / rw) * 100,
+          y: ((sp.y - rr.top) / rh) * 100,
+        }));
+
+        // Simplify (tolerance in percentage units, ~2px equivalent)
+        const tolerance = (2 / rw) * 100;
+        const simplified = simplifyPath(pctPoints, tolerance);
+        if (simplified.length < 2) return null;
+
+        // Find which piece the cut path intersects most (by number of intersections)
+        let bestPiece: TearPiece | null = null;
+        let bestIdx = -1;
+        let bestEntry: { polySegIdx: number; cutSegIdx: number; t: number; pt: Point } | null = null;
+        let bestExit: { polySegIdx: number; cutSegIdx: number; t: number; pt: Point } | null = null;
+
+        for (let pi = 0; pi < pieces.length; pi++) {
+          const p = pieces[pi];
+          // Adjust polyline for piece offset (use base offset from stroke time for consistency)
+          const baseOff = baseOffsets?.get(p) ?? p.offsetY;
+          const adjustedSimp = simplified.map(pt => ({
+            x: pt.x,
+            y: pt.y - (baseOff / rh) * 100,
+          }));
+
+          const crossings: { polySegIdx: number; cutSegIdx: number; t: number; pt: Point }[] = [];
+
+          // Find all intersections between the cut polyline and polygon edges
+          for (let ci = 0; ci < adjustedSimp.length - 1; ci++) {
+            const c1 = adjustedSimp[ci];
+            const c2 = adjustedSimp[ci + 1];
+            for (let ei = 0; ei < p.polygon.length; ei++) {
+              if (p.edges[ei]?.source === 'cut' && p.edges[ei]?.cutGen === cutGeneration) continue;
+              const e1 = p.polygon[ei];
+              const e2 = p.polygon[(ei + 1) % p.polygon.length];
+              const hit = segSegIntersect(c1, c2, e1, e2);
+              if (hit) {
+                crossings.push({ polySegIdx: ei, cutSegIdx: ci, t: hit.t, pt: hit.pt });
+              }
+            }
+          }
+
+          if (crossings.length >= 2) {
+            // Sort crossings by position along the cut polyline
+            crossings.sort((a, b) => a.cutSegIdx - b.cutSegIdx || a.t - b.t);
+            // Find the first consecutive crossing pair where the path between them
+            // is inside the polygon (confirmed entry→exit, not exit→entry).
+            // This handles concave polygons from prior cuts where blind ci+=2 pairing fails.
+            const z = parseInt(p.el.style.zIndex) || 0;
+            let pairEntry: typeof crossings[0] | null = null;
+            let pairExit: typeof crossings[0] | null = null;
+            for (let ci = 0; ci < crossings.length - 1; ci++) {
+              const c1 = crossings[ci];
+              const c2 = crossings[ci + 1];
+              if (c1.polySegIdx === c2.polySegIdx) continue;
+              // Skip pairs that overlap with already-consumed cut ranges
+              const pairLo = Math.min(c1.cutSegIdx, c2.cutSegIdx);
+              const pairHi = Math.max(c1.cutSegIdx, c2.cutSegIdx);
+              if (consumedRanges?.some(([lo, hi]) => pairLo < hi && pairHi > lo)) continue;
+              // Verify the path between these crossings is inside the polygon
+              const midIdx = Math.min(
+                c1.cutSegIdx + Math.max(1, Math.floor((c2.cutSegIdx - c1.cutSegIdx) / 2)),
+                adjustedSimp.length - 1
+              );
+              if (!pointInPolygon(adjustedSimp[midIdx], p.polygon)) continue;
+              pairEntry = c1;
+              pairExit = c2;
+              break;
+            }
+            if (pairEntry && pairExit) {
+              if (!bestPiece || z > (parseInt(bestPiece.el.style.zIndex) || 0)) {
+                bestPiece = p;
+                bestIdx = pi;
+                bestEntry = pairEntry;
+                bestExit = pairExit;
+              }
+            }
+          } else if (crossings.length === 1) {
+            // Forgiveness: cut starts or ends inside the polygon
+            const crossing = crossings[0];
+            const startPt = adjustedSimp[0];
+            const endPt = adjustedSimp[adjustedSimp.length - 1];
+            const startInside = pointInPolygon(startPt, p.polygon);
+            const endInside = pointInPolygon(endPt, p.polygon);
+
+            let entry: typeof crossing | null = null;
+            let exit: typeof crossing | null = null;
+
+            if (startInside) {
+              const proj = nearestEdgeProjection(startPt, p.polygon);
+              entry = { polySegIdx: proj.edgeIdx, cutSegIdx: 0, t: 0, pt: proj.pt };
+              exit = crossing;
+            } else if (endInside) {
+              entry = crossing;
+              const proj = nearestEdgeProjection(endPt, p.polygon);
+              exit = { polySegIdx: proj.edgeIdx, cutSegIdx: adjustedSimp.length - 2, t: 1, pt: proj.pt };
+            }
+
+            if (entry && exit && entry.polySegIdx !== exit.polySegIdx) {
+              const z = parseInt(p.el.style.zIndex) || 0;
+              if (!bestPiece || z > (parseInt(bestPiece.el.style.zIndex) || 0)) {
+                bestPiece = p;
+                bestIdx = pi;
+                bestEntry = entry;
+                bestExit = exit;
+              }
+            }
+          } else if (crossings.length === 0) {
+            const startPt = adjustedSimp[0];
+            const endPt = adjustedSimp[adjustedSimp.length - 1];
+            if (pointInPolygon(startPt, p.polygon) && pointInPolygon(endPt, p.polygon)) {
+              const projStart = nearestEdgeProjection(startPt, p.polygon);
+              const projEnd = nearestEdgeProjection(endPt, p.polygon);
+              if (projStart.edgeIdx !== projEnd.edgeIdx) {
+                const maxDistPct = desktopFinePointer ? 5 : 10;
+                const distStart = Math.hypot(startPt.x - projStart.pt.x, startPt.y - projStart.pt.y);
+                const distEnd = Math.hypot(endPt.x - projEnd.pt.x, endPt.y - projEnd.pt.y);
+                if (distStart <= maxDistPct && distEnd <= maxDistPct) {
+                  const entry = { polySegIdx: projStart.edgeIdx, cutSegIdx: 0, t: 0, pt: projStart.pt };
+                  const exit = { polySegIdx: projEnd.edgeIdx, cutSegIdx: adjustedSimp.length - 2, t: 1, pt: projEnd.pt };
+                  const z = parseInt(p.el.style.zIndex) || 0;
+                  if (!bestPiece || z > (parseInt(bestPiece.el.style.zIndex) || 0)) {
+                    bestPiece = p;
+                    bestIdx = pi;
+                    bestEntry = entry;
+                    bestExit = exit;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (!bestPiece || !bestEntry || !bestExit) return null;
+
+        const target = bestPiece;
+        const targetIdx = bestIdx;
+
+        // Adjust simplified polyline to piece offset coordinates (use base offset)
+        const targetBaseOff = baseOffsets?.get(target) ?? target.offsetY;
+        const adjustedCut = simplified.map(pt => ({
+          x: pt.x,
+          y: pt.y - (targetBaseOff / rh) * 100,
+        }));
+
+        // Build the cut path between entry and exit points (in piece-local pct coords)
+        const cutPath: Point[] = [bestEntry.pt];
+        // Add intermediate points from the simplified polyline between entry and exit
+        for (let ci = bestEntry.cutSegIdx + 1; ci <= bestExit.cutSegIdx; ci++) {
+          cutPath.push(adjustedCut[ci]);
+        }
+        cutPath.push(bestExit.pt);
+
+        // Split the polygon into two pieces along the cut path
+        const entryEdge = bestEntry.polySegIdx;
+        const exitEdge = bestExit.polySegIdx;
+        const n = target.polygon.length;
+
+        // Generate jagged edges for each cut segment (shared by both child pieces)
+        const cutJagged: JaggedEdge[] = [];
+        const cutJaggedReversed: JaggedEdge[] = [];
+        for (let i = 0; i < cutPath.length - 1; i++) {
+          const edge = generateJaggedEdge();
+          cutJagged.push(edge);
+          cutJaggedReversed.push([...edge].reverse());
+        }
+
+        // Piece A: entry → cut path forward → exit → walk polygon edges back to entry
+        const polyA: Point[] = [];
+        const edgesA: EdgeInfo[] = [];
+
+        // Start with the cut path
+        for (const pt of cutPath) polyA.push(pt);
+        for (let i = 0; i < cutPath.length - 1; i++) edgesA.push({ jagged: cutJagged[i], source: 'cut', cutGen: cutGeneration });
+
+        // Edge from exit point to first polygon vertex (partial of exitEdge)
+        edgesA.push(target.edges[exitEdge]);
+
+        // Walk polygon vertices from (exitEdge+1) through entryEdge
+        let walkIdx = (exitEdge + 1) % n;
+        const stopIdx = (entryEdge + 1) % n;
+        let safety = 0;
+        while (walkIdx !== stopIdx && safety < n + 1) {
+          polyA.push(target.polygon[walkIdx]);
+          edgesA.push(target.edges[walkIdx]);
+          walkIdx = (walkIdx + 1) % n;
+          safety++;
+        }
+
+        // Piece B: exit → cut path reversed → entry → walk polygon edges back to exit
+        const polyB: Point[] = [];
+        const edgesB: EdgeInfo[] = [];
+
+        // Reversed cut path — segment i in B = segment (numSegs-1-i) of the original, reversed
+        for (let i = cutPath.length - 1; i >= 0; i--) polyB.push(cutPath[i]);
+        const numSegs = cutPath.length - 1;
+        for (let i = 0; i < numSegs; i++) edgesB.push({ jagged: cutJaggedReversed[numSegs - 1 - i], source: 'cut', cutGen: cutGeneration });
+
+        // Edge from entry point to first polygon vertex (partial of entryEdge)
+        edgesB.push(target.edges[entryEdge]);
+
+        // Walk polygon vertices from (entryEdge+1) through exitEdge
+        walkIdx = (entryEdge + 1) % n;
+        const stopIdxB = (exitEdge + 1) % n;
+        safety = 0;
+        while (walkIdx !== stopIdxB && safety < n + 1) {
+          polyB.push(target.polygon[walkIdx]);
+          edgesB.push(target.edges[walkIdx]);
+          walkIdx = (walkIdx + 1) % n;
+          safety++;
+        }
+
+        // Validate: skip if either piece is too small
+        const MIN_AREA = 50; // percentage units squared
+        if (polygonArea(polyA) < MIN_AREA || polygonArea(polyB) < MIN_AREA) return null;
+
+        sounds.tearSound();
+        dismissCutHint();
+
+        // Determine which piece is "upper" (lower centroid Y) vs "lower"
+        const centroidY = (poly: Point[]) => poly.reduce((s, p) => s + p.y, 0) / poly.length;
+        const aY = centroidY(polyA);
+        const bY = centroidY(polyB);
+
+        // Assign: piece with lower centroid stays, other shifts down
+        const upperPoly = aY <= bY ? polyA : polyB;
+        const upperEdges = aY <= bY ? edgesA : edgesB;
+        const lowerPoly = aY <= bY ? polyB : polyA;
+        const lowerEdges = aY <= bY ? edgesB : edgesA;
+
+        // Update target piece to be the upper portion
+        target.polygon = upperPoly;
+        target.edges = upperEdges;
+        target.rotation += (Math.random() - 0.5) * 0.6;
+        animatePiece(target);
+
+        // Create new piece for lower portion
+        const wrapper = receipt!.parentElement!;
+        const { el: newEl, clipEl: newClipEl, printables: newPrintables } = makePieceEl(
+          lowerPoly, lowerEdges, target.offsetX, target.offsetY, target.rotation
+        );
+        wrapper.appendChild(newEl);
+
+        const newPiece: TearPiece = {
+          el: newEl,
+          clipEl: newClipEl,
+          polygon: lowerPoly,
+          edges: lowerEdges,
+          offsetX: target.offsetX,
+          offsetY: target.offsetY,
+          rotation: target.rotation,
+          printables: newPrintables,
+        };
+        pieces.splice(targetIdx + 1, 0, newPiece);
+
+        // Register new piece with parent's base offset for multi-cut coordinate consistency
+        if (baseOffsets) baseOffsets.set(newPiece, baseOffsets.get(target) ?? target.offsetY);
+
+        // Shift lower pieces down
+        for (let i = targetIdx + 1; i < pieces.length; i++) {
+          pieces[i].offsetY += TEAR_GAP;
+          pieces[i].rotation += (Math.random() - 0.5) * 1.2;
+        }
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            for (let i = targetIdx + 1; i < pieces.length; i++) {
+              animatePiece(pieces[i]);
+            }
+          });
+        });
+
+        const maxOff = pieces[pieces.length - 1].offsetY;
+        wrapper.style.paddingBottom = (maxOff + 40) + 'px';
+
+        invalidateLayoutCache();
+        return [bestEntry!.cutSegIdx, bestExit!.cutSegIdx] as [number, number];
+      }
+
       function executeTear(swipeX: number, swipeY: number): boolean {
         initTearSystem();
 
@@ -3001,8 +3535,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (swipeX < pieceRect.left - CUT_EDGE_PADDING || swipeX > pieceRect.right + CUT_EDGE_PADDING) continue;
 
           // Use manual Y calculation for precise tear percentage (bounding rect is affected by rotation)
-          const vTop = rr.top + (p.top / 100) * rh + p.offsetY;
-          const vBot = rr.top + (p.bottom / 100) * rh + p.offsetY;
+          const pTop = polyTop(p);
+          const pBot = polyBottom(p);
+          const vTop = rr.top + (pTop / 100) * rh + p.offsetY;
+          const vBot = rr.top + (pBot / 100) * rh + p.offsetY;
           const safeTop = vTop + CUT_EDGE_SAFETY;
           const safeBot = vBot - CUT_EDGE_SAFETY;
           if (swipeY >= safeTop - CUT_EDGE_PADDING && swipeY <= safeBot + CUT_EDGE_PADDING) {
@@ -3025,15 +3561,97 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         sounds.tearSound();
         dismissCutHint();
 
-        const origBottom = target.bottom;
-        const origBottomEdge = target.bottomEdge;
-
         // Generate shared jagged edge for this tear (both pieces share it)
         const jaggedEdge = generateJaggedEdge();
+        // Reversed copy for the bottom edge of the top piece (polygon walks right-to-left there)
+        const jaggedEdgeReversed = [...jaggedEdge].reverse();
 
-        // Shrink target to top portion with new jagged bottom
-        target.bottom = tearPct;
-        target.bottomEdge = jaggedEdge;
+        // Split target polygon horizontally at tearPct.
+        // Current polygon is a rectangle-like shape; find which edges cross y=tearPct.
+        // For a horizontal tear, the top piece gets the upper portion, bottom piece the lower.
+        const topPoly: Point[] = [];
+        const topEdges: EdgeInfo[] = [];
+        const botPoly: Point[] = [];
+        const botEdges: EdgeInfo[] = [];
+
+        // Walk the polygon and split edges that cross tearPct
+        const n = target.polygon.length;
+        for (let i = 0; i < n; i++) {
+          const curr = target.polygon[i];
+          const next = target.polygon[(i + 1) % n];
+          const currAbove = curr.y <= tearPct;
+          const nextAbove = next.y <= tearPct;
+
+          if (currAbove) {
+            topPoly.push(curr);
+          } else {
+            botPoly.push(curr);
+          }
+
+          // Edge crosses the tear line — split it, pushing edge info to both halves
+          if (currAbove !== nextAbove) {
+            const t = (tearPct - curr.y) / (next.y - curr.y);
+            const ix = curr.x + (next.x - curr.x) * t;
+            const crossPt: Point = { x: ix, y: tearPct };
+
+            if (currAbove) {
+              // Going from above to below
+              topPoly.push(crossPt);
+              topEdges.push(target.edges[i]); // upper half: curr → crossPt
+              botPoly.push({ ...crossPt });
+              botEdges.push(target.edges[i]); // lower half: crossPt → next
+            } else {
+              // Going from below to above
+              botPoly.push(crossPt);
+              botEdges.push(target.edges[i]); // lower half: curr → crossPt
+              topPoly.push({ ...crossPt });
+              topEdges.push(target.edges[i]); // upper half: crossPt → next
+            }
+          } else {
+            // Both vertices on the same side — edge stays with that side
+            if (currAbove) {
+              topEdges.push(target.edges[i]);
+            } else {
+              botEdges.push(target.edges[i]);
+            }
+          }
+        }
+
+        // Now add the tear edges connecting the crossing points.
+        // For a horizontal rectangle, topPoly should have its last two points at y=tearPct,
+        // connected by the jagged tear edge going right-to-left (clockwise for top piece).
+        // botPoly should have its first two points at y=tearPct, connected going left-to-right.
+
+        // Find the tear edge indices: in the top polygon, the last edge connects the two tear-line points
+        // We need to insert jagged edges between the crossing points.
+        // The top piece's bottom edge (the tear) goes right-to-left in clockwise order.
+        // The bottom piece's top edge (the tear) goes left-to-right.
+
+        // Determine which edges in top/botPoly are the tear edges
+        // In topPoly: find the edge where both endpoints have y ≈ tearPct
+        for (let i = 0; i < topPoly.length; i++) {
+          const curr = topPoly[i];
+          const next = topPoly[(i + 1) % topPoly.length];
+          if (Math.abs(curr.y - tearPct) < 0.01 && Math.abs(next.y - tearPct) < 0.01) {
+            // This is the tear edge — determine direction for jagged data
+            const goesRightToLeft = curr.x > next.x;
+            topEdges.splice(i, 0, { jagged: goesRightToLeft ? jaggedEdgeReversed : jaggedEdge });
+            break;
+          }
+        }
+        for (let i = 0; i < botPoly.length; i++) {
+          const curr = botPoly[i];
+          const next = botPoly[(i + 1) % botPoly.length];
+          if (Math.abs(curr.y - tearPct) < 0.01 && Math.abs(next.y - tearPct) < 0.01) {
+            const goesLeftToRight = curr.x < next.x;
+            botEdges.splice(i, 0, { jagged: goesLeftToRight ? jaggedEdge : jaggedEdgeReversed });
+            break;
+          }
+        }
+
+        // Update target piece to be the top portion
+        target.polygon = topPoly;
+        target.edges = topEdges;
         target.rotation += (Math.random() - 0.5) * 0.6;
 
         animatePiece(target);
@@ -3041,9 +3659,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         // Add grain after animatePiece (Safari blend-mode repaint issue)
         addEdgeGrain(target.clipEl, tearPct, 'top');
 
-        // Create new piece for bottom portion (jagged top, inherits old bottom edge)
+        // Create new piece for bottom portion
         const wrapper = receipt!.parentElement!;
-        const { el: newEl, clipEl: newClipEl, printables: newPrintables } = makePieceEl(tearPct, origBottom, target.offsetX, target.offsetY, target.rotation, jaggedEdge, origBottomEdge);
+        const { el: newEl, clipEl: newClipEl, printables: newPrintables } = makePieceEl(botPoly, botEdges, target.offsetX, target.offsetY, target.rotation);
         wrapper.appendChild(newEl);
 
         // Transfer seam traces and washi strips that fall below the tear to the new piece
@@ -3057,13 +3675,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const newPiece: TearPiece = {
           el: newEl,
           clipEl: newClipEl,
-          top: tearPct,
-          bottom: origBottom,
+          polygon: botPoly,
+          edges: botEdges,
           offsetX: target.offsetX,
           offsetY: target.offsetY,
           rotation: target.rotation,
-          topEdge: jaggedEdge,
-          bottomEdge: origBottomEdge,
           printables: newPrintables,
         };
         pieces.splice(targetIdx + 1, 0, newPiece);
@@ -3097,7 +3713,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function getCursorProximity(mouseX: number, mouseY: number): { proximity: number; canCut: boolean } {
         if (!canCutDuringPrint()) return { proximity: 0, canCut: false };
-        if (handMode || washiMode) return { proximity: 0, canCut: false };
+        if (handMode || washiMode || cutMode) return { proximity: 0, canCut: false };
 
         let distX = 0;
         let minDistY = Infinity;
@@ -3235,7 +3851,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
       function endWashiStroke() {
         if (!washiDrawing) return;
-        if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
+        if (!washiMode && !handMode && !cutMode) document.documentElement.style.touchAction = '';
         const scrollDX = window.scrollX - washiStartScrollX;
         const scrollDY = window.scrollY - washiStartScrollY;
         const stroke: TapeStroke = {
@@ -3283,6 +3899,70 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
       }
 
+      // ---- Freehand cut gesture (shared state for desktop + mobile) ----
+
+      const cutSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      Object.assign(cutSvg.style, {
+        position: 'fixed',
+        left: '0',
+        top: '0',
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: '10100',
+        display: 'none',
+      });
+      document.body.appendChild(cutSvg);
+
+      const cutTrail = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      cutTrail.setAttribute('fill', 'none');
+      cutTrail.setAttribute('stroke', 'white');
+      cutTrail.setAttribute('stroke-width', '1.5');
+      cutTrail.setAttribute('stroke-linecap', 'round');
+      cutTrail.setAttribute('opacity', '0.2');
+      cutSvg.appendChild(cutTrail);
+
+      const cutShimmer = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      cutShimmer.setAttribute('fill', 'none');
+      cutShimmer.setAttribute('stroke', 'white');
+      cutShimmer.setAttribute('stroke-width', '2.5');
+      cutShimmer.setAttribute('stroke-linecap', 'round');
+      cutShimmer.setAttribute('stroke-dasharray', '8 48');
+      cutShimmer.setAttribute('opacity', '0.9');
+      cutShimmer.style.animation = 'cut-shimmer 0.8s linear infinite';
+      cutSvg.appendChild(cutShimmer);
+
+      if (!desktopFinePointer) {
+        cutTrail.setAttribute('stroke-width', '3');
+        cutTrail.setAttribute('opacity', '0.35');
+        cutShimmer.setAttribute('stroke-width', '4');
+        cutShimmer.setAttribute('stroke-dasharray', '12 28');
+        cutShimmer.style.animation = 'cut-shimmer-mobile 0.6s linear infinite';
+      }
+
+      let cutDrawing = false;
+      let cutPoints: { x: number; y: number }[] = [];
+      const CUT_MIN_DIST = 4;
+
+      cleanupCutStroke = () => {
+        if (cutDrawing) {
+          cutDrawing = false;
+          cutPoints = [];
+          cutSvg.style.display = 'none';
+          cutTrail.setAttribute('points', '');
+          cutShimmer.setAttribute('points', '');
+        }
+        if (!washiMode && !handMode) {
+          document.documentElement.style.touchAction = '';
+        }
+      };
+
+      function updateCutTrail() {
+        const pts = cutPoints.map(p => `${p.x},${p.y}`).join(' ');
+        cutTrail.setAttribute('points', pts);
+        cutShimmer.setAttribute('points', pts);
+      }
+
       // ---- Desktop click-to-tear ----
 
       if (desktopFinePointer) {
@@ -3292,7 +3972,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         let desktopTearDecided = false;
 
         document.addEventListener('mousemove', (e: MouseEvent) => {
-          if (handMode) return;
+          if (handMode || cutMode) return;
           if (washiDrawing && (!usePointerWashi || activeWashiPointerId === null)) {
             washiCurrentX = e.clientX;
             washiCurrentY = e.clientY;
@@ -3316,6 +3996,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             startWashiStroke(e.clientX, e.clientY);
             return;
           }
+
+          if (cutMode) return;
 
           if (!canCutDuringPrint()) return;
           sounds.prepareTearGesture();
@@ -3386,6 +4068,51 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             if (!desktopTearing && !washiMode) checkEdgeProximity(dotTargetX, dotTargetY);
           }, 100);
         }
+
+        // ---- Freehand cut gesture (desktop mouse handlers) ----
+
+        document.addEventListener('mousedown', (e: MouseEvent) => {
+          if (!cutMode || handMode || washiMode) return;
+          if ((e.target as HTMLElement).closest('button')) return;
+          if ((e.target as HTMLElement).closest('a')) return;
+          if (!canCutDuringPrint()) return;
+
+          dismissHint();
+          cutDrawing = true;
+          cutPoints = [{ x: e.clientX, y: e.clientY }];
+          cutSvg.style.display = '';
+          updateCutTrail();
+          sounds.prepareTearGesture();
+        });
+
+        document.addEventListener('mousemove', (e: MouseEvent) => {
+          if (!cutDrawing) return;
+          const last = cutPoints[cutPoints.length - 1];
+          const dx = e.clientX - last.x;
+          const dy = e.clientY - last.y;
+          if (dx * dx + dy * dy < CUT_MIN_DIST * CUT_MIN_DIST) return;
+          cutPoints.push({ x: e.clientX, y: e.clientY });
+          updateCutTrail();
+        });
+
+        document.addEventListener('mouseup', () => {
+          if (!cutDrawing) return;
+          cutDrawing = false;
+
+          if (cutPoints.length < 3) {
+            cutSvg.style.display = 'none';
+            cutTrail.setAttribute('points', '');
+            cutShimmer.setAttribute('points', '');
+            cutPoints = [];
+            return;
+          }
+
+          executeCutAll(cutPoints);
+          cutSvg.style.display = 'none';
+          cutTrail.setAttribute('points', '');
+          cutShimmer.setAttribute('points', '');
+          cutPoints = [];
+        });
       }
 
       // ---- Hand mode: piece dragging with physics ----
@@ -3463,9 +4190,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (piece.offsetX < minOX) { piece.offsetX = minOX; corrected = true; }
         else if (piece.offsetX > maxOX) { piece.offsetX = maxOX; corrected = true; }
 
-        const pieceCY0 = rr.top + ((piece.top + piece.bottom) / 200) * rh;
-        const minOY = HAND_EDGE_PADDING - pieceCY0;
-        const maxOY = vh - HAND_EDGE_PADDING - pieceCY0;
+        const pieceBot0 = rr.top + (polyBottom(piece) / 100) * rh;
+        const pieceTop0 = rr.top + (polyTop(piece) / 100) * rh;
+        const minOY = HAND_EDGE_PADDING - pieceBot0;
+        const maxOY = vh - HAND_EDGE_PADDING - pieceTop0;
         if (piece.offsetY < minOY) { piece.offsetY = minOY; corrected = true; }
         else if (piece.offsetY > maxOY) { piece.offsetY = maxOY; corrected = true; }
 
@@ -3495,9 +4223,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (pp.piece.offsetX < minOX) { pp.piece.offsetX = minOX; pp.vx = 0; }
           else if (pp.piece.offsetX > maxOX) { pp.piece.offsetX = maxOX; pp.vx = 0; }
 
-          const pieceCY0 = rr.top + ((pp.piece.top + pp.piece.bottom) / 200) * rh;
-          const minOY = HAND_EDGE_PADDING - pieceCY0;
-          const maxOY = vh - HAND_EDGE_PADDING - pieceCY0;
+          const pieceTop0 = rr.top + (polyTop(pp.piece) / 100) * rh;
+          const pieceBot0 = rr.top + (polyBottom(pp.piece) / 100) * rh;
+          const minOY = HAND_EDGE_PADDING - pieceBot0;
+          const maxOY = vh - HAND_EDGE_PADDING - pieceTop0;
           if (pp.piece.offsetY < minOY) { pp.piece.offsetY = minOY; pp.vy = 0; }
           else if (pp.piece.offsetY > maxOY) { pp.piece.offsetY = maxOY; pp.vy = 0; }
 
@@ -3622,6 +4351,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           toggleHandMode();
           flashButton(handToggleBtn);
           e.preventDefault();
+        } else if (key === 'x') {
+          toggleCutMode();
+          flashButton(cutToggleBtn);
+          e.preventDefault();
         } else if (key === 'r') {
           resetToDefault();
           flashButton(resetBtn);
@@ -3693,7 +4426,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         tearDecided = false;
         tearIsHorizontal = false;
         tearReady = false;
-        if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
+        if (!washiMode && !handMode && !cutMode) document.documentElement.style.touchAction = '';
       }
 
       // Touch (swipe gesture stays the same for mobile)
@@ -3708,6 +4441,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           startWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
           return;
         }
+        if (cutMode) {
+          if (e.touches.length === 0) return;
+          if (!canCutDuringPrint()) return;
+          dismissHint();
+          cutDrawing = true;
+          cutPoints = [{ x: e.touches[0].clientX, y: e.touches[0].clientY }];
+          cutSvg.style.display = '';
+          updateCutTrail();
+          sounds.prepareTearGesture();
+          return;
+        }
         startTear(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: true });
       document.addEventListener('touchmove', (e: TouchEvent) => {
@@ -3715,6 +4459,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (washiMode && washiDrawing) {
           if (activeWashiPointerId === null && e.touches.length > 0) {
             updateWashiStroke(e.touches[0].clientX, e.touches[0].clientY);
+          }
+          return;
+        }
+        if (cutDrawing && e.touches.length > 0) {
+          const last = cutPoints[cutPoints.length - 1];
+          const dx = e.touches[0].clientX - last.x;
+          const dy = e.touches[0].clientY - last.y;
+          if (dx * dx + dy * dy >= CUT_MIN_DIST * CUT_MIN_DIST) {
+            cutPoints.push({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+            updateCutTrail();
           }
           return;
         }
@@ -3726,6 +4480,17 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (handMode) return;
         if (washiMode && washiDrawing && (!usePointerWashi || activeWashiPointerId === null)) {
           endWashiStroke();
+          return;
+        }
+        if (cutDrawing) {
+          cutDrawing = false;
+          if (cutPoints.length >= 3) {
+            executeCutAll(cutPoints);
+          }
+          cutSvg.style.display = 'none';
+          cutTrail.setAttribute('points', '');
+          cutShimmer.setAttribute('points', '');
+          cutPoints = [];
           return;
         }
         if (e.changedTouches.length > 0) {
