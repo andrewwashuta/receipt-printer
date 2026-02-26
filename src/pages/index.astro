@@ -15,7 +15,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     </button>
     <button class="toolbar-btn" id="tapeToggle" aria-label="Toggle washi tape" title="Toggle washi tape">
       <span class="toolbar-label" id="tapeLabel">Washi &bull; Off</span>
-      <span class="toolbar-icon" id="tapeIcon">&#x270F;</span>
+      <span class="toolbar-icon" id="tapeIcon">&#x1F517;</span>
       <span class="toolbar-key">W</span>
     </button>
     <button class="toolbar-btn toolbar-btn--washi-only" id="clearTape" aria-label="Clear tape" title="Clear tape">
@@ -25,7 +25,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     </button>
     <button class="toolbar-btn" id="cutToggle" aria-label="Toggle draw-to-cut mode" title="Toggle draw-to-cut mode">
       <span class="toolbar-label" id="cutLabel">Draw to Cut &bull; Off</span>
-      <span class="toolbar-icon">&#x2702;</span>
+      <span class="toolbar-icon">&#x270F;</span>
       <span class="toolbar-key">X</span>
     </button>
     <button class="toolbar-btn" id="handToggle" aria-label="Toggle drag mode" title="Toggle drag mode">
@@ -1118,6 +1118,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
   @keyframes cut-shimmer {
     to { stroke-dashoffset: -56; }
+  }
+  @keyframes cut-shimmer-mobile {
+    to { stroke-dashoffset: -40; }
   }
 </style>
 
@@ -2268,7 +2271,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Each piece tracks its polygon clip shape, offset, and edge info
       type JaggedEdge = number[]; // perpendicular offset values in px, evenly spaced along edge
       type Point = { x: number; y: number }; // percentage coordinates (0-100) within receipt
-      type EdgeInfo = { jagged: JaggedEdge | null; source?: 'cut' | 'tear' };
+      type EdgeInfo = { jagged: JaggedEdge | null; source?: 'cut' | 'tear'; cutGen?: number };
+      let cutGeneration = 0;
 
       type TearPiece = {
         el: HTMLElement;              // wrapper div (positioned, draggable, washi goes here)
@@ -3213,6 +3217,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       }
 
       function executeCutAll(screenPoints: { x: number; y: number }[]) {
+        cutGeneration++;
         // Capture piece offsets at stroke time so coordinate mapping stays consistent
         // even after cuts shift pieces down with TEAR_GAP
         const baseOffsets = new Map<TearPiece, number>();
@@ -3266,7 +3271,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
             const c1 = adjustedSimp[ci];
             const c2 = adjustedSimp[ci + 1];
             for (let ei = 0; ei < p.polygon.length; ei++) {
-              if (p.edges[ei]?.source === 'cut') continue;
+              if (p.edges[ei]?.source === 'cut' && p.edges[ei]?.cutGen === cutGeneration) continue;
               const e1 = p.polygon[ei];
               const e2 = p.polygon[(ei + 1) % p.polygon.length];
               const hit = segSegIntersect(c1, c2, e1, e2);
@@ -3341,6 +3346,29 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
                 bestExit = exit;
               }
             }
+          } else if (crossings.length === 0) {
+            const startPt = adjustedSimp[0];
+            const endPt = adjustedSimp[adjustedSimp.length - 1];
+            if (pointInPolygon(startPt, p.polygon) && pointInPolygon(endPt, p.polygon)) {
+              const projStart = nearestEdgeProjection(startPt, p.polygon);
+              const projEnd = nearestEdgeProjection(endPt, p.polygon);
+              if (projStart.edgeIdx !== projEnd.edgeIdx) {
+                const maxDistPct = desktopFinePointer ? 5 : 10;
+                const distStart = Math.hypot(startPt.x - projStart.pt.x, startPt.y - projStart.pt.y);
+                const distEnd = Math.hypot(endPt.x - projEnd.pt.x, endPt.y - projEnd.pt.y);
+                if (distStart <= maxDistPct && distEnd <= maxDistPct) {
+                  const entry = { polySegIdx: projStart.edgeIdx, cutSegIdx: 0, t: 0, pt: projStart.pt };
+                  const exit = { polySegIdx: projEnd.edgeIdx, cutSegIdx: adjustedSimp.length - 2, t: 1, pt: projEnd.pt };
+                  const z = parseInt(p.el.style.zIndex) || 0;
+                  if (!bestPiece || z > (parseInt(bestPiece.el.style.zIndex) || 0)) {
+                    bestPiece = p;
+                    bestIdx = pi;
+                    bestEntry = entry;
+                    bestExit = exit;
+                  }
+                }
+              }
+            }
           }
         }
 
@@ -3384,7 +3412,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         // Start with the cut path
         for (const pt of cutPath) polyA.push(pt);
-        for (let i = 0; i < cutPath.length - 1; i++) edgesA.push({ jagged: cutJagged[i], source: 'cut' });
+        for (let i = 0; i < cutPath.length - 1; i++) edgesA.push({ jagged: cutJagged[i], source: 'cut', cutGen: cutGeneration });
 
         // Edge from exit point to first polygon vertex (partial of exitEdge)
         edgesA.push(target.edges[exitEdge]);
@@ -3407,7 +3435,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         // Reversed cut path — segment i in B = segment (numSegs-1-i) of the original, reversed
         for (let i = cutPath.length - 1; i >= 0; i--) polyB.push(cutPath[i]);
         const numSegs = cutPath.length - 1;
-        for (let i = 0; i < numSegs; i++) edgesB.push({ jagged: cutJaggedReversed[numSegs - 1 - i], source: 'cut' });
+        for (let i = 0; i < numSegs; i++) edgesB.push({ jagged: cutJaggedReversed[numSegs - 1 - i], source: 'cut', cutGen: cutGeneration });
 
         // Edge from entry point to first polygon vertex (partial of entryEdge)
         edgesB.push(target.edges[entryEdge]);
@@ -3903,6 +3931,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       cutShimmer.setAttribute('opacity', '0.9');
       cutShimmer.style.animation = 'cut-shimmer 0.8s linear infinite';
       cutSvg.appendChild(cutShimmer);
+
+      if (!desktopFinePointer) {
+        cutTrail.setAttribute('stroke-width', '3');
+        cutTrail.setAttribute('opacity', '0.35');
+        cutShimmer.setAttribute('stroke-width', '4');
+        cutShimmer.setAttribute('stroke-dasharray', '12 28');
+        cutShimmer.style.animation = 'cut-shimmer-mobile 0.6s linear infinite';
+      }
 
       let cutDrawing = false;
       let cutPoints: { x: number; y: number }[] = [];
