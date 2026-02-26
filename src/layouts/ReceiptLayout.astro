@@ -8,8 +8,8 @@ interface Props {
 
 const { title, description } = Astro.props;
 const siteName = "Andrew Washuta";
-const pageTitle = title ? `${title} | ${siteName}` : siteName;
-const pageDescription = description || "New Mexico-based product and visual designer. Receipt #12289.";
+const pageTitle = title ? `${title} | ${siteName}` : `${siteName} — Product Designer`;
+const pageDescription = description || "Product designer in Albuquerque, NM. Leading design systems at Kroger, building at Universal.xyz. Designing where human intent meets machine capability.";
 const pageImage = "/og.png";
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') || "https://receipt.andrew.cv";
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
@@ -103,6 +103,7 @@ const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
   html {
     scroll-behavior: smooth;
     overflow-x: hidden;
+    background: var(--color-bg);
   }
 
   html, body {

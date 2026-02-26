@@ -4,7 +4,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 ---
 
 <ReceiptLayout
-  description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
+  description="Product designer in Albuquerque, NM. Leading design systems at Kroger, building at Universal.xyz. Designing where human intent meets machine capability."
 >
   <!-- Toolbar -->
   <div class="toolbar" id="toolbar">
@@ -1059,17 +1059,18 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     :global(*), :global(*::before), :global(*::after) {
       cursor: none !important;
     }
-    :global(body.washi-mode) *, :global(body.washi-mode) *::before, :global(body.washi-mode) *::after {
+    :global(body.washi-mode *), :global(body.washi-mode *::before), :global(body.washi-mode *::after) {
       cursor: crosshair !important;
     }
-    :global(body.hand-mode) *, :global(body.hand-mode) *::before, :global(body.hand-mode) *::after {
+    :global(body.hand-mode *), :global(body.hand-mode *::before), :global(body.hand-mode *::after) {
       cursor: grab !important;
     }
-    :global(body.hand-mode.hand-dragging) *, :global(body.hand-mode.hand-dragging) *::before, :global(body.hand-mode.hand-dragging) *::after {
+    :global(body.hand-mode.hand-dragging *), :global(body.hand-mode.hand-dragging *::before), :global(body.hand-mode.hand-dragging *::after) {
       cursor: grabbing !important;
     }
   }
 
+  :global(body.washi-mode) .cursor-dot,
   :global(body.hand-mode) .cursor-dot {
     display: none;
   }
@@ -3309,6 +3310,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if ((e.target as HTMLElement).closest('a')) return;
 
           if (washiMode) {
+            e.preventDefault();
             if (usePointerWashi && activeWashiPointerId !== null && washiDrawing) return;
             if (washiDrawing) return;
             startWashiStroke(e.clientX, e.clientY);
@@ -3394,6 +3396,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let handDragStartY = 0;
       let handDragOrigOffsetX = 0;
       let handDragOrigOffsetY = 0;
+      let handDragStartScrollX = 0;
+      let handDragStartScrollY = 0;
       let activeHandPointerId: number | null = null;
       const HAND_EDGE_PADDING = 50;
 
@@ -3413,15 +3417,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let _layoutDirty = true;
       let _cachedParentRect: DOMRect | null = null;
       let _cachedReceiptRect: DOMRect | null = null;
-      let _cachedHalfW = 0;
       function invalidateLayoutCache() { _layoutDirty = true; }
       window.addEventListener('resize', invalidateLayoutCache);
       window.addEventListener('orientationchange', invalidateLayoutCache);
+      window.addEventListener('scroll', invalidateLayoutCache, { passive: true });
       function refreshLayoutCache() {
         if (!_layoutDirty && _cachedParentRect) return;
         _cachedParentRect = receipt!.parentElement!.getBoundingClientRect();
         _cachedReceiptRect = receipt!.getBoundingClientRect();
-        _cachedHalfW = receipt!.offsetWidth / 2;
         _layoutDirty = false;
       }
       let handZCounter = 20;
@@ -3449,22 +3452,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         refreshLayoutCache();
         const parentRect = _cachedParentRect!;
         const baseCX = parentRect.left + parentRect.width / 2;
-        const halfW = _cachedHalfW;
         const rr = _cachedReceiptRect!;
         const rh = rr.height;
         const vw = window.innerWidth;
         const vh = window.innerHeight;
 
         let corrected = false;
-        const minOX = HAND_EDGE_PADDING - baseCX - halfW;
-        const maxOX = vw - HAND_EDGE_PADDING - baseCX + halfW;
+        const minOX = HAND_EDGE_PADDING - baseCX;
+        const maxOX = vw - HAND_EDGE_PADDING - baseCX;
         if (piece.offsetX < minOX) { piece.offsetX = minOX; corrected = true; }
         else if (piece.offsetX > maxOX) { piece.offsetX = maxOX; corrected = true; }
 
-        const pieceBot0 = rr.top + (piece.bottom / 100) * rh;
-        const pieceTop0 = rr.top + (piece.top / 100) * rh;
-        const minOY = HAND_EDGE_PADDING - pieceBot0;
-        const maxOY = vh - HAND_EDGE_PADDING - pieceTop0;
+        const pieceCY0 = rr.top + ((piece.top + piece.bottom) / 200) * rh;
+        const minOY = HAND_EDGE_PADDING - pieceCY0;
+        const maxOY = vh - HAND_EDGE_PADDING - pieceCY0;
         if (piece.offsetY < minOY) { piece.offsetY = minOY; corrected = true; }
         else if (piece.offsetY > maxOY) { piece.offsetY = maxOY; corrected = true; }
 
@@ -3478,7 +3479,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         refreshLayoutCache();
         const parentRect = _cachedParentRect!;
         const baseCX = parentRect.left + parentRect.width / 2;
-        const halfW = _cachedHalfW;
         const rr = _cachedReceiptRect!;
         const rh = rr.height;
         const vw = window.innerWidth;
@@ -3490,18 +3490,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           pp.piece.offsetY += pp.vy;
           pp.piece.rotation += pp.vRot;
 
-          // Edge-based clamping: keep at least HAND_EDGE_PADDING px of piece visible
-          // Horizontal: right edge >= padding, left edge <= vw - padding
-          const minOX = HAND_EDGE_PADDING - baseCX - halfW;
-          const maxOX = vw - HAND_EDGE_PADDING - baseCX + halfW;
+          const minOX = HAND_EDGE_PADDING - baseCX;
+          const maxOX = vw - HAND_EDGE_PADDING - baseCX;
           if (pp.piece.offsetX < minOX) { pp.piece.offsetX = minOX; pp.vx = 0; }
           else if (pp.piece.offsetX > maxOX) { pp.piece.offsetX = maxOX; pp.vx = 0; }
 
-          // Vertical: bottom edge >= padding, top edge <= vh - padding
-          const pieceTop0 = rr.top + (pp.piece.top / 100) * rh;
-          const pieceBot0 = rr.top + (pp.piece.bottom / 100) * rh;
-          const minOY = HAND_EDGE_PADDING - pieceBot0;
-          const maxOY = vh - HAND_EDGE_PADDING - pieceTop0;
+          const pieceCY0 = rr.top + ((pp.piece.top + pp.piece.bottom) / 200) * rh;
+          const minOY = HAND_EDGE_PADDING - pieceCY0;
+          const maxOY = vh - HAND_EDGE_PADDING - pieceCY0;
           if (pp.piece.offsetY < minOY) { pp.piece.offsetY = minOY; pp.vy = 0; }
           else if (pp.piece.offsetY > maxOY) { pp.piece.offsetY = maxOY; pp.vy = 0; }
 
@@ -3536,6 +3532,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         handDragStartY = e.clientY;
         handDragOrigOffsetX = piece.offsetX;
         handDragOrigOffsetY = piece.offsetY;
+        handDragStartScrollX = window.scrollX;
+        handDragStartScrollY = window.scrollY;
 
         handZCounter++;
         piece.el.style.zIndex = String(handZCounter);
@@ -3553,8 +3551,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!handMode || !handDragging || activeHandPointerId !== e.pointerId) return;
         if (!handDragPiece) return;
 
-        handDragPiece.offsetX = handDragOrigOffsetX + (e.clientX - handDragStartX);
-        handDragPiece.offsetY = handDragOrigOffsetY + (e.clientY - handDragStartY);
+        const scrollDX = window.scrollX - handDragStartScrollX;
+        const scrollDY = window.scrollY - handDragStartScrollY;
+        handDragPiece.offsetX = handDragOrigOffsetX + (e.clientX - handDragStartX) + scrollDX;
+        handDragPiece.offsetY = handDragOrigOffsetY + (e.clientY - handDragStartY) + scrollDY;
         handDragPiece.el.style.transform = transformFor(handDragPiece);
 
         handVelocitySamples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
