@@ -10,7 +10,7 @@ const { title, description } = Astro.props;
 const siteName = "Andrew Washuta";
 const pageTitle = title ? `${title} | ${siteName}` : `${siteName} — Product Designer`;
 const pageDescription = description || "Product designer in Albuquerque, NM. Leading design systems at Kroger, building at Universal.xyz. Designing where human intent meets machine capability.";
-const pageImage = "/og.png";
+const pageImage = "/og.png?v=2";
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') || "https://receipt.andrew.cv";
 const currentUrl = new URL(Astro.url.pathname, siteUrl).href;
 ---
