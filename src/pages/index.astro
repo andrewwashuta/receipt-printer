@@ -4,7 +4,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 ---
 
 <ReceiptLayout
-  description="New Mexico-based product and visual designer crafting empathy-driven digital experiences. Receipt printer portfolio."
+  description="Product designer in Albuquerque, NM. Leading design systems at Kroger, building at Universal.xyz. Designing where human intent meets machine capability."
 >
   <!-- Toolbar -->
   <div class="toolbar" id="toolbar">
@@ -778,19 +778,20 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     .theme-btn {
       top: auto;
       right: auto;
-      left: 50%;
-      bottom: calc(72px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
-      transform: translateX(-50%);
+      left: calc(50% - 120px);
+      bottom: calc(28px + env(safe-area-inset-bottom) + var(--vv-bottom-offset, 0px));
+      transform: none;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
+      transition: transform 0.2s ease, left 0.25s ease;
+    }
+
+    :global(body.washi-mode) .theme-btn {
+      left: calc(50% - 139px);
     }
 
     .theme-btn:hover {
-      transform: translateX(-50%) scale(1.1);
-    }
-
-    .theme-btn .toolbar-label {
-      display: none;
+      transform: scale(1.1);
     }
   }
 
@@ -822,6 +823,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     .mode-hint.visible {
       opacity: 1;
+    }
+
+    .mode-hint.mode-hint--theme {
+      left: calc(50% - 105px);
+    }
+
+    :global(body.washi-mode) .mode-hint.mode-hint--theme {
+      left: calc(50% - 124px);
     }
 
   }
@@ -1055,16 +1064,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     :global(*), :global(*::before), :global(*::after) {
       cursor: none !important;
     }
-    :global(body.washi-mode) *, :global(body.washi-mode) *::before, :global(body.washi-mode) *::after {
+    :global(body.washi-mode *), :global(body.washi-mode *::before), :global(body.washi-mode *::after) {
       cursor: crosshair !important;
     }
-    :global(body.cut-mode) *, :global(body.cut-mode) *::before, :global(body.cut-mode) *::after {
+    :global(body.cut-mode *), :global(body.cut-mode *::before), :global(body.cut-mode *::after) {
       cursor: crosshair !important;
     }
-    :global(body.hand-mode) *, :global(body.hand-mode) *::before, :global(body.hand-mode) *::after {
+    :global(body.hand-mode *), :global(body.hand-mode *::before), :global(body.hand-mode *::after) {
       cursor: grab !important;
     }
-    :global(body.hand-mode.hand-dragging) *, :global(body.hand-mode.hand-dragging) *::before, :global(body.hand-mode.hand-dragging) *::after {
+    :global(body.hand-mode.hand-dragging *), :global(body.hand-mode.hand-dragging *::before), :global(body.hand-mode.hand-dragging *::after) {
       cursor: grabbing !important;
     }
   }
@@ -1384,6 +1393,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     const cutLabel = document.getElementById('cutLabel') as HTMLElement | null;
     const modeHint = document.getElementById('modeHint') as HTMLElement | null;
     let hintTimer: ReturnType<typeof setTimeout> | null = null;
+    let fadeInTimer: ReturnType<typeof setTimeout> | null = null;
     let hintPersistent = false;
 
     function syncControlLabels() {
@@ -1393,22 +1403,64 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (cutLabel) cutLabel.textContent = cutMode ? 'Draw to Cut \u2022 On' : 'Draw to Cut \u2022 Off';
     }
 
-    function showHint(text: string, persistent: boolean) {
+    function showHint(
+      text: string,
+      persistent: boolean,
+      kind: 'default' | 'theme' = 'default',
+      instant = false,
+      updateMode: 'crossfade' | 'restart' = 'crossfade',
+    ) {
       if (!modeHint) return;
       if (hintTimer) { clearTimeout(hintTimer); hintTimer = null; }
-      modeHint.textContent = text;
-      modeHint.classList.add('visible');
-      hintPersistent = persistent;
-      if (!persistent) {
-        hintTimer = setTimeout(() => {
+      if (fadeInTimer) { clearTimeout(fadeInTimer); fadeInTimer = null; }
+      modeHint.classList.toggle('mode-hint--theme', kind === 'theme');
+
+      const scheduleAutoHide = () => {
+        hintPersistent = persistent;
+        if (!persistent) {
+          hintTimer = setTimeout(() => {
+            modeHint.classList.remove('visible');
+            hintTimer = null;
+          }, 1500);
+        }
+      };
+
+      if (instant) {
+        modeHint.textContent = text;
+        modeHint.classList.add('visible');
+        scheduleAutoHide();
+        return;
+      }
+
+      if (modeHint.classList.contains('visible')) {
+        if (updateMode === 'restart') {
           modeHint.classList.remove('visible');
-          hintTimer = null;
-        }, 1500);
+          modeHint.textContent = text;
+          modeHint.getBoundingClientRect(); // Force reflow so opacity transition restarts.
+          modeHint.classList.add('visible');
+          scheduleAutoHide();
+          return;
+        }
+        // Cross-fade visible hint text to preserve a clear fade-in on updates.
+        modeHint.classList.remove('visible');
+        fadeInTimer = setTimeout(() => {
+          modeHint.textContent = text;
+          modeHint.getBoundingClientRect(); // Force reflow so opacity transition restarts.
+          modeHint.classList.add('visible');
+          fadeInTimer = null;
+          scheduleAutoHide();
+        }, 120);
+      } else {
+        modeHint.textContent = text;
+        modeHint.getBoundingClientRect(); // Force reflow so opacity transition starts from 0.
+        modeHint.classList.add('visible');
+        scheduleAutoHide();
       }
     }
 
     function dismissHint() {
       if (!modeHint || !hintPersistent) return;
+      if (fadeInTimer) { clearTimeout(fadeInTimer); fadeInTimer = null; }
       hintPersistent = false;
       modeHint.classList.remove('visible');
     }
@@ -1612,6 +1664,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     // ========================================
     let tearTextureCache: string[] = [];
     const THEMES = ['parchment', 'midnight', 'carbon', 'terracotta', 'forest'] as const;
+    let themeTransitionInFlight = false;
     const themeToggleBtn = document.getElementById('themeToggle') as HTMLButtonElement | null;
     const themeLabel = document.getElementById('themeLabel') as HTMLElement | null;
 
@@ -1629,14 +1682,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       if (themeLabel) themeLabel.textContent = name.charAt(0).toUpperCase() + name.slice(1);
     }
 
-    function cycleTheme() {
-      const current = getCurrentTheme();
+    function getNextThemeName(current = getCurrentTheme()): string {
       const currentIdx = THEMES.indexOf(current as typeof THEMES[number]);
       const nextIdx = (currentIdx + 1) % THEMES.length;
-      const next = THEMES[nextIdx];
+      return THEMES[nextIdx];
+    }
+
+    function cycleTheme(next = getNextThemeName()) {
+      const finishTransition = () => {
+        themeTransitionInFlight = false;
+      };
+
+      themeTransitionInFlight = true;
 
       const btn = themeToggleBtn;
-      if (!btn) { applyTheme(next); refreshCanvasElements(); return; }
+      if (!btn) {
+        applyTheme(next);
+        refreshCanvasElements();
+        finishTransition();
+        return;
+      }
 
       const rect = btn.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
@@ -1645,18 +1710,27 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         Math.max(cx, window.innerWidth - cx),
         Math.max(cy, window.innerHeight - cy)
       );
-
       if (!document.startViewTransition) {
         applyTheme(next);
         refreshCanvasElements();
+        finishTransition();
         return;
       }
 
       document.documentElement.classList.add('theme-transitioning');
 
-      const transition = document.startViewTransition(() => {
+      let transition: any;
+      try {
+        transition = document.startViewTransition(() => {
+          applyTheme(next);
+        });
+      } catch {
+        document.documentElement.classList.remove('theme-transitioning');
         applyTheme(next);
-      });
+        refreshCanvasElements();
+        finishTransition();
+        return;
+      }
 
       transition.ready.then(() => {
         const feather = 80;
@@ -1679,10 +1753,15 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         });
       });
 
-      transition.finished.then(() => {
-        document.documentElement.classList.remove('theme-transitioning');
-        refreshCanvasElements();
-      });
+      transition.finished
+        .catch(() => {
+          // Ignore transition rejections and run shared cleanup below.
+        })
+        .finally(() => {
+          document.documentElement.classList.remove('theme-transitioning');
+          refreshCanvasElements();
+          finishTransition();
+        });
     }
 
     function getThemeColor(prop: string): string {
@@ -1712,7 +1791,16 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     themeToggleBtn?.addEventListener('click', () => {
-      cycleTheme();
+      if (themeTransitionInFlight) return;
+
+      const nextTheme = getNextThemeName();
+      cycleTheme(nextTheme);
+      if (isMobileHint) {
+        // Let View Transition capture old/new states first, then fade the label in.
+        requestAnimationFrame(() => {
+          showHint(nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1), false, 'theme', false, 'restart');
+        });
+      }
     });
 
     // Initialize theme label from stored preference
@@ -3866,6 +3954,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if ((e.target as HTMLElement).closest('a')) return;
 
           if (washiMode) {
+            e.preventDefault();
             if (usePointerWashi && activeWashiPointerId !== null && washiDrawing) return;
             if (washiDrawing) return;
             startWashiStroke(e.clientX, e.clientY);
@@ -3997,6 +4086,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let handDragStartY = 0;
       let handDragOrigOffsetX = 0;
       let handDragOrigOffsetY = 0;
+      let handDragStartScrollX = 0;
+      let handDragStartScrollY = 0;
       let activeHandPointerId: number | null = null;
       const HAND_EDGE_PADDING = 50;
 
@@ -4016,15 +4107,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       let _layoutDirty = true;
       let _cachedParentRect: DOMRect | null = null;
       let _cachedReceiptRect: DOMRect | null = null;
-      let _cachedHalfW = 0;
       function invalidateLayoutCache() { _layoutDirty = true; }
       window.addEventListener('resize', invalidateLayoutCache);
       window.addEventListener('orientationchange', invalidateLayoutCache);
+      window.addEventListener('scroll', invalidateLayoutCache, { passive: true });
       function refreshLayoutCache() {
         if (!_layoutDirty && _cachedParentRect) return;
         _cachedParentRect = receipt!.parentElement!.getBoundingClientRect();
         _cachedReceiptRect = receipt!.getBoundingClientRect();
-        _cachedHalfW = receipt!.offsetWidth / 2;
         _layoutDirty = false;
       }
       let handZCounter = 20;
@@ -4052,15 +4142,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         refreshLayoutCache();
         const parentRect = _cachedParentRect!;
         const baseCX = parentRect.left + parentRect.width / 2;
-        const halfW = _cachedHalfW;
         const rr = _cachedReceiptRect!;
         const rh = rr.height;
         const vw = window.innerWidth;
         const vh = window.innerHeight;
 
         let corrected = false;
-        const minOX = HAND_EDGE_PADDING - baseCX - halfW;
-        const maxOX = vw - HAND_EDGE_PADDING - baseCX + halfW;
+        const minOX = HAND_EDGE_PADDING - baseCX;
+        const maxOX = vw - HAND_EDGE_PADDING - baseCX;
         if (piece.offsetX < minOX) { piece.offsetX = minOX; corrected = true; }
         else if (piece.offsetX > maxOX) { piece.offsetX = maxOX; corrected = true; }
 
@@ -4081,7 +4170,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         refreshLayoutCache();
         const parentRect = _cachedParentRect!;
         const baseCX = parentRect.left + parentRect.width / 2;
-        const halfW = _cachedHalfW;
         const rr = _cachedReceiptRect!;
         const rh = rr.height;
         const vw = window.innerWidth;
@@ -4093,14 +4181,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           pp.piece.offsetY += pp.vy;
           pp.piece.rotation += pp.vRot;
 
-          // Edge-based clamping: keep at least HAND_EDGE_PADDING px of piece visible
-          // Horizontal: right edge >= padding, left edge <= vw - padding
-          const minOX = HAND_EDGE_PADDING - baseCX - halfW;
-          const maxOX = vw - HAND_EDGE_PADDING - baseCX + halfW;
+          const minOX = HAND_EDGE_PADDING - baseCX;
+          const maxOX = vw - HAND_EDGE_PADDING - baseCX;
           if (pp.piece.offsetX < minOX) { pp.piece.offsetX = minOX; pp.vx = 0; }
           else if (pp.piece.offsetX > maxOX) { pp.piece.offsetX = maxOX; pp.vx = 0; }
 
-          // Vertical: bottom edge >= padding, top edge <= vh - padding
           const pieceTop0 = rr.top + (polyTop(pp.piece) / 100) * rh;
           const pieceBot0 = rr.top + (polyBottom(pp.piece) / 100) * rh;
           const minOY = HAND_EDGE_PADDING - pieceBot0;
@@ -4139,6 +4224,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         handDragStartY = e.clientY;
         handDragOrigOffsetX = piece.offsetX;
         handDragOrigOffsetY = piece.offsetY;
+        handDragStartScrollX = window.scrollX;
+        handDragStartScrollY = window.scrollY;
 
         handZCounter++;
         piece.el.style.zIndex = String(handZCounter);
@@ -4156,8 +4243,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!handMode || !handDragging || activeHandPointerId !== e.pointerId) return;
         if (!handDragPiece) return;
 
-        handDragPiece.offsetX = handDragOrigOffsetX + (e.clientX - handDragStartX);
-        handDragPiece.offsetY = handDragOrigOffsetY + (e.clientY - handDragStartY);
+        const scrollDX = window.scrollX - handDragStartScrollX;
+        const scrollDY = window.scrollY - handDragStartScrollY;
+        handDragPiece.offsetX = handDragOrigOffsetX + (e.clientX - handDragStartX) + scrollDX;
+        handDragPiece.offsetY = handDragOrigOffsetY + (e.clientY - handDragStartY) + scrollDY;
         handDragPiece.el.style.transform = transformFor(handDragPiece);
 
         handVelocitySamples.push({ x: e.clientX, y: e.clientY, t: performance.now() });
