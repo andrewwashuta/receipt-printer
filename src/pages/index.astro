@@ -3254,11 +3254,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       function executeCutAll(screenPoints: { x: number; y: number }[]) {
         cutGeneration++;
 
-        // Closed shape detection: start and end within 25px
+        // Closed shape detection
+        const closeThreshold = desktopFinePointer ? 25 : 45;
         const startPt = screenPoints[0];
         const endPt = screenPoints[screenPoints.length - 1];
         const closeDist = Math.hypot(endPt.x - startPt.x, endPt.y - startPt.y);
-        if (closeDist <= 25 && screenPoints.length >= 8) {
+        if (closeDist <= closeThreshold && screenPoints.length >= 8) {
           executeClosedCut(screenPoints);
           return;
         }
@@ -4636,6 +4637,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (cutMode) {
           if (e.touches.length === 0) return;
           if (!canCutDuringPrint()) return;
+          document.documentElement.style.touchAction = 'none';
           dismissHint();
           cutDrawing = true;
           cutPoints = [{ x: e.touches[0].clientX, y: e.touches[0].clientY }];
@@ -4683,6 +4685,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           cutTrail.setAttribute('points', '');
           cutShimmer.setAttribute('points', '');
           cutPoints = [];
+          if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
           return;
         }
         if (e.changedTouches.length > 0) {
