@@ -1125,6 +1125,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 </style>
 
 <script>
+  import { WebHaptics } from 'web-haptics';
+  const haptics = new WebHaptics();
+
   // ============================================
   // RECEIPT PRINTER - CLIENT-SIDE LOGIC
   // ============================================
@@ -1593,6 +1596,12 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       setTimeout(() => btn.classList.remove('toolbar-btn--pressed'), 300);
     }
 
+    function triggerHaptic() {
+      if (WebHaptics.isSupported) {
+        haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
+      }
+    }
+
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
     let activeLabelBtn: HTMLElement | null = null;
     const isMobileHint = window.matchMedia('(max-width: 600px)').matches;
@@ -1616,12 +1625,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     soundToggle.addEventListener('click', () => {
+      triggerHaptic();
       toggleSound();
       showLabelBriefly(soundToggle);
       if (isMobileHint) showHint(sounds.isEnabled ? 'Sound \u00B7 On' : 'Sound \u00B7 Off', false);
     });
 
     tapeToggle?.addEventListener('click', () => {
+      triggerHaptic();
       washiMode = !washiMode;
       syncWashiToggle();
       showLabelBriefly(tapeToggle);
@@ -1631,12 +1642,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     });
 
     clearTapeBtn?.addEventListener('click', () => {
+      triggerHaptic();
       clearAllTape();
       showLabelBriefly(clearTapeBtn);
       if (isMobileHint) showHint('Tape Cleared', false);
     });
 
     handToggleBtn?.addEventListener('click', () => {
+      triggerHaptic();
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
       if (isMobileHint) {
@@ -1645,6 +1658,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     });
 
     cutToggleBtn?.addEventListener('click', () => {
+      triggerHaptic();
       toggleCutMode();
       showLabelBriefly(cutToggleBtn);
       if (isMobileHint) {
@@ -1654,6 +1668,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement | null;
     resetBtn?.addEventListener('click', () => {
+      triggerHaptic();
       resetToDefault();
       if (isMobileHint) showHint('Reset', false);
     });
@@ -1794,6 +1809,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     themeToggleBtn?.addEventListener('click', () => {
       if (themeTransitionInFlight) return;
+      triggerHaptic();
 
       const nextTheme = getNextThemeName();
       cycleTheme(nextTheme);
