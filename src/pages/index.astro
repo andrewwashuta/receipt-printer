@@ -1122,17 +1122,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   @keyframes cut-shimmer-mobile {
     to { stroke-dashoffset: -40; }
   }
-  /* web-haptics: keep the iOS fallback checkbox in the render tree */
-  [for^="web-haptics"],
-  [for^="web-haptics"] input {
-    position: fixed !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 1px !important;
-    height: 1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-  }
 </style>
 
 <script>
@@ -1613,9 +1602,10 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       const label = document.querySelector('[for^="web-haptics"]') as HTMLElement | null;
       if (!label) return;
       hapticDomFixed = true;
-      label.style.display = '';
+      const hideCss = 'position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)';
+      label.style.cssText = hideCss;
       const input = label.querySelector('input') as HTMLElement | null;
-      if (input) input.style.display = '';
+      if (input) input.style.cssText = hideCss;
     }
     function triggerHaptic() {
       haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
