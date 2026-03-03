@@ -1597,9 +1597,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     function triggerHaptic() {
-      if (WebHaptics.isSupported) {
-        haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
-      }
+      haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
     }
 
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
