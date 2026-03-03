@@ -1484,7 +1484,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       // Block scrolling while washi mode is active on mobile
       if (washiMode) {
         document.documentElement.style.touchAction = 'none';
-      } else if (!handMode) {
+      } else if (!handMode && !cutMode) {
         document.documentElement.style.touchAction = '';
       }
       syncControlLabels();
@@ -1499,10 +1499,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const clipChild = el.firstElementChild as HTMLElement | null;
         if (clipChild) clipChild.style.pointerEvents = pe;
       });
-      // Block scrolling while hand mode is active on mobile
       if (handMode) {
         document.documentElement.style.touchAction = 'none';
-      } else if (!washiMode) {
+      } else if (!washiMode && !cutMode) {
         document.documentElement.style.touchAction = '';
       }
       syncControlLabels();
@@ -3216,37 +3215,74 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         return Math.abs(area) / 2;
       }
 
+      function polygonAreaSigned(poly: Point[]): number {
+        let area = 0;
+        for (let i = 0; i < poly.length; i++) {
+          const j = (i + 1) % poly.length;
+          area += poly[i].x * poly[j].y - poly[j].x * poly[i].y;
+        }
+        return area / 2;
+      }
+
+      type PieceSnapshot = { offsetX: number; offsetY: number; rotation: number };
+
+      function screenToPiecePct(
+        sx: number, sy: number,
+        rr: DOMRect,
+        snap: PieceSnapshot,
+      ): Point {
+        const W = rr.width;
+        const H = rr.height;
+        const totalAngle = (baseRotation + snap.rotation) * Math.PI / 180;
+        const cosA = Math.cos(totalAngle);
+        const sinA = Math.sin(totalAngle);
+
+        const dx = sx - (rr.left + W / 2) - snap.offsetX;
+        const dy = sy - (rr.top + H / 2);
+
+        // Inverse rotation
+        const ux = dx * cosA + dy * sinA;
+        const uy = -dx * sinA + dy * cosA;
+
+        return {
+          x: (ux / W) * 100 + 50,
+          y: ((uy - snap.offsetY) / H) * 100 + 50,
+        };
+      }
+
       function executeCutAll(screenPoints: { x: number; y: number }[]) {
         cutGeneration++;
-        // Capture piece offsets at stroke time so coordinate mapping stays consistent
+
+        // Closed shape detection
+        const closeThreshold = desktopFinePointer ? 25 : 45;
+        const startPt = screenPoints[0];
+        const endPt = screenPoints[screenPoints.length - 1];
+        const closeDist = Math.hypot(endPt.x - startPt.x, endPt.y - startPt.y);
+        if (closeDist <= closeThreshold && screenPoints.length >= 8) {
+          executeClosedCut(screenPoints);
+          return;
+        }
+
+        // Capture piece transforms at stroke time so coordinate mapping stays consistent
         // even after cuts shift pieces down with TEAR_GAP
-        const baseOffsets = new Map<TearPiece, number>();
-        for (const p of pieces) baseOffsets.set(p, p.offsetY);
+        const baseSnapshots = new Map<TearPiece, PieceSnapshot>();
+        for (const p of pieces) baseSnapshots.set(p, { offsetX: p.offsetX, offsetY: p.offsetY, rotation: p.rotation });
         const consumedRanges: [number, number][] = [];
         for (let pass = 0; pass < 8; pass++) {
-          const range = executeCut(screenPoints, baseOffsets, consumedRanges);
+          const range = executeCut(screenPoints, baseSnapshots, consumedRanges);
           if (!range) break;
           consumedRanges.push(range);
         }
       }
 
-      function executeCut(screenPoints: { x: number; y: number }[], baseOffsets?: Map<TearPiece, number>, consumedRanges?: [number, number][]): [number, number] | null {
+      function executeCut(screenPoints: { x: number; y: number }[], baseSnapshots?: Map<TearPiece, PieceSnapshot>, consumedRanges?: [number, number][]): [number, number] | null {
         initTearSystem();
         if (pieces.length === 0) return null;
 
         const rr = receipt!.getBoundingClientRect();
-        const rh = rr.height;
-        const rw = rr.width;
 
-        // Convert screen coords to receipt percentage coords
-        const pctPoints: Point[] = screenPoints.map(sp => ({
-          x: ((sp.x - rr.left) / rw) * 100,
-          y: ((sp.y - rr.top) / rh) * 100,
-        }));
-
-        // Simplify (tolerance in percentage units, ~2px equivalent)
-        const tolerance = (2 / rw) * 100;
-        const simplified = simplifyPath(pctPoints, tolerance);
+        // Simplify in screen coordinates (2px tolerance)
+        const simplified = simplifyPath(screenPoints, 2);
         if (simplified.length < 2) return null;
 
         // Find which piece the cut path intersects most (by number of intersections)
@@ -3257,12 +3293,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         for (let pi = 0; pi < pieces.length; pi++) {
           const p = pieces[pi];
-          // Adjust polyline for piece offset (use base offset from stroke time for consistency)
-          const baseOff = baseOffsets?.get(p) ?? p.offsetY;
-          const adjustedSimp = simplified.map(pt => ({
-            x: pt.x,
-            y: pt.y - (baseOff / rh) * 100,
-          }));
+          const snap = baseSnapshots?.get(p) ?? { offsetX: p.offsetX, offsetY: p.offsetY, rotation: p.rotation };
+          const adjustedSimp = simplified.map(sp => screenToPiecePct(sp.x, sp.y, rr, snap));
 
           const crossings: { polySegIdx: number; cutSegIdx: number; t: number; pt: Point }[] = [];
 
@@ -3377,12 +3409,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const target = bestPiece;
         const targetIdx = bestIdx;
 
-        // Adjust simplified polyline to piece offset coordinates (use base offset)
-        const targetBaseOff = baseOffsets?.get(target) ?? target.offsetY;
-        const adjustedCut = simplified.map(pt => ({
-          x: pt.x,
-          y: pt.y - (targetBaseOff / rh) * 100,
-        }));
+        const targetSnap = baseSnapshots?.get(target) ?? { offsetX: target.offsetX, offsetY: target.offsetY, rotation: target.rotation };
+        const adjustedCut = simplified.map(sp => screenToPiecePct(sp.x, sp.y, rr, targetSnap));
 
         // Build the cut path between entry and exit points (in piece-local pct coords)
         const cutPath: Point[] = [bestEntry.pt];
@@ -3494,8 +3522,8 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         };
         pieces.splice(targetIdx + 1, 0, newPiece);
 
-        // Register new piece with parent's base offset for multi-cut coordinate consistency
-        if (baseOffsets) baseOffsets.set(newPiece, baseOffsets.get(target) ?? target.offsetY);
+        // Register new piece with parent's snapshot for multi-cut coordinate consistency
+        if (baseSnapshots) baseSnapshots.set(newPiece, baseSnapshots.get(target) ?? { offsetX: target.offsetX, offsetY: target.offsetY, rotation: target.rotation });
 
         // Shift lower pieces down
         for (let i = targetIdx + 1; i < pieces.length; i++) {
@@ -3516,6 +3544,170 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
         invalidateLayoutCache();
         return [bestEntry!.cutSegIdx, bestExit!.cutSegIdx] as [number, number];
+      }
+
+      function createBridgedPolygon(
+        outerPoly: Point[], outerEdges: EdgeInfo[],
+        innerPoly: Point[], innerEdges: EdgeInfo[],
+      ): { polygon: Point[]; edges: EdgeInfo[] } {
+        // Find closest vertex pair between outer and inner polygons
+        let bestDist = Infinity;
+        let outerBridgeIdx = 0;
+        let innerBridgeIdx = 0;
+        for (let oi = 0; oi < outerPoly.length; oi++) {
+          for (let ii = 0; ii < innerPoly.length; ii++) {
+            const d = Math.hypot(outerPoly[oi].x - innerPoly[ii].x, outerPoly[oi].y - innerPoly[ii].y);
+            if (d < bestDist) { bestDist = d; outerBridgeIdx = oi; innerBridgeIdx = ii; }
+          }
+        }
+
+        // Perpendicular epsilon offset so bridge has nonzero width
+        const ob = outerPoly[outerBridgeIdx];
+        const ib = innerPoly[innerBridgeIdx];
+        const bdx = ib.x - ob.x;
+        const bdy = ib.y - ob.y;
+        const blen = Math.hypot(bdx, bdy) || 1;
+        const EPS = 0.01; // percentage units — invisible
+        const px = (-bdy / blen) * EPS;
+        const py = (bdx / blen) * EPS;
+
+        const poly: Point[] = [];
+        const edges: EdgeInfo[] = [];
+        const n = outerPoly.length;
+        const m = innerPoly.length;
+
+        // Walk outer polygon from vertex 0 up to and including bridge vertex
+        for (let i = 0; i <= outerBridgeIdx; i++) {
+          poly.push(outerPoly[i]);
+          if (i < outerBridgeIdx) edges.push(outerEdges[i]);
+        }
+
+        edges.push({ jagged: null }); // bridge out
+
+        // Walk inner polygon in REVERSE from bridge vertex (creates hole via winding)
+        for (let i = 0; i < m; i++) {
+          const idx = (innerBridgeIdx - i + m) % m;
+          poly.push({ x: innerPoly[idx].x + px, y: innerPoly[idx].y + py });
+          const revEdgeIdx = (idx - 1 + m) % m;
+          const srcEdge = innerEdges[revEdgeIdx];
+          edges.push({
+            jagged: srcEdge.jagged ? [...srcEdge.jagged].reverse() : null,
+            source: srcEdge.source,
+            cutGen: srcEdge.cutGen,
+          });
+        }
+
+        poly.push({ x: innerPoly[innerBridgeIdx].x - px, y: innerPoly[innerBridgeIdx].y - py });
+        edges.push({ jagged: null }); // bridge back
+        for (let i = outerBridgeIdx; i < n; i++) {
+          poly.push(outerPoly[i]);
+          edges.push(outerEdges[i]);
+        }
+
+        return { polygon: poly, edges };
+      }
+
+      function executeClosedCut(screenPoints: { x: number; y: number }[]): boolean {
+        initTearSystem();
+        if (pieces.length === 0) return false;
+
+        const rr = receipt!.getBoundingClientRect();
+
+        const closed = [...screenPoints];
+        closed[closed.length - 1] = { ...closed[0] };
+        const simplified = simplifyPath(closed, 2);
+        if (simplified.length < 4) return false;
+        const closedPath = simplified.slice(0, -1);
+        if (closedPath.length < 3) return false;
+
+        let bestPiece: TearPiece | null = null;
+        let bestIdx = -1;
+        let bestLocalPath: Point[] = [];
+        let bestZ = -Infinity;
+
+        for (let pi = 0; pi < pieces.length; pi++) {
+          const p = pieces[pi];
+          const snap: PieceSnapshot = { offsetX: p.offsetX, offsetY: p.offsetY, rotation: p.rotation };
+          const localPath = closedPath.map(sp => screenToPiecePct(sp.x, sp.y, rr, snap));
+
+          const insideCount = localPath.filter(pt => pointInPolygon(pt, p.polygon)).length;
+          const centroid = {
+            x: localPath.reduce((s, pt) => s + pt.x, 0) / localPath.length,
+            y: localPath.reduce((s, pt) => s + pt.y, 0) / localPath.length,
+          };
+          const centroidInside = pointInPolygon(centroid, p.polygon);
+          if (insideCount < localPath.length * 0.3 && !centroidInside) continue;
+
+          const area = polygonArea(localPath);
+          if (area < 50) continue;
+
+          const z = parseInt(p.el.style.zIndex) || 0;
+          if (z > bestZ) {
+            bestPiece = p;
+            bestIdx = pi;
+            bestLocalPath = localPath;
+            bestZ = z;
+          }
+        }
+
+        if (!bestPiece || bestLocalPath.length < 3) return false;
+
+        const clippedInner = bestLocalPath.map(pt => {
+          if (pointInPolygon(pt, bestPiece!.polygon)) return pt;
+          return nearestEdgeProjection(pt, bestPiece!.polygon).pt;
+        });
+
+        // Ensure CW winding so bridge reversal creates CCW hole (nonzero fill rule)
+        if (polygonAreaSigned(clippedInner) < 0) clippedInner.reverse();
+        const innerArea = polygonArea(clippedInner);
+        const outerArea = polygonArea(bestPiece.polygon);
+        if (innerArea < 50 || outerArea - innerArea < 50) return false;
+
+        const innerEdges: EdgeInfo[] = [];
+        for (let i = 0; i < clippedInner.length; i++) {
+          innerEdges.push({ jagged: generateJaggedEdge(), source: 'cut', cutGen: cutGeneration });
+        }
+
+        const { polygon: outerPoly, edges: outerEdges } = createBridgedPolygon(
+          bestPiece.polygon, bestPiece.edges,
+          clippedInner, innerEdges,
+        );
+
+        sounds.tearSound();
+        dismissCutHint();
+
+        bestPiece.polygon = outerPoly;
+        bestPiece.edges = outerEdges;
+        bestPiece.rotation += (Math.random() - 0.5) * 0.6;
+        animatePiece(bestPiece);
+
+        const wrapper = receipt!.parentElement!;
+        const { el: newEl, clipEl: newClipEl, printables: newPrintables } = makePieceEl(
+          clippedInner, innerEdges, bestPiece.offsetX, bestPiece.offsetY, bestPiece.rotation
+        );
+        wrapper.appendChild(newEl);
+        newEl.style.zIndex = String((parseInt(bestPiece.el.style.zIndex) || 10) + 1);
+
+        const newPiece: TearPiece = {
+          el: newEl,
+          clipEl: newClipEl,
+          polygon: clippedInner,
+          edges: innerEdges,
+          offsetX: bestPiece.offsetX,
+          offsetY: bestPiece.offsetY + TEAR_GAP / 2,
+          rotation: bestPiece.rotation + (Math.random() - 0.5) * 2,
+          printables: newPrintables,
+        };
+        pieces.splice(bestIdx + 1, 0, newPiece);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            animatePiece(newPiece);
+          });
+        });
+
+        invalidateLayoutCache();
+        return true;
       }
 
       function executeTear(swipeX: number, swipeY: number): boolean {
@@ -3952,7 +4144,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           cutTrail.setAttribute('points', '');
           cutShimmer.setAttribute('points', '');
         }
-        if (!washiMode && !handMode) {
+        if (!washiMode && !handMode && !cutMode) {
           document.documentElement.style.touchAction = '';
         }
       };
@@ -4444,6 +4636,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (cutMode) {
           if (e.touches.length === 0) return;
           if (!canCutDuringPrint()) return;
+          document.documentElement.style.touchAction = 'none';
           dismissHint();
           cutDrawing = true;
           cutPoints = [{ x: e.touches[0].clientX, y: e.touches[0].clientY }];
@@ -4491,6 +4684,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           cutTrail.setAttribute('points', '');
           cutShimmer.setAttribute('points', '');
           cutPoints = [];
+          if (!washiMode && !handMode && !cutMode) document.documentElement.style.touchAction = '';
           return;
         }
         if (e.changedTouches.length > 0) {
