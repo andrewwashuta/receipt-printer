@@ -4145,7 +4145,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           cutTrail.setAttribute('points', '');
           cutShimmer.setAttribute('points', '');
         }
-        if (!washiMode && !handMode) {
+        if (!washiMode && !handMode && !cutMode) {
           document.documentElement.style.touchAction = '';
         }
       };
@@ -4685,7 +4685,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           cutTrail.setAttribute('points', '');
           cutShimmer.setAttribute('points', '');
           cutPoints = [];
-          if (!washiMode && !handMode) document.documentElement.style.touchAction = '';
+          if (!washiMode && !handMode && !cutMode) document.documentElement.style.touchAction = '';
           return;
         }
         if (e.changedTouches.length > 0) {
