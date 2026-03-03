@@ -1137,7 +1137,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
 <script>
   import { WebHaptics } from 'web-haptics';
-  const haptics = new WebHaptics({ showSwitch: true });
+  const haptics = new WebHaptics();
 
   // ============================================
   // RECEIPT PRINTER - CLIENT-SIDE LOGIC
@@ -1607,11 +1607,23 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       setTimeout(() => btn.classList.remove('toolbar-btn--pressed'), 300);
     }
 
+    let hapticDomFixed = false;
+    function fixHapticDOM() {
+      if (hapticDomFixed) return;
+      const label = document.querySelector('[for^="web-haptics"]') as HTMLElement | null;
+      if (!label) return;
+      hapticDomFixed = true;
+      label.style.display = '';
+      const input = label.querySelector('input') as HTMLElement | null;
+      if (input) input.style.display = '';
+    }
     function triggerHaptic() {
       haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
+      fixHapticDOM();
     }
     function triggerHapticSuccess() {
       haptics.trigger('success');
+      fixHapticDOM();
     }
 
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
