@@ -1122,11 +1122,22 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
   @keyframes cut-shimmer-mobile {
     to { stroke-dashoffset: -40; }
   }
+  /* web-haptics: keep the iOS fallback checkbox in the render tree */
+  [for^="web-haptics"],
+  [for^="web-haptics"] input {
+    position: fixed !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+  }
 </style>
 
 <script>
   import { WebHaptics } from 'web-haptics';
-  const haptics = new WebHaptics();
+  const haptics = new WebHaptics({ showSwitch: true });
 
   // ============================================
   // RECEIPT PRINTER - CLIENT-SIDE LOGIC
