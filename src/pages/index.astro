@@ -1125,6 +1125,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 </style>
 
 <script>
+  import { WebHaptics } from 'web-haptics';
+  const haptics = new WebHaptics();
+
   // ============================================
   // RECEIPT PRINTER - CLIENT-SIDE LOGIC
   // ============================================
@@ -1593,24 +1596,11 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       setTimeout(() => btn.classList.remove('toolbar-btn--pressed'), 300);
     }
 
-    // Haptic feedback — Android via Vibration API, iOS via hidden <input switch>
-    const canVibrate = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
-    let iosHapticCheckbox: HTMLInputElement | null = null;
-    if (!canVibrate && typeof document !== 'undefined') {
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.setAttribute('switch', '');
-      cb.style.cssText = 'position:fixed;opacity:0;pointer-events:none;left:-9999px;top:-9999px';
-      document.body.appendChild(cb);
-      iosHapticCheckbox = cb;
-    }
     function triggerHaptic() {
-      if (canVibrate) { navigator.vibrate(8); return; }
-      iosHapticCheckbox?.click();
+      haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
     }
     function triggerHapticSuccess() {
-      if (canVibrate) { navigator.vibrate([30, 60, 40]); return; }
-      iosHapticCheckbox?.click();
+      haptics.trigger('success');
     }
 
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
