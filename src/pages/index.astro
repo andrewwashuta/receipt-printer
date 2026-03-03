@@ -4084,6 +4084,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (!washiDrawing && activeWashiPointerId !== null) activeWashiPointerId = null;
           if (washiDrawing) return;
           activeWashiPointerId = e.pointerId;
+          triggerHaptic();
           startWashiStroke(e.clientX, e.clientY);
           e.preventDefault();
         });
@@ -4463,6 +4464,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!piece) return;
 
         dismissHint();
+        triggerHaptic();
         activeHandPointerId = e.pointerId;
         handDragging = true;
         handDragPiece = piece;
