@@ -3498,6 +3498,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (polygonArea(polyA) < MIN_AREA || polygonArea(polyB) < MIN_AREA) return null;
 
         sounds.tearSound();
+        haptics.trigger('success');
         dismissCutHint();
 
         // Determine which piece is "upper" (lower centroid Y) vs "lower"
@@ -3688,6 +3689,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         );
 
         sounds.tearSound();
+        haptics.trigger('success');
         dismissCutHint();
 
         bestPiece.polygon = outerPoly;
@@ -3765,6 +3767,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const tearPct = candidates[0].pct;
 
         sounds.tearSound();
+        haptics.trigger('success');
         dismissCutHint();
 
         // Generate shared jagged edge for this tear (both pieces share it)
