@@ -1125,9 +1125,6 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 </style>
 
 <script>
-  import { WebHaptics } from 'web-haptics';
-  const haptics = new WebHaptics();
-
   // ============================================
   // RECEIPT PRINTER - CLIENT-SIDE LOGIC
   // ============================================
@@ -1596,8 +1593,24 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       setTimeout(() => btn.classList.remove('toolbar-btn--pressed'), 300);
     }
 
+    // Haptic feedback — Android via Vibration API, iOS via hidden <input switch>
+    const canVibrate = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+    let iosHapticCheckbox: HTMLInputElement | null = null;
+    if (!canVibrate && typeof document !== 'undefined') {
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.setAttribute('switch', '');
+      cb.style.cssText = 'position:fixed;opacity:0;pointer-events:none;left:-9999px;top:-9999px';
+      document.body.appendChild(cb);
+      iosHapticCheckbox = cb;
+    }
     function triggerHaptic() {
-      haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
+      if (canVibrate) { navigator.vibrate(8); return; }
+      iosHapticCheckbox?.click();
+    }
+    function triggerHapticSuccess() {
+      if (canVibrate) { navigator.vibrate([30, 60, 40]); return; }
+      iosHapticCheckbox?.click();
     }
 
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
@@ -3498,7 +3511,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (polygonArea(polyA) < MIN_AREA || polygonArea(polyB) < MIN_AREA) return null;
 
         sounds.tearSound();
-        haptics.trigger('success');
+        triggerHapticSuccess();
         dismissCutHint();
 
         // Determine which piece is "upper" (lower centroid Y) vs "lower"
@@ -3689,7 +3702,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         );
 
         sounds.tearSound();
-        haptics.trigger('success');
+        triggerHapticSuccess();
         dismissCutHint();
 
         bestPiece.polygon = outerPoly;
@@ -3767,7 +3780,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const tearPct = candidates[0].pct;
 
         sounds.tearSound();
-        haptics.trigger('success');
+        triggerHapticSuccess();
         dismissCutHint();
 
         // Generate shared jagged edge for this tear (both pieces share it)
