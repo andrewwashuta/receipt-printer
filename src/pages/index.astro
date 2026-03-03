@@ -1125,6 +1125,9 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 </style>
 
 <script>
+  import { WebHaptics } from 'web-haptics';
+  const haptics = new WebHaptics();
+
   // ============================================
   // RECEIPT PRINTER - CLIENT-SIDE LOGIC
   // ============================================
@@ -1593,6 +1596,26 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
       setTimeout(() => btn.classList.remove('toolbar-btn--pressed'), 300);
     }
 
+    let hapticDomFixed = false;
+    function fixHapticDOM() {
+      if (hapticDomFixed) return;
+      const label = document.querySelector('[for^="web-haptics"]') as HTMLElement | null;
+      if (!label) return;
+      hapticDomFixed = true;
+      const hideCss = 'position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)';
+      label.style.cssText = hideCss;
+      const input = label.querySelector('input') as HTMLElement | null;
+      if (input) input.style.cssText = hideCss;
+    }
+    function triggerHaptic() {
+      haptics.trigger([{ duration: 8 }], { intensity: 0.3 });
+      fixHapticDOM();
+    }
+    function triggerHapticSuccess() {
+      haptics.trigger('success');
+      fixHapticDOM();
+    }
+
     let labelTimer: ReturnType<typeof setTimeout> | null = null;
     let activeLabelBtn: HTMLElement | null = null;
     const isMobileHint = window.matchMedia('(max-width: 600px)').matches;
@@ -1616,12 +1639,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     }
 
     soundToggle.addEventListener('click', () => {
+      triggerHaptic();
       toggleSound();
       showLabelBriefly(soundToggle);
       if (isMobileHint) showHint(sounds.isEnabled ? 'Sound \u00B7 On' : 'Sound \u00B7 Off', false);
     });
 
     tapeToggle?.addEventListener('click', () => {
+      triggerHaptic();
       washiMode = !washiMode;
       syncWashiToggle();
       showLabelBriefly(tapeToggle);
@@ -1631,12 +1656,14 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     });
 
     clearTapeBtn?.addEventListener('click', () => {
+      triggerHaptic();
       clearAllTape();
       showLabelBriefly(clearTapeBtn);
       if (isMobileHint) showHint('Tape Cleared', false);
     });
 
     handToggleBtn?.addEventListener('click', () => {
+      triggerHaptic();
       toggleHandMode();
       showLabelBriefly(handToggleBtn);
       if (isMobileHint) {
@@ -1645,6 +1672,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
     });
 
     cutToggleBtn?.addEventListener('click', () => {
+      triggerHaptic();
       toggleCutMode();
       showLabelBriefly(cutToggleBtn);
       if (isMobileHint) {
@@ -1654,6 +1682,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement | null;
     resetBtn?.addEventListener('click', () => {
+      triggerHaptic();
       resetToDefault();
       if (isMobileHint) showHint('Reset', false);
     });
@@ -1794,6 +1823,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
 
     themeToggleBtn?.addEventListener('click', () => {
       if (themeTransitionInFlight) return;
+      triggerHaptic();
 
       const nextTheme = getNextThemeName();
       cycleTheme(nextTheme);
@@ -3484,6 +3514,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (polygonArea(polyA) < MIN_AREA || polygonArea(polyB) < MIN_AREA) return null;
 
         sounds.tearSound();
+        triggerHapticSuccess();
         dismissCutHint();
 
         // Determine which piece is "upper" (lower centroid Y) vs "lower"
@@ -3674,6 +3705,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         );
 
         sounds.tearSound();
+        triggerHapticSuccess();
         dismissCutHint();
 
         bestPiece.polygon = outerPoly;
@@ -3751,6 +3783,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         const tearPct = candidates[0].pct;
 
         sounds.tearSound();
+        triggerHapticSuccess();
         dismissCutHint();
 
         // Generate shared jagged edge for this tear (both pieces share it)
@@ -4067,6 +4100,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
           if (!washiDrawing && activeWashiPointerId !== null) activeWashiPointerId = null;
           if (washiDrawing) return;
           activeWashiPointerId = e.pointerId;
+          triggerHaptic();
           startWashiStroke(e.clientX, e.clientY);
           e.preventDefault();
         });
@@ -4446,6 +4480,7 @@ import Avatar from '../assets/index/images/andrewwashuta.png';
         if (!piece) return;
 
         dismissHint();
+        triggerHaptic();
         activeHandPointerId = e.pointerId;
         handDragging = true;
         handDragPiece = piece;
